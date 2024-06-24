@@ -1,1 +1,0 @@
-# ferma-medical-information
