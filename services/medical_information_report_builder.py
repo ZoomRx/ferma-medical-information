@@ -1,6 +1,11 @@
 # Import necessary libraries
+import json
+
 import openai
 import requests
+
+from schemas.medical_info_inquiry import InquiryDetails
+from services.azure_doc_intelligence import AzureDocIntelligence
 
 # Set OpenAI API key
 openai.api_key = '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'
@@ -13,14 +18,19 @@ def fetch_content(url):
 
 
 # Function to create a SRL document
-def generate_report(article_content1, article_content2, article_content3):
+def generate_report(inquiry_details, article_summaries):
     # Define the conversation with GPT
 
-    title = "Kisqali monotherapy"
-    inquiry = "Can you provide data on the use and efficacy of Kisqali as a monotherapy? "
-    inquiry_type = "Efficacy (Primary and Secondary Outcomes), Safety (General and Specific AEs)"
-    summary = "The HCP is specifically interested in understanding the clinical outcomes. This includes data on overall response rates, progression-free survival, and common adverse events"
-    additional_notes = "In addition to the clinical outcomes, highlight the recommended phase II dose and any dose-limiting toxicities observed. Include pharmacokinetic data and relevant genetic alterations identified in the study."
+    title = inquiry_details.document_title
+    inquiry = inquiry_details.inquiry
+    inquiry_type = "All"
+    if bool(inquiry_details.inquiry_type):
+        # Convert the inquiry to a text format
+        inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
+    summary = inquiry_details.summary_section
+    additional_notes = inquiry_details.additional_notes
+
+    article_content = "{" + ", ".join([f"'{content}'" for content in article_summaries]) + "}"
 
     prompt = f"""You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data. Your task is to create a DETAILED document to answer Health Care Professional (HCP)-submitted clinical inquiry about a pharmaceutical company's drugs focusing on the inquiry type, and utilizing reference context for evidence-based information. 
 
@@ -44,9 +54,7 @@ def generate_report(article_content1, article_content2, article_content3):
 	Extract relevant information that might be pertinent to the inquiry but does not fall under the specific categories listed above. 
 	{additional_notes}
 
-    -Input Article- :["{article_content1}"
-    {article_content2}, {article_content3}
-    ]
+    -Input Article- :["{article_content}"]
 
     Read the entire article content provided above thoroughly and address the inquiry about pharmaceutical products.
 	Follow the below guidelines to structure the document content with specified headers: 
@@ -197,7 +205,7 @@ def generate_report(article_content1, article_content2, article_content3):
     conversation = [
         {"role": "system",
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data."},
-        {"role": "user_service.py", "content": f"""{prompt}"""
+        {"role": "user", "content": f"""{prompt}"""
          }
     ]
 
@@ -211,24 +219,42 @@ def generate_report(article_content1, article_content2, article_content3):
     )
 
     # Extract the content from the response
-    report_content = response['choices'][0]['message']['content']
+    srl_content = response['choices'][0]['message']['content']
 
-    with open("output.txt", "w") as file:
-        file.write(report_content)
+    with open("srl_content.txt", "w") as file:
+        file.write(srl_content)
 
-    print(report_content)
+    return srl_content
 
 
 # Run the function to create the document
-def generate_summary(article1):
+def generate_summary(inquiry_details, file_name):
     # Define the conversation with GPT
+    print(inquiry_details)
+    print(inquiry_details.inquiry_type)
+    #title = inquiry_details.document_title
+    inquiry = inquiry_details.inquiry
+    inquiry_type = "All"
+    if bool(inquiry_details.inquiry_type):
+        # Convert the inquiry to a text format
+        inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
+    #summary = inquiry_details.summary_section
+    #additional_notes = inquiry_details.additional_notes
 
-    title = "Kisqali monotherapy"
-    inquiry = "Can you provide data on the use and efficacy of Kisqali as a monotherapy? "
-    inquiry_type = "Safety, Efficacy"
-    summary = ""
-    additional_notes = ""
+    print("started...")
+    azure = AzureDocIntelligence()
+    print("Initializing...")
+    doc_intell_response_obj, doc_intell_response_dict = azure.get_raw_output(
+        local_inp_file_path=f"storage/data/{file_name}")
 
+    processed_content = azure.get_processed_output(raw_output_obj=doc_intell_response_obj)
+    processed_content.to_json("processed.json", orient="records", indent=4)
+
+    with open("processed.json") as file:
+        content_json = file.read()
+
+    # Load the JSON string from the file
+    article = json.dumps(content_json)
     prompt = f"""Create a DETAILED document to answer Health Care Professional (HCP)-submitted clinical inquiry {inquiry} about a pharmaceutical company's drugs focusing on the inquiry type, {inquiry_type} and utilizing reference context for evidence-based information. 
 
         The inquiry MUST pertain to the area of {inquiry_type}, emphasizing the need for detailed analysis and evidence-based information.
@@ -236,7 +262,7 @@ def generate_summary(article1):
 
         Guidelines for document generation: 
 
-        context: [{article1}]s
+        context: [{article}]s
 
         Read the entire article content provided in the context above thoroughly and address the inquiry about pharmaceutical products.
 		
@@ -287,7 +313,7 @@ def generate_summary(article1):
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role "
                     "involves responding to clinical inquiries from healthcare professionals (HCPs) by providing "
                     "accurate and comprehensive information based on the latest research and clinical data."},
-        {"role": "user_service.py", "content": f"""{prompt}"""
+        {"role": "user", "content": f"""{prompt}"""
          }
     ]
 
@@ -300,10 +326,27 @@ def generate_summary(article1):
     )
 
     # Extract the content from the response
-    report_content = response['choices'][0]['message']['content']
+    article_summary = response['choices'][0]['message']['content']
 
-    with open("output.txt", "w") as file:
-        file.write(report_content)
+    with open("summary_content.txt", "w") as file:
+        file.write(article_summary)
 
-    print(report_content)
-    return report_content
+    return article_summary
+
+# Function to convert the array to a text format
+def convert_to_text_format(types):
+    text = ""
+    for inquiry_type in types:
+        text += f"{inquiry_type.type} ({', '.join(inquiry_type.categories)}), "
+    return text.rstrip(", ")  # Remove trailing comma and space
+
+
+def generate_content(inquiry_details: InquiryDetails):
+    summaries = []
+
+    for filename in inquiry_details.document_source:
+        article_summary = generate_summary(inquiry_details, filename)
+        summaries.append(article_summary)
+
+    srl_content = generate_report(inquiry_details, summaries)
+    return srl_content

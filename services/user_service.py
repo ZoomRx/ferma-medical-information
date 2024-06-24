@@ -1,7 +1,5 @@
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, aliased
-
-from db.session import get_db
 from models.users import Users
 from services.base import BaseService
 from fastapi import HTTPException

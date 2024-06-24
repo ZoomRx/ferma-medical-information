@@ -5,7 +5,7 @@ from sentry_sdk.integrations.starlette import StarletteIntegration
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 import sentry_sdk
 
-from routers import users
+from routers import users, medical_information
 
 from middlewares.logger import logger_middleware
 from helpers.logger import Logger
@@ -41,6 +41,11 @@ app.middleware("http")(logger_middleware)
 app.include_router(
     router=users.router, prefix='/api/users',
     tags=["Users"]
+)
+
+app.include_router(
+    router=medical_information.router, prefix='/api/medical_information',
+    tags=["medical_information"]
 )
 
 @app.get("/")
