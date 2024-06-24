@@ -66,7 +66,7 @@ class EnvSettings(JSONSettings):
     temp_dir: str = "storage/data"
     jwt_token: str = Field(..., alias='JWT_SECRET_KEY')
     is_debug: str = Field(..., alias='IS_DEBUG')
-    open_ai_key = Field(..., alias='OPEN_AI_KEY')
+    open_ai_key: str = Field(..., alias='OPEN_AI_KEY')
 
 class DBSettings(JSONSettings):
     username: str = Field(..., alias='DB_USERNAME')
