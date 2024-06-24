@@ -6,9 +6,10 @@ import requests
 
 from schemas.medical_info_inquiry import InquiryDetails
 from services.azure_doc_intelligence import AzureDocIntelligence
+from config import settings
 
 # Set OpenAI API key
-openai.api_key = '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'
+openai.api_key = settings.env.open_ai_key
 
 
 # Helper function to fetch and parse content from URLs
