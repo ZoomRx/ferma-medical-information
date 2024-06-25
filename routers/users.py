@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
 from requests import Session
 from db.session import get_db
 from helpers.authentication import authenticate_user
@@ -10,13 +11,22 @@ from helpers.authentication import authenticate_user
 router = APIRouter()
 
 
+# Define the Pydantic model for the JSON payload
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+
+# Create the router instance
+router = APIRouter()
+
 @router.post("/login")
 def login(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        login_data: LoginSchema,
         db: Session = Depends(get_db)
 ):
-    username = form_data.username
-    password = form_data.password
+    username = login_data.username
+    password = login_data.password
+
     response = authenticate_user(db, username, password)
 
     if response:
