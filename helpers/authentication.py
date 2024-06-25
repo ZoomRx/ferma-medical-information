@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
+from pytz import UTC
 from typing import Optional
 
 from fastapi import Depends, HTTPException, status
