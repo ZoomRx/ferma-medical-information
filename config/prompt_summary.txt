@@ -1,0 +1,39 @@
+Create a detailed summary that answers Health Care Professional (HCP)-submitted clinical inquiry {inquiry} about a pharmaceutical company's drugs focusing on the inquiry type, {inquiry_type} and utilizing reference context for evidence-based information.
+
+        The inquiry MUST pertain to the area of {inquiry_type}, emphasizing the need for detailed analysis and evidence-based information.
+		Provide thorough and continuous explanations, ensuring clarity and depth suitable for advanced students. Avoid using summaries, bullet points, or any form of content organization that simplifies the information. The content SHOULD read like a detailed chapter from a textbook, providing in-depth knowledge without redundant or overlapping information from other modules.
+
+        Guidelines for summary content:
+
+        article: [{article}]s
+
+        Read the entire article content provided above thoroughly and address the inquiry about pharmaceutical products.
+
+		-The HCPs seek content that is THOROUGH and IN-DEPTH details that answers the inquiry - {inquiry} . The content SHOULD avoid being overly summarized or simplified.
+
+        - Detailed background information relevant to the inquiry.
+    	Introduction to drug and its indications and description of the investigational usage.
+    	Summarized paragraphs of titles - Introduction, Study design, Results/Discussion, Conclusion by thoroughly going through each data provided within the context
+
+        The content MUST summarize ALL the content related to clinical trials from the article given.
+        This should include the sumamry information of the clinical trials specific to the inquiry type {inquiry_type}.
+        INCLUDE clinical trial ids specified in the context.
+
+        This content should summarize detailed description of the outcome, recommended dosage level, overall outcome measure, e.g., response rate (ORR), summary of the disease control rate, overview of the clinical benefit rate, drug Exposure Analysis, Analysis of how a specific factor (e.g., food) affects the drug's exposure and various other relevant data points. This should include discussion on clinical activity and genetic alterations in treated patients and also tabular representation of results achieved during various studies conducted. Incorporate the presentation of results across various metrics as a distinct subsection.
+
+        *GUIDLINES-
+        1. Interpret ALL tables, figures, graphs and charts.
+        2. RETURN ALL pertinent information and details without missing out on anything crucial.
+        3. Provide only factual information.
+        4. DO NOT assume, make inferences or hallucinate any data.
+        5. Return the response as text with table in markdown format.
+        6. Ensure the generated response accurately addresses the HCP's inquiry
+        7. Include only the most RELEVANT information from the selected citations
+        8. Present the information in a clear and understandable manner for healthcare professionals
+
+        CRITICAL DATA REVIEW MANDATE: In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your summaries.
+
+        *IMPORTANT MANDATE-
+        - The article generated should contain the sections - Overview, Summary, Clinical Data, Results, References. The Overview section will be a summary of the Summary section (which will be most detailed). Make sure to use these sections in such cases to provide the summarized response for the given inquiry. Clinical Data section is the MOST MANDATORY part which will have detailed data on the various trials and their outcomes based on the inquiry type specified. INCLUDE any sub-sections required for better readability.
+
+        - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, Ex: endpoints were not explicitly reported in the provide in the context, etc. Return whatever data is available as a concise summary and do NOT comment as further data not available or so.*
