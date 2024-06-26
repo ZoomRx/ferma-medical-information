@@ -20,8 +20,7 @@ def fetch_content(url):
 
 
 # Function to create a SRL document
-def generate_report(inquiry_details, article_summaries, content = "all"):
-
+def generate_report(inquiry_details, article_summaries, content="all"):
     title = inquiry_details.document_title
     inquiry = inquiry_details.inquiry
     inquiry_type = "All"
@@ -46,8 +45,8 @@ def generate_report(inquiry_details, article_summaries, content = "all"):
     with open(f"config/{prompt_file}", "r") as file:
         prompt_text = file.read()
 
-
-    prompt = f"""{prompt_text}"""
+    prompt = prompt_text.format(title=title, inquiry=inquiry, inquiry_type=inquiry_type, summary=summary,
+                                additional_notes=additional_notes, article_content=article_content)
 
     conversation = [
         {"role": "system",
@@ -79,14 +78,14 @@ def generate_report(inquiry_details, article_summaries, content = "all"):
 
 # Run the function to create the document
 def generate_summary(inquiry_details, file_name):
-    #title = inquiry_details.document_title
+    # title = inquiry_details.document_title
     inquiry = inquiry_details.inquiry
     inquiry_type = "All"
     if bool(inquiry_details.inquiry_type):
         # Convert the inquiry to a text format
         inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
-    #summary = inquiry_details.summary_section
-    #additional_notes = inquiry_details.additional_notes
+    # summary = inquiry_details.summary_section
+    # additional_notes = inquiry_details.additional_notes
 
     azure = AzureDocIntelligence()
     doc_intell_response_obj, doc_intell_response_dict = azure.get_raw_output(
@@ -104,17 +103,17 @@ def generate_summary(inquiry_details, file_name):
     with open("config/prompt_extract.txt", "r") as file:
         prompt_text = file.read()
 
-    prompt = f"""{prompt_text}"""
-
+    prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article)
 
     conversation = [
         {"role": "system",
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role "
                     "involves responding to clinical inquiries from healthcare professionals (HCPs) by providing "
                     "accurate and comprehensive information based on the latest research and clinical data."},
-        {"role": "user", "content": f"""{prompt}"""
+        {"role": "user", "content": f"{prompt}"
          }
     ]
+    print(conversation)
     start_time = datetime.now()
     # Generate the report using the OpenAI API
     response = openai.ChatCompletion.create(
@@ -135,6 +134,7 @@ def generate_summary(inquiry_details, file_name):
 
     return article_summary
 
+
 # Function to convert the array to a text format
 def convert_to_text_format(types):
     text = ""
@@ -152,12 +152,12 @@ def generate_content(inquiry_details: InquiryDetails):
 
     srl_content = generate_report(inquiry_details, summaries)
 
-    #srl_content = generate_report(inquiry_details, summaries, "summary")
+    # srl_content = generate_report(inquiry_details, summaries, "summary")
 
-    #srl_content = extract_srl_overview(inquiry_details, summaries)
+    # srl_content = extract_srl_overview(inquiry_details, summaries)
 
-    #srl_content = extract_clinical_data(inquiry_details, summaries)
+    # srl_content = extract_clinical_data(inquiry_details, summaries)
 
-    #srl_content = extract_clinical_results(inquiry_details, summaries)
+    # srl_content = extract_clinical_results(inquiry_details, summaries)
 
     return srl_content
