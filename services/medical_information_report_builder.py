@@ -113,7 +113,6 @@ def generate_summary(inquiry_details, file_name):
         {"role": "user", "content": f"{prompt}"
          }
     ]
-    print(conversation)
     start_time = datetime.now()
     # Generate the report using the OpenAI API
     response = openai.ChatCompletion.create(
@@ -128,9 +127,6 @@ def generate_summary(inquiry_details, file_name):
     print(f"Response Time for Extraction: {elapsed_time} seconds")
     # Extract the content from the response
     article_summary = response['choices'][0]['message']['content']
-
-    with open("summary_content.txt", "w") as file:
-        file.write(article_summary)
 
     return article_summary
 
