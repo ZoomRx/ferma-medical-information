@@ -19,3 +19,6 @@ class InquiryDetails(BaseModel):
     document_source: List[str]
     inquiry_type: List[InquiryType]
 
+
+class Inquiry(BaseModel):
+    inquiry: str
