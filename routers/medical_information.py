@@ -1,16 +1,12 @@
 # routes/upload_routes.py
 import os
 
-from fastapi import APIRouter, File, UploadFile, HTTPException
-from typing import List
-from pathlib import Path
-from datetime import datetime
-import aiofiles
+from fastapi import APIRouter
 from starlette.responses import JSONResponse
 
 from schemas.medical_info_inquiry import InquiryDetails, Inquiry
 from services.medical_information_report_builder import generate_report, generate_content
-from services.pubmed_es_service import fetch_articles_based_on_inquiry
+from services.pubmed_service import fetch_articles_based_on_inquiry
 
 router = APIRouter()
 
@@ -73,7 +69,7 @@ async def create_srl(inquiry_details: InquiryDetails):
 
 @router.post("/find_cite")
 async def find_cite(inquiry: Inquiry):
-    articles = fetch_articles_based_on_inquiry(inquiry)
+    articles = await fetch_articles_based_on_inquiry(inquiry)
     return articles
 
 
@@ -82,7 +78,7 @@ async def download_pdf_endpoint(links: list[str]):
     filenames = []
     for link in links:
         try:
-            filename = ""#download_pdf_from_url(link)
+            filename = "nihms-1732896_20240628132111.pdf"
             filenames.append(filename)
         except Exception as e:
             return JSONResponse(status_code=400, content={"error": str(e)})
