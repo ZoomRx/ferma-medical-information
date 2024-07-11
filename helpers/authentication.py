@@ -113,7 +113,8 @@ def validate_user(db, username, password):
         try:
             user = user_service.get(db, email=email)
             print(user)
-            is_authenticated = True
+            if user['is_valid'] == 1 and user['password_hash'] == password:
+                is_authenticated = True
         except Exception as e:
             print(e)
             raise
