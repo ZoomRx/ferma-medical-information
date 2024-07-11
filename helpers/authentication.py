@@ -112,15 +112,20 @@ def validate_user(db, username, password):
         email = username
         try:
             user = user_service.get(db, email=email)
-            if user.is_valid== 1 and user.password_hash == password:
+            print(user.is_valid)
+            print(user.password_hash)
+            if user.is_valid == 1 and user.password_hash == password:
                 is_authenticated = True
         except Exception as e:
             print(e)
             raise
-        return {
-            "mail": email,
-            "username": username
-        }
+        if is_authenticated:
+            return {
+                "mail": email,
+                "username": username
+            }
+        else:
+            raise HTTPException(status_code=400, detail="User not found")
     except Exception as e:
         capture_exception(e)
         print(e)
