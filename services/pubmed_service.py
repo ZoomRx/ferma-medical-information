@@ -1,5 +1,4 @@
 import concurrent
-
 import openai
 import json
 import datetime
@@ -9,8 +8,40 @@ from config import settings
 
 openai.api_key = settings.env.open_ai_key
 
+def get_pubmed_phrase(inquiry):
+    prompt = f"""You are tasked with identifying ONLY the key terms mainly including the drug in the given inquiry: {inquiry}
+
+    *IMPORTANT MANDATE-
+    - DO NOT include specific words like specifically, particulary, recommended, new and any adjectives along with the keyterms.
+    - DO NOT include any special characters like - instead replace with space.
+    - DO NOT include specific terms like safety, efficacy
+    - DO NOT include any terms included inside brackets in the inquiry 
+    - The output should be ONLY the identified keyword separated by space.
+    - DO NOT include any text in the output response."""
+
+    conversation = [
+        {"role": "system",
+         "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves identifying the relevant keywords in clinical inquiries from healthcare professionals (HCPs)"},
+        {"role": "user", "content": f"""{prompt}"""
+         }
+    ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=conversation,
+        temperature=0,
+        max_tokens=4096
+    )
+    pubmed_query = response['choices'][0]['message']['content']
+    pubmed_query_content = pubmed_query.strip()  # Remove leading/trailing whitespace
+    print(pubmed_query_content)
+    return pubmed_query_content
+
 async def fetch_articles_based_on_inquiry(inquiry):
-    pubmed_article_ids = await esearch(inquiry)
+    pubmed_inquiry = get_pubmed_phrase(inquiry)
+    if pubmed_inquiry is None:
+        return json.dumps([])
+    pubmed_article_ids = await esearch(pubmed_inquiry)
     articles_json = await get_pubmed_article(pubmed_article_ids)
     return json.loads(articles_json)
 
@@ -19,7 +50,7 @@ async def esearch(inquiry):
     url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     params = {
         "db": "pubmed",
-        "term": inquiry.inquiry,
+        "term": inquiry,
         "retmax": 50
     }
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:
@@ -36,10 +67,12 @@ async def esearch(inquiry):
                     raise Exception(f"Failed to fetch search results: {response.status}")
         except Exception as e:
             print(f"An error occurred: {e}")
-            raise
+            return []
 
 
 async def get_pubmed_article(pubmed_ids):
+    if len(pubmed_ids) == 0:
+        return json.dumps([])
     # Construct the URL for fetching the articles
     article_url = f"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&tool=PMA&id={','.join(pubmed_ids)}"
 
