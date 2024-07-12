@@ -1,6 +1,8 @@
+import concurrent
+
 import requests
 import openai
-import xml.etree.ElementTree as ET
+from transformers import pipeline
 import json
 import datetime
 import aiohttp
@@ -50,84 +52,16 @@ async def get_pubmed_article(pubmed_ids):
                 root = etree.fromstring(await response.text())
                 articles = []
 
-                for article_element in root.iter('PubmedArticle'):
-                    # Initialize variables
-                    id = ""
-                    title = ""
-                    abstract = ""
-                    url = ""
-                    author = ""
-                    affiliation = []
-                    formatted_date = ""
-                    publication_type = []
-                    journal_title = ""
-                    keywords = []
+                # Use ThreadPoolExecutor to process articles in parallel
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    # Map each article_element to the process_article_element function
+                    futures = [executor.submit(process_article_element, article_element) for article_element in
+                               root.iter('PubmedArticle')]
 
-                    # Populate variables based on the existence of elements
-                    if article_element.find('./MedlineCitation/PMID') is not None:
-                        id = article_element.find('./MedlineCitation/PMID').text
-                        url = f"https://pubmed.ncbi.nlm.nih.gov/{id}/"
-
-                    if article_element.find('./MedlineCitation/Article/ArticleTitle') is not None:
-                        title = article_element.find('./MedlineCitation/Article/ArticleTitle').text
-
-                    if article_element.find('./MedlineCitation/Article/Abstract/AbstractText') is not None:
-                        abstractText = article_element.find('./MedlineCitation/Article/Abstract/AbstractText').text
-                        abstract = get_summary(abstractText)  # Assuming get_summary is defined elsewhere
-
-                    if article_element.find('./MedlineCitation/Article/AuthorList/Author') is not None:
-                        authors = article_element.findall('./MedlineCitation/Article/AuthorList/Author', article_element)
-                        if len(authors) > 0:
-                            author_names = []
-                            for author in authors:
-                                first_name = author.find('ForeName').text if author.find('ForeName') is not None else ""
-                                last_name = author.find('LastName').text if author.find('LastName') is not None else ""
-                                author_names.append(f"{first_name} {last_name}")
-                            author = author_names[0]
-
-                    if article_element.find('./MedlineCitation/Article/AuthorList/Author/AffiliationInfo/Affiliation') is not None:
-                        affiliation = [affiliation.text for affiliation in
-                                       article_element.find('./MedlineCitation/Article/AuthorList/Author', article_element).findall(
-                                           'AffiliationInfo/Affiliation')]
-
-                    if article_element.find('./MedlineCitation/Article/ArticleDate') is not None:
-                        year_element = article_element.find('./MedlineCitation/Article/ArticleDate/Year')
-                        month_element = article_element.find('./MedlineCitation/Article/ArticleDate/Month')
-                        day_element = article_element.find('./MedlineCitation/Article/ArticleDate/Day')
-
-                        year = int(year_element.text) if year_element is not None else None
-                        month = int(month_element.text) if month_element is not None else None
-                        day = int(day_element.text) if day_element is not None else None
-
-                        if year is not None and month is not None and day is not None:
-                            article_date = datetime.date(year, month, day)
-                            formatted_date = article_date.strftime('%Y-%m-%d')
-                        else:
-                            formatted_date = "Unknown"
-
-                    if article_element.find('./MedlineCitation/Article/PublicationTypeList') is not None:
-                        publication_type = [ptype.text for ptype in article_element.findall('.//PublicationType')]
-
-                    if article_element.find('./MedlineCitation/Article/Journal/Title') is not None:
-                        journal_title = article_element.find('./MedlineCitation/Article/Journal/Title').text
-
-                    if article_element.find('./MedlineCitation/KeywordList') is not None:
-                        keywords = [keyword.text for keyword in article_element.findall('.//Keyword')]
-
-                    # Create the dictionary
-                    article_dict = {
-                        "id": id,
-                        "title": title,
-                        "abstract": abstract,
-                        "url": url,
-                        "author": author,
-                        "affiliation": affiliation,
-                        "article_date": formatted_date,
-                        "publication_type": publication_type,
-                        "journal_title": journal_title,
-                        "keywords": keywords
-                    }
-                    articles.append(article_dict)
+                    # Collect the results from all futures
+                    for future in concurrent.futures.as_completed(futures):
+                        article_dict = future.result()
+                        articles.append(article_dict)
 
                 # Convert the list of dictionaries to JSON
                 json_data = json.dumps(articles, indent=4)
@@ -152,3 +86,85 @@ def get_summary(abstract):
     summary = response['choices'][0]['message']['content']
     return summary
 
+def process_article_element(article_element):
+    # Initialize variables
+    id = ""
+    title = ""
+    abstract = ""
+    url = ""
+    author = ""
+    affiliation = []
+    formatted_date = ""
+    publication_type = []
+    journal_title = ""
+    keywords = []
+
+    # Populate variables based on the existence of elements
+    if article_element.find('./MedlineCitation/PMID') is not None:
+        id = article_element.find('./MedlineCitation/PMID').text
+        url = f"https://pubmed.ncbi.nlm.nih.gov/{id}/"
+
+    if article_element.find('./MedlineCitation/Article/ArticleTitle') is not None:
+        title = article_element.find('./MedlineCitation/Article/ArticleTitle').text
+
+    if article_element.find('./MedlineCitation/Article/Abstract/AbstractText') is not None:
+        abstractText = article_element.find('./MedlineCitation/Article/Abstract/AbstractText').text
+
+        if abstractText is not None and len(abstractText) > 600:
+            abstract = get_summary(abstractText)  # Assuming get_summary is defined elsewhere
+        else:
+            abstract = abstractText
+
+    if article_element.find('./MedlineCitation/Article/AuthorList/Author') is not None:
+        authors = article_element.findall('./MedlineCitation/Article/AuthorList/Author', article_element)
+        if len(authors) > 0:
+            author_names = []
+            for author in authors:
+                first_name = author.find('ForeName').text if author.find('ForeName') is not None else ""
+                last_name = author.find('LastName').text if author.find('LastName') is not None else ""
+                author_names.append(f"{first_name} {last_name}")
+            author = author_names[0]
+
+    if article_element.find('./MedlineCitation/Article/AuthorList/Author/AffiliationInfo/Affiliation') is not None:
+        affiliation = [affiliation.text for affiliation in
+                       article_element.find('./MedlineCitation/Article/AuthorList/Author', article_element).findall(
+                           'AffiliationInfo/Affiliation')]
+
+    if article_element.find('./MedlineCitation/Article/ArticleDate') is not None:
+        year_element = article_element.find('./MedlineCitation/Article/ArticleDate/Year')
+        month_element = article_element.find('./MedlineCitation/Article/ArticleDate/Month')
+        day_element = article_element.find('./MedlineCitation/Article/ArticleDate/Day')
+
+        year = int(year_element.text) if year_element is not None else None
+        month = int(month_element.text) if month_element is not None else None
+        day = int(day_element.text) if day_element is not None else None
+
+        if year is not None and month is not None and day is not None:
+            article_date = datetime.date(year, month, day)
+            formatted_date = article_date.strftime('%Y-%m-%d')
+        else:
+            formatted_date = "Unknown"
+
+    if article_element.find('./MedlineCitation/Article/PublicationTypeList') is not None:
+        publication_type = [ptype.text for ptype in article_element.findall('.//PublicationType')]
+
+    if article_element.find('./MedlineCitation/Article/Journal/Title') is not None:
+        journal_title = article_element.find('./MedlineCitation/Article/Journal/Title').text
+
+    if article_element.find('./MedlineCitation/KeywordList') is not None:
+        keywords = [keyword.text for keyword in article_element.findall('.//Keyword')]
+
+    # Create the dictionary
+    article_dict = {
+        "id": id,
+        "title": title,
+        "abstract": abstract,
+        "url": url,
+        "author": author,
+        "affiliation": affiliation,
+        "article_date": formatted_date,
+        "publication_type": publication_type,
+        "journal_title": journal_title,
+        "keywords": keywords
+    }
+    return article_dict
