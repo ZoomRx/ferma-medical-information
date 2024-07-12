@@ -107,24 +107,23 @@ def authenticate_user(db, username, password):
 def validate_user(db, username, password):
     try:
         is_authenticated = False
-        print(username)
         # email = f"{username}@zoomrx.com"
         email = username
         try:
             user = user_service.get(db, email=email)
-            print(user.is_valid)
-            print(user.password_hash)
             if user.is_valid == 1 and user.password_hash == password:
                 is_authenticated = True
         except Exception as e:
             print(e)
             raise
         if is_authenticated:
+            Logger.log(msg=f"{username} Logged in")
             return {
                 "mail": email,
                 "username": username
             }
         else:
+            Logger.log(msg=f"{username} not found")
             raise HTTPException(status_code=400, detail="User not found")
     except Exception as e:
         capture_exception(e)

@@ -5,6 +5,7 @@ import datetime
 import aiohttp
 from lxml import etree
 from config import settings
+from helpers.logger import Logger
 
 openai.api_key = settings.env.open_ai_key
 
@@ -34,14 +35,18 @@ def get_pubmed_phrase(inquiry):
     )
     pubmed_query = response['choices'][0]['message']['content']
     pubmed_query_content = pubmed_query.strip()  # Remove leading/trailing whitespace
-    print(pubmed_query_content)
+    Logger.log(msg = f"Pubmed Inquiry terms: {pubmed_query_content}")
     return pubmed_query_content
 
 async def fetch_articles_based_on_inquiry(inquiry):
-    pubmed_inquiry = get_pubmed_phrase(inquiry)
-    if pubmed_inquiry is None:
-        return json.dumps([])
-    pubmed_article_ids = await esearch(pubmed_inquiry)
+    Logger.log(msg = f"User Inquiry: {inquiry.inquiry}")
+    pubmed_article_ids = await esearch(inquiry.inquiry)
+    if len(pubmed_article_ids) == 0:
+        pubmed_inquiry = get_pubmed_phrase(inquiry)
+        if pubmed_inquiry is None:
+            return json.dumps([])
+        pubmed_article_ids = await esearch(pubmed_inquiry)
+    Logger.log(msg=f"Pubmed Article Ids for user Inquiry: {pubmed_article_ids}")
     articles_json = await get_pubmed_article(pubmed_article_ids)
     return json.loads(articles_json)
 

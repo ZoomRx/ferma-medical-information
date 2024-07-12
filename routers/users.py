@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from requests import Session
 from db.session import get_db
 from helpers.authentication import authenticate_user
+from helpers.logger import Logger
 
 router = APIRouter()
 
@@ -26,6 +26,7 @@ def login(
 ):
     username = login_data.username
     password = login_data.password
+    Logger.log(msg=f"{username} Logging in.....")
 
     response = authenticate_user(db, username, password)
 
@@ -41,7 +42,7 @@ def login(
                 content=response["content"]
             )
 
-        # return response as user_service.py details
         return response
     else:
+        Logger.log(msg="Incorrect username or password")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")

@@ -1,9 +1,11 @@
 # routes/upload_routes.py
 import os
+import time
 
 from fastapi import APIRouter
 from starlette.responses import JSONResponse
 
+from helpers.logger import Logger
 from schemas.medical_info_inquiry import InquiryDetails, Inquiry
 from services.medical_information_report_builder import generate_report, generate_content
 from services.pubmed_service import fetch_articles_based_on_inquiry
@@ -61,6 +63,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
 
 @router.post("/create_srl")
 async def create_srl(inquiry_details: InquiryDetails):
+    Logger.log(f"Received request to create_srl for inquiry: {inquiry_details.inquiry}")
     # Placeholder for generating the SRL document
     # In a real implementation, this would involve processing the inquiry details and files
     document_content = generate_content(inquiry_details)
@@ -69,8 +72,25 @@ async def create_srl(inquiry_details: InquiryDetails):
 
 @router.post("/find_cite")
 async def find_cite(inquiry: Inquiry):
-    articles = await fetch_articles_based_on_inquiry(inquiry)
-    return articles
+    Logger.log(msg = f"Received request to find citations for inquiry: {inquiry.inquiry}")
+    try:
+        start_time = time.time()
+        # Simulate fetching articles based on inquiry
+        articles = await fetch_articles_based_on_inquiry(inquiry)
+
+        # Log successful retrieval of articles
+        Logger.log(msg = f"Successfully retrieved {len(articles)} articles.")
+        # Capture the end time
+        end_time = time.time()
+        # Calculate and log the response time
+        response_time = end_time - start_time
+        Logger.log(msg = f"Find cite Response time: {response_time:.2f} seconds")
+
+        return articles
+    except Exception as e:
+        # Log any exceptions that occur during processing
+        Logger.log(level="error",msg=f"An error occurred while processing the request: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.post("/download_cite")
