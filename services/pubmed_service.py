@@ -1,8 +1,6 @@
 import concurrent
 
-import requests
 import openai
-from transformers import pipeline
 import json
 import datetime
 import aiohttp
