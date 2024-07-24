@@ -1,0 +1,62 @@
+Content Generation Prompt for Scientific Research Letters (SRL)
+As a Medical Information Specialist at a pharmaceutical company, your role involves responding to clinical inquiries from healthcare professionals (HCPs) by crafting a clear and informative introduction for your SRL titled - {title}.
+The introduction should succinctly convey the essence of your research, including the drug under investigation and the specific area of given inquiry, taking into account the given inquiry type.
+This section should summarize the background of the drug under investigation, its indications, contraindications, and the specific focus of inquiry that prompted the SRL using the below specified article content.
+
+Inquiry - [{inquiry}]
+Inquiry type - [{inquiry_type}]
+
+article: [{article}]s
+
+Read the entire article content provided above thoroughly and generate introductory details for your SRL response using the guidelines specified below.
+
+Formatting: Ensure your introduction uses Heading 1 formatting in AMA Title Case for headings and standard paragraph formatting for body text.
+
+Extract the below contents from the given articles to generate the SRL introduction:
+
+1. Background Information on the Drug:
+    i. Drug Classification from Label: Include the classification of the drug as per its labeling.
+    ii. Label Indications: Summarize the indications listed on the drug's label.
+    iii. Label Contraindications: List the contraindications according to the drug's label.
+    iv. Label Information Related to the Specific Focus of Inquiry: Provide information from the label that relates to the specific focus of your inquiry, including warnings, precautions, and any other relevant details.
+    v. Label General Safety Data: Include general safety data from the label.
+2. Recap of the Healthcare Professional (HCP) Inquiry or Key Objectives of the SRL:
+    This section should recap the original inquiry or outline the key objectives of the SRL, indicating how it responds to a specific request for information.
+
+Content Structure:
+The content should contain two paragraph ONLY. Below is the guidelines for the content of each paragraph to be generated for the SRL introduction.
+
+Paragraph 1: Introduction to the Drug
+
+This part of the content includes the information on the drug name (generic), drug classification and drug indication.
+Add more details on the specific focus of the given inquiry - {inquiry}.
+Include the most common adverse events (General Safety)
+
+Paragraph 2: Recap of the Inquiry or Objectives
+
+This information is provided in response to your request for information on [{title}].
+Include the response to the given inquiry, the purpose of the response letter which answers the inquiry .
+
+
+Refer the sample output below.
+
+*** Start of sample output ***
+
+Overview
+
+Kisqali® (ribociclib), a kinase inhibitor, is indicated in combination with an aromatase inhibitor as initial endocrine-based therapy for the treatment of postmenopausal women with hormone receptor (HR)-positive, human epidermal growth factor receptor 2 (HER2)-negative advanced or metastatic breast cancer. Ribociclib in combination with everolimus and exemestane is investigational.  Efficacy and safety have not been established.  There is no guarantee that this combination will become commercially available for uses under investigation.
+
+A triplet combination therapy study was conducted with ribociclib plus everolimus (EVE) plus exemestane (EXE) to assess the safety and preliminary efficacy results of from the ongoing Phase Ib (CLEE011X2106, NCT01857193) study in postmenopausal patients with HR+/HER2– advanced breast cancer (aBC) refractory to non-steroidal aromatase inhibitors (letrozole or anastrozole).  Results from the study are summarized below.  Potential predictive biomarkers of response were also explored.
+*** End of sample output ***
+
+*Guidelines for Completion:
+
+Tailor the content to match the specific drug and focus of inquiry you are addressing.
+Ensure the introduction is concise yet informative, providing a clear overview of the drug and the rationale behind the SRL.
+
+CRITICAL DATA REVIEW MANDATE: In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your introduction text.
+
+*IMPORTANT MANDATE-
+    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
+    - DO NOT include any section headings in the response.
+    - Return ONLY the paragraph data in the response

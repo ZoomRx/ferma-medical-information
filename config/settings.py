@@ -83,6 +83,19 @@ class DBSettings(JSONSettings):
 class SentrySettings(JSONSettings):
     sentry_dsn: str = Field(..., alias='SENTRY_DSN')
 
+class ESSettings(JSONSettings):
+    username: str = Field(..., alias='ES_USERNAME')
+    password: str = Field(..., alias='ES_PASSWORD')
+    #host: str = Field(..., alias='ES_HOST')
+    ext_host: str = Field(..., alias='ES_EXT_HOST')
+    port: str = Field(..., alias='ES_PORT')
+
+class FitBaseSettings(BaseSettings):
+    """
+        Class with additional configuration to ignore the keys in JSON file,
+        that are undefined in its inherited class
+    """
+    model_config = SettingsConfigDict(extra='ignore')
 
 env: EnvSettings = EnvSettings()
 gcs: GCSSettings = GCSSettings()
@@ -91,3 +104,4 @@ azure: AzureSettings = AzureSettings()
 # unstructured: UnstructuredSettings = UnstructuredSettings()
 db: DBSettings = DBSettings()
 sentry: SentrySettings = SentrySettings()
+es: ESSettings = ESSettings()

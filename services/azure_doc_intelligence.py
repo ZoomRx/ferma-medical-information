@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 from typing import List, Optional, Tuple
 from azure.core.polling._poller import PollingReturnType_co
@@ -30,7 +31,7 @@ class AzureDocIntelligence():
         doc_intell_response_dict = doc_intell_response_obj.as_dict()
         return doc_intell_response_obj, doc_intell_response_dict
 
-    def get_processed_output(self, *, raw_output_obj: PollingReturnType_co) -> DataFrame:
+    def get_processed_output(self, *, raw_output_obj: PollingReturnType_co, file_name) -> DataFrame:
         chunck_positions = {}
         for paragraph in raw_output_obj.paragraphs:
             if paragraph.spans:
@@ -62,15 +63,19 @@ class AzureDocIntelligence():
                         }
 
         next_chunck_position = -1
+        document_name = file_name
+        file_id = os.path.splitext(file_name)[0]
         current_page = 1
         chunck_order = 1
         page_title = None
-        page_df = pd.DataFrame(columns=["page_no", "page_title"])
+        page_df = pd.DataFrame(columns=["document_name", "page_no", "page_title"])
         paragraph_df = pd.DataFrame(columns=["page_no", "paragraph_order", "type", "content"])
 
         for start_position, metadata in chunck_positions.items():
             if metadata["page_no"] != current_page:
                 page_row = {
+                    "id" : file_id,
+                    "document_name": document_name,
                     "page_no": current_page,
                     "page_title": page_title
                 }
@@ -102,12 +107,66 @@ class AzureDocIntelligence():
                 chunck_order += 1
 
         page_row = {
+            "id": file_id,
+            "document_name": document_name,
             "page_no": current_page,
             "page_title": page_title
         }
         page_df = pd.concat([page_df, pd.DataFrame([page_row])], ignore_index=True)
         cluster_df = pd.merge(paragraph_df, page_df, on='page_no')
-        return cluster_df
+        pages_df= self.combine_pages(cluster_df)
+
+        #page_df = self.convert_to_pages_dict(document_name, cluster_df.to_dict())
+        #print(page_df)
+        return pages_df
+
+
+    def combine_pages(self, cluster_df):
+        data_list = cluster_df.to_dict('records')
+
+        # Sort the list based on paragraph_order and then page_no
+        sorted_paragraphs = sorted(data_list, key=lambda x: (x["page_no"], x["paragraph_order"]))
+
+        cluster_df = pd.DataFrame(sorted_paragraphs)
+
+        # Step 1: Aggregate the 'content' based on 'page_no'
+        aggregated_df = cluster_df.groupby('page_no')[['content', 'document_name', 'page_title']].agg({
+            'content': ' '.join,
+            'document_name': 'first'
+        }).reset_index()
+        return aggregated_df
+
+    def convert_to_pages_dict(self,document_name, doc_intell_response_dict):
+        pages_dict = {}
+        current_page = 1
+        page_title = ""
+        content_type = "paragraph"
+        content = ""
+
+        # Example structure - adjust according to your actual response structure
+        for section in doc_intell_response_dict.get('sections', []):
+            for item in section.get('items', []):
+                # Update page title if a title is found
+                if 'title' in item:
+                    page_title = item['title']
+                # Update content type if a different type is found
+                if 'type' in item:
+                    content_type = item['type']
+                # Aggregate paragraph content
+                if 'text' in item:
+                    content += item['text'] + "\n"
+
+            # Assuming each section ends a page
+            if content:
+                pages_dict[current_page] = (document_name, page_title, content_type, content.strip())
+                current_page += 1
+                content = ""  # Reset content for the next page
+
+        # Final check for any remaining content
+        if content:
+            pages_dict[current_page] = (document_name, page_title, content_type, content.strip())
+
+        return pages_dict
 
     @staticmethod
     def json_to_markdown(*, table: Dict[str, Any]) -> str:

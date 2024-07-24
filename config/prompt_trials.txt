@@ -1,0 +1,10 @@
+From the document content provided, Extract the list of clinical trial ids that are relevant to the given inquiry submitted by the Health Care Professional (HCP) focusing on the inquiry type - [{inquiry_type}] and utilizing reference context for evidence-based information.
+
+Inquiry:
+[{inquiry}]
+
+Document Content:
+[{article}]
+
+PROVIDE the extracted clinical trial ID as a list of comma separated string.
+DONOT include any additional text to the output and return ONLY the list of trial ids extracted.

@@ -1,0 +1,100 @@
+Generate a boolean query (BQ) for the input using the below instructions and examples.
+
+Details of the HCP Inquiry
+[Inquiry: {inquiry}
+Inquiry title: {title}
+Summary: {summary}
+Additional Notes: {notes}]
+
+Instructions:
+
+Identify important terms from the inquiry, title, summary, and additional notes. Focus on extracting relevant information based on the intent of the input.
+Form a query using "must_have" and "should_have" keywords for ElasticSearch.
+Group keywords belonging to the same category (drug, firm, disease, mechanism of action (drug_class), etc.) using the "OR" condition.
+General terms like updates and discussions should be categorized under the "should_have" field.
+Connect keywords from different categories using the "AND" condition.
+Break complex keywords into smaller keywords and map them accordingly.
+Wrap every sub-query inside brackets, even if it's a single word.
+Do not add any term not present in the input.
+The Output BQ should be in json format.
+The output should be ONLY the json and DONOT add any string to the output.
+Elastic schema:
+
+indication
+phase
+firm - sponsors
+nct_and_acronym - clinical trial-related data
+drug_class (moa)
+date
+location
+
+Examples Start
+
+Input:
+Inquiry: Can ribociclib be used for patients with HR+, HER2- advanced breast cancer?
+Inquiry_type: Efficacy (Primary Outcomes, Secondary Outcomes), Safety (General, Specific AEs)
+Document_title: Phase I Triplet Therapy (ribociclib+everolimus+exemestane) Study in HR+/HER2- Advanced Breast Cancer
+Summary: The HCP is specifically interested in understanding the clinical outcomes. This includes data on overall response rates, progression-free survival, and common adverse events.
+Additional_notes: In addition to the clinical outcomes, highlight the recommended phase II dose and any dose-limiting toxicities observed. Include pharmacokinetic data and relevant genetic alterations identified in the study.
+
+BQ:
+{{
+"must_have_drugs": "(ribociclib)",
+"must_have_diseases": "((HR+) OR (HER2-) OR (advanced breast cancer))",
+"must_have_firms": "",
+"must_have_phases": "((Primary Outcomes) OR (Secondary Outcomes) OR (Efficacy) OR (Safety) OR (AEs) OR (clinical outcomes) OR (progression-free survival))",
+"must_have_ncts_acronyms": "",
+"must_have_patient_subgroups": "",
+"must_have_moa": "",
+"must_have_location": "",
+"should_have": "((recommended phase II dose) OR (pharmacokinetic) OR (genetic alterations) OR (Phase I Triplet Therapy))"
+}}
+
+Input:
+Inquiry: Is Trastuzumab Deruxtecan being investigated in DESTINY Breast-04 Trial (NCT03734029) for HER2-low Metastatic Breast Cancer by AstraZeneca and is the Phase 3?
+BQ:
+{{
+"must_have_drugs": "(Trastuzumab Deruxtecan)",
+"must_have_diseases": "(Breast Cancer)",
+"must_have_firms": "(AstraZeneca)",
+"must_have_phases": "(Phase 3)",
+"must_have_ncts_acronyms": "((NCT03734029) OR (DESTINY Breast-04))",
+"must_have_patient_subgroups": "((HER2-low) OR (Metastatic))",
+"must_have_moa": "",
+"must_have_location": "",
+"should_have": "(trial)"
+}}
+
+Input:
+Inquiry: How has the ORR varied for trials for BRCA Wild Type Platinum Sensitive Recurrent Ovarian Cancer?
+BQ:
+{{
+"must_have_drugs": "",
+"must_have_diseases": "(Ovarian Cancer)",
+"must_have_firms": "",
+"must_have_phases": "",
+"must_have_ncts_acronyms": "",
+"must_have_patient_subgroups": "((BRCA) OR (Wild Type) OR (Platinum Sensitive) OR (Recurrent))",
+"must_have_moa": "",
+"must_have_location": "",
+"should_have": "((trials) OR (ORR))"
+}}
+
+Input:
+Inquiry: Describe Trodelvy's safety profile in HR-positive, HER2-negative metastatic breast cancer
+BQ:
+{{
+"must_have_drugs": "(Trodelvy)",
+"must_have_diseases": "(breast cancer)",
+"must_have_firms": "",
+"must_have_phases": "",
+"must_have_ncts_acronyms": "",
+"must_have_patient_subgroups": "((HR-positive) OR (HER2-negative) OR (metastatic))",
+"must_have_moa": "",
+"must_have_location": "",
+"should_have": "(safety profile)"
+}}
+
+Examples End
+
+Input: $question
