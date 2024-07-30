@@ -13,10 +13,9 @@ class InquiryType(BaseModel):
 
 class InquiryDetails(BaseModel):
     inquiry: str
-    document_title: str
-    summary_section: str
     additional_notes: str
     document_source: List[str]
+    pi_source: str
     inquiry_type: List[InquiryType]
 
 

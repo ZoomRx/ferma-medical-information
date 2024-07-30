@@ -7,14 +7,17 @@ Inquiry - [{inquiry}]
 Inquiry type - [{inquiry_type}]
 
 article: [{article}]s
+Prescribed Information:[{pi_data}]
 
 Read the entire article content provided above thoroughly and generate introductory details for your SRL response using the guidelines specified below.
 
+Heading: Use "Introduction" as the heading for your introduction section.
+
 Formatting: Ensure your introduction uses Heading 1 formatting in AMA Title Case for headings and standard paragraph formatting for body text.
 
-Extract the below contents from the given articles to generate the SRL introduction:
+Extract the below contents from the given articles and prescribed information to generate the SRL introduction:
 
-1. Background Information on the Drug:
+1. Background Information on the Drug from the Prescribed Information given above:
     i. Drug Classification from Label: Include the classification of the drug as per its labeling.
     ii. Label Indications: Summarize the indications listed on the drug's label.
     iii. Label Contraindications: List the contraindications according to the drug's label.
@@ -27,10 +30,9 @@ Content Structure:
 The content should contain two paragraph ONLY. Below is the guidelines for the content of each paragraph to be generated for the SRL introduction.
 
 Paragraph 1: Introduction to the Drug
-
-This part of the content includes the information on the drug name (generic), drug classification and drug indication.
-Add more details on the specific focus of the given inquiry - {inquiry}.
-Include the most common adverse events (General Safety)
+    1. This part of the content includes the information on the drug name (generic), drug classification and drug indication. Include information on Label Contraindications and also Label Specific Focus of Inquiry Information.
+    2. Add more details on the specific focus of the given inquiry - {inquiry}.
+    3. Include the most common adverse events.
 
 Paragraph 2: Recap of the Inquiry or Objectives
 
@@ -42,12 +44,11 @@ Refer the sample output below.
 
 *** Start of sample output ***
 
-Overview
+Introduction
 
-Kisqali® (ribociclib), a kinase inhibitor, is indicated in combination with an aromatase inhibitor as initial endocrine-based therapy for the treatment of postmenopausal women with hormone receptor (HR)-positive, human epidermal growth factor receptor 2 (HER2)-negative advanced or metastatic breast cancer. Ribociclib in combination with everolimus and exemestane is investigational.  Efficacy and safety have not been established.  There is no guarantee that this combination will become commercially available for uses under investigation.
+Pantoprazole is a proton pump inhibitor indicated in adults for short-term treatment (7 to 10 days) of gastroesophageal reflux disease (GERD) associated with a history of erosive esophagitis (EE) or pathological hypersecretion conditions including Zollinger-Ellison (ZE) Syndrome. It is contraindicated in patients with a known hypersensitivity to any component of the formulation or to substituted benzimidazoles and patients receiving rilpivirine-containing products. The most common adverse events (>2%) are headache, diarrhea, nausea, abdominal pain, vomiting, flatulence, dizziness, and arthralgia.
 
-A triplet combination therapy study was conducted with ribociclib plus everolimus (EVE) plus exemestane (EXE) to assess the safety and preliminary efficacy results of from the ongoing Phase Ib (CLEE011X2106, NCT01857193) study in postmenopausal patients with HR+/HER2– advanced breast cancer (aBC) refractory to non-steroidal aromatase inhibitors (letrozole or anastrozole).  Results from the study are summarized below.  Potential predictive biomarkers of response were also explored.
-*** End of sample output ***
+In response to your unsolicited request, the purpose of this response letter is to provide information on pantoprazole and the occurrence of ventilator-associated pneumonia.*** End of sample output ***
 
 *Guidelines for Completion:
 

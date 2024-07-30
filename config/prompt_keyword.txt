@@ -2,13 +2,12 @@ Generate a boolean query (BQ) for the input using the below instructions and exa
 
 Details of the HCP Inquiry
 [Inquiry: {inquiry}
-Inquiry title: {title}
-Summary: {summary}
+Inquiry_type :{inquiry_type}
 Additional Notes: {notes}]
 
 Instructions:
 
-Identify important terms from the inquiry, title, summary, and additional notes. Focus on extracting relevant information based on the intent of the input.
+Identify important terms from the given inquiry, inquiry_type and additional notes. Focus on extracting relevant information based on the intent of the input.
 Form a query using "must_have" and "should_have" keywords for ElasticSearch.
 Group keywords belonging to the same category (drug, firm, disease, mechanism of action (drug_class), etc.) using the "OR" condition.
 General terms like updates and discussions should be categorized under the "should_have" field.
@@ -33,8 +32,6 @@ Examples Start
 Input:
 Inquiry: Can ribociclib be used for patients with HR+, HER2- advanced breast cancer?
 Inquiry_type: Efficacy (Primary Outcomes, Secondary Outcomes), Safety (General, Specific AEs)
-Document_title: Phase I Triplet Therapy (ribociclib+everolimus+exemestane) Study in HR+/HER2- Advanced Breast Cancer
-Summary: The HCP is specifically interested in understanding the clinical outcomes. This includes data on overall response rates, progression-free survival, and common adverse events.
 Additional_notes: In addition to the clinical outcomes, highlight the recommended phase II dose and any dose-limiting toxicities observed. Include pharmacokinetic data and relevant genetic alterations identified in the study.
 
 BQ:
@@ -97,4 +94,7 @@ BQ:
 
 Examples End
 
-Input: $question
+Input:
+[Inquiry: {inquiry}
+Inquiry_type :{inquiry_type}
+Additional Notes: {notes}]

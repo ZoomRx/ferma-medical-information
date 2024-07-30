@@ -1,0 +1,24 @@
+{
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "query_string": {
+                            "query": json_data["must_have_phases"],
+                            "fields": ["content^50", "page_title", "title"],
+                            "default_operator": "AND"
+                        }
+                    }
+                ],
+                "should": [
+                    {
+                        "query_string": {
+                            "query": json_data["should_have"],
+                            "fields": ["content^50", "page_title", "title"],
+                            "default_operator": "AND"
+                        }
+                    }
+                ]
+            }
+        }
+    }

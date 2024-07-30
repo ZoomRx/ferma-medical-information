@@ -3,7 +3,7 @@ import json
 from google.cloud import storage
 from pydantic import Field
 from typing import List, Dict
-from config.settings import app_config, byod_secrets_bucket, FitBaseSettings, JSONSettings
+from config.settings import app_config, FitBaseSettings, JSONSettings
 
 
 class ESSettings(JSONSettings):

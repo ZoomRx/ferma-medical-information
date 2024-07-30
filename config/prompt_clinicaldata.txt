@@ -1,28 +1,139 @@
-Create a detailed document about the clinical trial - {trial_id} from the given article below such that the document answers Health Care Professional (HCP)-submitted clinical inquiry {inquiry} about a pharmaceutical company's drugs focusing on the inquiry type, {inquiry_type} and utilizing reference context for evidence-based information.
+Create a detailed document about the given clinical study and the trial from the given article below such that the document answers Health Care Professional (HCP)-submitted clinical inquiry "{inquiry}" about a pharmaceutical company's drugs focusing on the inquiry type - {inquiry_type} and utilizing reference context for evidence-based information.
 
-        The document MUST pertain to the study, design and results of the trial, emphasizing the need for detailed analysis and evidence-based information.
-		Provide thorough and continuous explanations, ensuring clarity and depth suitable for advanced analysis. Avoid using summaries, bullet points, or any form of content organization that simplifies the information. The content SHOULD read like a detailed chapter from a textbook, providing in-depth knowledge without redundant or overlapping information from other modules.
+The document MUST pertain to the study, design and results of the clinical data for the given study that is answers the inquiry given above, emphasizing the need for detailed analysis and evidence-based information.
+Provide thorough and continuous explanations, ensuring clarity and depth suitable for advanced analysis. Avoid using summaries, bullet points, or any form of content organization that simplifies the information. The content SHOULD read like a detailed chapter from a textbook, providing in-depth knowledge without redundant or overlapping information from other modules.
 
-        Guidelines for summary content:
+Input Clinical data:
+[{trial_json}]
 
-        article: [{article}]s
+article: [{article}]
 
-        Read the entire article content provided above thoroughly and generate a details on the given clinical data.
+*Instructions for Clinical Data content:
+    -Please follow the following instructions STRICTLY to generate the Clinical data content:
 
+This content SHOULD have the heading as [Study Name]([Clinical trials]) with the subheadings Study Methods, Study Results and Safety
 
-        *GUIDELINES-
-        1. Interpret ALL tables, figures, graphs and charts.
-        2. RETURN ALL pertinent information and details without missing out on anything crucial.
-        3. Provide only factual information.
-        4. DO NOT assume, make inferences or hallucinate any data.
-        5. Return the response as text with table in Markdown format.
-        6. Ensure the generated response accurately addresses the HCP's inquiry
-        7. Include only the most RELEVANT information from the selected citations
-        8. Present the information in a clear and understandable manner for healthcare professionals
+Study Methods Content Requirements:
+    INCLUDE the below contents to the Study Methods section and DONOT introduce any new sub-headings or sub-sections within this section.
+    a.	Include Objective which describe the study design and methodology
+    b.	Study section subheading: Study Methods
+    c.	Formatting: Heading 3 for study section subheadings within trial (eg Methods, Results, Safety), paragraph for body text.
+    d.	Content Requirements (if available in the publication):
+        Provide detailed information on the below context in this section. This section should specify the full Study Name and optionally, provide an abbreviated name or code for the study.
+	    1. This section should include the type of Study (Study Design)
+		    i. Specify whether the study is prospective or retrospective.
+		    ii. Indicate if it is multicentered or single-center.
+		    iii. Mention the phase of the study (Phase 1, Phase 2, Phase 3) or note if it is investigator-initiated.
+		    iv. Classify the study as randomized controlled trial or observational.
+		    v. Note if the study is double-blind, single-blind, or open-label.
+		    vi. Identify if it is placebo-controlled, active-controlled, or observational.
+		    vii. State if it is a cross-over study.
+		    viii. Categorize the study as cohort, case-control, case series, case report.
+		    ix. Indicate if it is a meta-analysis or systematic review.
 
-        CRITICAL DATA REVIEW MANDATE: In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise document. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate data, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
+	    2. Include the N Value (Total Number of Subjects in the Study)
+	    3. Provide the total number of subjects involved in the study.
+	    4. Provide Duration of the Study and Follow-Up Periods (Study Duration).
+	    5. Detail the duration of the study and any follow-up periods.
+	    5. clearly outline the study's objectives, including the patient population studied.
+	    6. Provide details of Inclusion and Exclusion Criteria for Participants
+		    i. List the inclusion criteria, such as age, BMI, treatment naïveté, concurrent diseases or treatments, disease-specific markers, disease severity, and medical history.
+		    ii, Also detail the exclusion criteria, including contraindications to treatments.
+	    7. Describe of Treatment Arms and Interventions with below details
+		    i. Describe the lead-in period prior to randomization.
+		    ii. Outline the treatment groups, including investigational drugs, placebos, and active controls.
+		    iii. Specify the treatment dose and route of administration for investigational drugs and active controls.
+		    iv. Mention the treatment ratio (e.g., 1:1, 2:1, 3:1 treatment to control).
+		    v. Explain any treatment stratification, such as by center or specific inclusion criteria.
+		    vi. If applicable, mention the treatment geography.
 
-        *IMPORTANT MANDATE-
-        - The article generated should contain the main sections - Clinical Data - [trial_id] with its subsections study and Results.  Clinical Data section is the MOST MANDATORY part which will have detailed data on the trial and their outcomes based on the inquiry type specified. INCLUDE any sub-sections required for better readability.
-        - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, Ex: endpoints were not explicitly reported in the provided in the context, etc. Return whatever data is available as a concise document and do NOT comment as further data not available or so.*
-        - DO NOT add any truncated text or paragraph or tables. IGNORE truncated tables.
+	    8. Include details about the Primary Endpoint with below details:
+		    i. Define the primary endpoint of the study.
+		    ii. Secondary Endpoints (Optional) If relevant to the specific focus of inquiry, list secondary endpoints.
+
+    e. INCLUDE the above details as the paragraph content along with relevant tables.
+    f. DONOT INCLUDE any other subheadings or subdivisions under this section.
+    g. INCLUDE tables that are relevant to this section along with paragraph content above.
+
+Study Results Content Requirements:
+    a.	The objective of this section is to present the key findings from the study
+    b.	Study section subheading: Study Results
+    c.	Formatting: Heading 3 for the section subheading, paragraph for body text
+    d.	Content Requirements:
+        Provide detailed information on the below context in this section:
+        i.	Baseline characteristics of the study population
+            1.	Treatment group imbalances
+            2.	Baseline age
+            3.	Baseline disease-specific values
+            4.	Baseline values related to key results
+            5.	Actual treatment duration
+            6.	Study completion rates
+        ii.	Primary efficacy results (if applicable)
+        iii. Secondary efficacy results (if applicable)
+        iv.	Statistical significance and confidence intervals
+    e. INCLUDE the above details as the paragraph content.
+    f. DONOT introduce any sub-headings or sub-sections within this section.
+    g. INCLUDE tables that are relevant to this section adjacent to the paragraph data
+
+Safety Content Requirements:
+    a.	The objective of this section is to present the key findings from the study on Safety, Limitations, and Conclusions
+    b.	Study section subheading: Safety
+    c.	Formatting: Heading 3 for section subheading, paragraph for body text
+    d.	Content Requirements:
+        Provide detailed information on the below context in this section:
+        i.	Safety endpoints, including adverse events and serious adverse events (if applicable)
+            1.	Safety Outcomes
+                a.	Include statistical significance and confidence intervals
+            2.	Common Adverse Events
+                a.	Treatment related
+            3.	Severe Adverse Events
+                a.	Treatment related
+            4.	Deaths
+        ii.	Study limitations (optional)
+        iii.	Author conclusions (optional)
+            1.	Related to the specific focus of inquiry
+    e. INCLUDE the above details as the paragraph content.
+    f. DONOT introduce any sub-headings or sub-sections within this section.
+    g. INCLUDE tables that are relevant to this section adjacent to the paragraph data
+
+Include any subsections like Pharmacokinetics, Clinical Activity and Genetic Alterations if applicable for the given inquiry and inquiry type.
+
+Please ensure all necessary details are included and accurately represented in the document. This update will enhance our ability to understand and evaluate the studies referenced in the given article.
+
+Formatting: Heading 2 for main section, Heading 3 for study section subheadings (eg Study Methods, Study Results, Safety), paragraph for body text.
+
+Example:
+** Start of Example **
+Stress Ulcer Prophylaxis during Invasive Mechanical Ventilation
+
+Study Method
+Reevaluating the Inhibition of Stress Erosions (REVISE) was an investigator-initiated, multicenter, randomized, blinded trial that assessed stress ulcer prophylaxis in critically ill patients undergoing invasive ventilation. Patients (N=4821) were ≥18 years of age, undergoing invasive mechanical ventilation in the intensive care unit (ICU) that was expected to last >1 day post-randomization. Patients were excluded if invasive ventilation began >72 hours prior to randomization, if they received >1 dose of acid suppression in the ICU, or if acid suppression therapy was specifically indicated or contraindicated. Across 68 centers in Australia, Brazil, Canada, England, Kuwait, Pakistan, Saudi Arabia, and the United States, patients received either intravenous (IV) pantoprazole 40 mg or placebo in a 1:1 ratio, stratified by treatment center and past medical history of acid suppression (pre-hospital). The primary endpoint was clinically important upper gastrointestinal (GI) bleeding (overt GI bleeding with evidence of hemodynamic compromise or GI bleeding leading to ICU intervention or readmission to the ICU during the index hospital stay) up to 90 days after randomization. Secondary endpoints included the occurrence of ventilator-associated pneumonia, defined as a Clinical Pulmonary Infection Score (CPIS) of 6 or more.
+1.	Cook D, Deane A, Lauzier F, et al, for the REVISE Investigators. Stress ulcer prophylaxis during invasive mechanical ventilation. N Engl J Med. 2024;391(1):9-20. doi:10.1056/NEJMoa2404245.
+
+Study Results
+
+Baseline characteristics were similar between treatment groups. The mean age (SD) was 58.2 (±16.4) years; 36.3% were female. The mean (SD) APACHE II score was 21.7 (±8.3). Patients were treated with study drug or placebo for a median of 5 days (interquartile range, 3 to 10) with 97.5% receiving their assigned agent (or had a prespecified exemption) for at least 80% of days receiving invasive ventilation. No patients were unblinded during the study. Ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and 567 of 2381 patients (23.8%) in the placebo group (HR, 1; 95% CI, 0.89 to 1.12; p=0.93). There were no differences between the groups using alternative pneumonia definitions.
+
+Safety
+
+No significant differences were seen between groups in the primary safety endpoint of death by 90 days after randomization, as well as c difficile infection in hospital, death in ICU or in hospital, or new renal replacement therapy in ICU. In addition to events that were included in the trial outcomes, one adverse drug reaction and one suspected serious adverse reaction were reported in the placebo group. Study limitations included lack of patient-reported disability outcomes or data regarding microbiome modification as a mechanism for infection risk. The authors concluded there was no clear difference in the risk of ventilator-associated pneumonia between the pantoprazole and placebo groups in critically ill patients on permanent ventilation.
+
+** End of Example **
+
+*GUIDELINES-
+      1. Interpret ALL tables, figures, graphs and charts.
+      2. RETURN ALL pertinent information and details without missing out on anything crucial.
+      3. Provide only factual information.
+      4. DO NOT assume, make inferences or hallucinate any data.
+      5. Return the response as text with table in Markdown format.
+      6. Ensure the generated response accurately addresses the HCP's inquiry
+      7. Include only the most RELEVANT information from the selected citations
+      8. Present the information in a clear and understandable manner for healthcare professionals
+      9. DONOT include separate section for tables.
+
+CRITICAL DATA REVIEW MANDATE: In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise document. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate data, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
+
+*IMPORTANT MANDATE-
+   - DO NOT return any sub-headings apart from Study Method, Study Results, Safety.
+   - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, Ex: endpoints were not explicitly reported in the provided in the context, etc. Return whatever data is available as a concise document and do NOT comment as further data not available or so.*
+   - DO NOT add any truncated text or paragraph or tables. IGNORE truncated tables.

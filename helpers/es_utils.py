@@ -56,6 +56,5 @@ def get_es_data(query):
 
     # Converting the hits to a list of dictionaries
     result = [hit['_source'] for hit in hits]
-    print(result)
 
     return result
