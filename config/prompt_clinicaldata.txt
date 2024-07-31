@@ -24,7 +24,7 @@ Follow these instructions precisely to generate the Clinical data content:
   - Formatting: Use Heading 3 for study section subheadings within the trial (e.g., Methods, Results, Safety); use paragraphs for body text.
   - Content Requirements: Provide detailed information on the full Study Name and optionally, an abbreviated name or code for the study. Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint.
   - Include the above details as paragraph content along with relevant tables.
-  - Do not include any other subheadings or subdivisions under this section.
+  - *MOST Importantly DONOT introduce any sub-headings or sub-sections within this section.
   - Include tables that are relevant to this section along with paragraph content above.
 
 - For the Study Results section:
@@ -33,7 +33,7 @@ Follow these instructions precisely to generate the Clinical data content:
   - Formatting: Use Heading 3 for the section subheading, paragraphs for body text.
   - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy results (if applicable), secondary efficacy results (if applicable), and statistical significance and confidence intervals.
   - Include the above details as paragraph content.
-  - Do not introduce any sub-headings or sub-sections within this section.
+  - *MOST Importantly DONOT introduce any sub-headings or sub-sections within this section.
   - Include tables that are relevant to this section adjacent to the paragraph data.
 
 - For the Safety section:
@@ -42,7 +42,7 @@ Follow these instructions precisely to generate the Clinical data content:
   - Formatting: Use Heading 3 for section subheading, paragraphs for body text.
   - Content Requirements: Provide detailed information on safety endpoints, study limitations (optional), and author conclusions (optional).
   - Include the above details as paragraph content.
-  - DONOT introduce any sub-headings or sub-sections within this section.
+  - *MOST Importantly DONOT introduce any sub-headings or sub-sections within this section.
   - INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
 Include subsections like Pharmacokinetics, Clinical Activity, and Genetic Alterations if applicable for the given inquiry, inquiry type, and additional notes specified by the user below:
