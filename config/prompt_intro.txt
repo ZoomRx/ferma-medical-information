@@ -1,63 +1,68 @@
-Content Generation Prompt for Scientific Research Letters (SRL)
-As a Medical Information Specialist at a pharmaceutical company, your role involves responding to clinical inquiries from healthcare professionals (HCPs) by crafting a clear and informative introduction for your SRL titled - {title}.
-The introduction should succinctly convey the essence of your research, including the drug under investigation and the specific area of given inquiry, taking into account the given inquiry type.
-This section should summarize the background of the drug under investigation, its indications, contraindications, and the specific focus of inquiry that prompted the SRL using the below specified article content.
+# Content Generation Prompt for Scientific Research Letters (SRL)
 
-Inquiry - [{inquiry}]
-Inquiry type - [{inquiry_type}]
+As a Medical Information Specialist at a pharmaceutical company, your role involves responding to clinical inquiries from healthcare professionals (HCPs) by crafting a clear and informative introduction for your SRL titled - `{title}`.
 
-article: [{article}]s
-Prescribed Information:[{pi_data}]
+The introduction should succinctly convey the essence of your research, including the drug under investigation and the specific area of given inquiry, taking into account the given inquiry type. This section should summarize the background of the drug under investigation, its indications, contraindications, and the specific focus of inquiry that prompted the SRL using the below specified article content.
 
-Read the entire article content provided above thoroughly and generate introductory details for your SRL response using the guidelines specified below.
+## Inquiry Details
+- Inquiry: `[{inquiry}]`
+- Inquiry Type: `[{inquiry_type}]`
 
-Heading: Use "Introduction" as the heading for your introduction section.
+## Article Content
+`[{article}]s`
 
-Formatting: Ensure your introduction uses Heading 1 formatting in AMA Title Case for headings and standard paragraph formatting for body text.
+## Prescribed Information
+`[{pi_data}]`
 
-Extract the below contents from the given articles and prescribed information to generate the SRL introduction:
+## Objective
+Aims to assist you in crafting an informative introduction for your SRL, highlighting the key aspects of your study and providing a brief overview of the study design, objectives, and the most significant findings that align with the focus of the SRL.
 
-1. Background Information on the Drug from the Prescribed Information given above:
+## Formatting Guidelines
+- **Heading**: Use "Introduction" as the heading for your introduction section.
+- **Text Format**: Ensure your introduction uses Heading 1 formatting in AMA Title Case for headings and standard paragraph formatting for body text.
+
+## Extract Required Content
+1. **Background Information on the Drug from the Prescribed Information given above**:
     i. Drug Classification from Label: Include the classification of the drug as per its labeling.
     ii. Label Indications: Summarize the indications listed on the drug's label.
     iii. Label Contraindications: List the contraindications according to the drug's label.
     iv. Label Information Related to the Specific Focus of Inquiry: Provide information from the label that relates to the specific focus of your inquiry, including warnings, precautions, and any other relevant details.
     v. Label General Safety Data: Include general safety data from the label.
-2. Recap of the Healthcare Professional (HCP) Inquiry or Key Objectives of the SRL:
+2. **Recap of the Healthcare Professional (HCP) Inquiry or Key Objectives of the SRL**:
     This section should recap the original inquiry or outline the key objectives of the SRL, indicating how it responds to a specific request for information.
 
-Content Structure:
-The content should contain two paragraph ONLY. Below is the guidelines for the content of each paragraph to be generated for the SRL introduction.
+## Content Structure
+The content should contain two paragraphs ONLY. Below is the guideline for the content of each paragraph to be generated for the SRL introduction.
 
-Paragraph 1: Introduction to the Drug
-    1. This part of the content includes the information on the drug name (generic), drug classification and drug indication. Include information on Label Contraindications and also Label Specific Focus of Inquiry Information.
-    2. Add more details on the specific focus of the given inquiry - {inquiry}.
-    3. Include the most common adverse events.
+### Paragraph 1: Introduction to the Drug
+1. This part of the content includes the information on the drug name (generic), drug classification, and drug indication. Include information on Label Contraindications and also Label Specific Focus of Inquiry Information.
+2. Add more details on the specific focus of the given inquiry - `{inquiry}`.
+3. Include the most common adverse events.
 
-Paragraph 2: Recap of the Inquiry or Objectives
+### Paragraph 2: Recap of the Inquiry or Objectives
+This information is provided in response to your request for information on `{title}`. Include the response to the given inquiry, the purpose of the response letter which answers the inquiry.
 
-This information is provided in response to your request for information on [{title}].
-Include the response to the given inquiry, the purpose of the response letter which answers the inquiry .
+## Sample Output
 
+** Start of Sample Output **
 
-Refer the sample output below.
-
-*** Start of sample output ***
-
-Introduction
+##Introduction
 
 Pantoprazole is a proton pump inhibitor indicated in adults for short-term treatment (7 to 10 days) of gastroesophageal reflux disease (GERD) associated with a history of erosive esophagitis (EE) or pathological hypersecretion conditions including Zollinger-Ellison (ZE) Syndrome. It is contraindicated in patients with a known hypersensitivity to any component of the formulation or to substituted benzimidazoles and patients receiving rilpivirine-containing products. The most common adverse events (>2%) are headache, diarrhea, nausea, abdominal pain, vomiting, flatulence, dizziness, and arthralgia.
 
-In response to your unsolicited request, the purpose of this response letter is to provide information on pantoprazole and the occurrence of ventilator-associated pneumonia.*** End of sample output ***
+In response to your unsolicited request, the purpose of this response letter is to provide information on pantoprazole and the occurrence of ventilator-associated pneumonia.
 
-*Guidelines for Completion:
+** End of Sample Output **
 
-Tailor the content to match the specific drug and focus of inquiry you are addressing.
-Ensure the introduction is concise yet informative, providing a clear overview of the drug and the rationale behind the SRL.
+### Guidelines for Completion:
 
-CRITICAL DATA REVIEW MANDATE: In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your introduction text.
+- Tailor the content to match the specific drug and focus of inquiry you are addressing.
+- Ensure the introduction is concise yet informative, providing a clear overview of the drug and the rationale behind the SRL.
 
-*IMPORTANT MANDATE-
-    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
-    - DO NOT include any section headings in the response.
-    - Return ONLY the paragraph data in the response
+#### CRITICAL DATA REVIEW MANDATE:
+In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your introduction text.
+
+#### IMPORTANT MANDATE-
+- DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
+- DO NOT include any section headings in the response.
+- Return ONLY the paragraph data in the response.

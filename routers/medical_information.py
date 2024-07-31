@@ -16,7 +16,7 @@ import asyncio
 import os
 import traceback
 import time
-
+from mdprint import mdprint
 
 router = APIRouter()
 app = FastAPI()
@@ -25,6 +25,8 @@ app = FastAPI()
 async def upload_files(files: List[UploadFile] = File(...)):
     file_names = []
     tasks = [process_file(file) for file in files]
+    if tasks is None:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)
     valid_results = [result for result in results if result is not None]
     file_names = valid_results
@@ -67,7 +69,7 @@ async def process_file(file: UploadFile):
 async def create_srl(inquiry_details: InquiryDetails):
     Logger.log(f"Received request to create_srl for inquiry: {inquiry_details.inquiry}")
     document_content = generate_content(inquiry_details)
-
+    mdprint(document_content)
     return {"content": document_content}
 
 @router.post("/find_cite")

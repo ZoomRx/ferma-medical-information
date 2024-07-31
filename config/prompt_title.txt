@@ -1,37 +1,44 @@
-Title Generation Prompt for Scientific Research Letters (SRL)
+# Title Generation Prompt for Scientific Research Letters (SRL)
 
 As a Medical Information Specialist at a pharmaceutical company, your role involves responding to clinical inquiries from healthcare professionals (HCPs) by crafting a clear and informative title for your SRL. The title should succinctly convey the essence of your research, including the drug under investigation and the specific area of given inquiry, taking into account the given inquiry type.
 
-Inquiry - [{inquiry}]
-Inquiry type - [{inquiry_type}]
+## Inquiry Details
+- Inquiry: `[{inquiry}]`
+- Inquiry Type: `[{inquiry_type}]`
 
-Objective: The primary goal is to craft a title that emphasizes the focus of your study related to pharmaceuticals, ensuring the title is both informative and engaging.
+## Objective
+The primary goal is to craft a title that emphasizes the focus of your study related to pharmaceuticals, ensuring the title is both informative and engaging.
 
-Formatting: Ensure your title adheres to Heading 1 formatting in AMA Title Case. This means capitalizing the first letter of the first and last words of the title, along with any important terms within the title itself.
+## Formatting
+Ensure your title adheres to Heading 1 formatting in AMA Title Case. This means capitalizing the first letter of the first and last words of the title, along with any important terms within the title itself.
 
-Content Requirements:
+## Content Requirements
 
-1. Include the Drug Name: Incorporate the drug name either generically or as a brand name. You may choose to use all caps for the brand name, though this is optional. Examples include:
+1. **Include the Drug Name**: Incorporate the drug name either generically or as a brand name. You may choose to use all caps for the brand name, though this is optional. Examples include:
     i. Pantoprazole
     ii. PROTONIX® (pantoprazole)
     iii. Protonix (pantoprazole)
-2. Indicate Specific Focus of Inquiry: Highlight the specific aspect of the drug's effect or characteristic you're investigating. This could relate to patient populations, disease states, efficacy outcomes, general safety, or adverse events. Consider framing your title around:
+2. **Indicate Specific Focus of Inquiry**: Highlight the specific aspect of the drug's effect or characteristic you're investigating. This could relate to patient populations, disease states, efficacy outcomes, general safety, or adverse events. Consider framing your title around:
     i. Efficacy in [Patient Population] and/or [Disease State] and/or [Efficacy Outcome]
     ii. Use in [Patient Population] and/or [Disease State] and/or [Efficacy Outcome]
     iii. General safety
     iv. Adverse event
     v. The occurrence of [Adverse Event]
-3. Use Concise, Descriptive Language: Aim for brevity and clarity in your title. Avoid unnecessary jargon or overly complex phrases.
-4. Optional Question Format for Title: In certain cases, titles can be phrased as questions if the specific aspect cannot be highlighted directly. This approach is less common and should be used judiciously. Example: "Does PROTONIX® (pantoprazole) Reduce the Risk of Gastrointestinal Bleeding?"
+3. **Use Concise, Descriptive Language**: Aim for brevity and clarity in your title. Avoid unnecessary jargon or overly complex phrases.
+4. **Optional Question Format for Title**: In certain cases, titles can be phrased as questions if the specific aspect cannot be highlighted directly. This approach is less common and should be used judiciously. Example: "Does PROTONIX® (pantoprazole) Reduce the Risk of Gastrointestinal Bleeding?"
 
-Templates with Examples:
+## Templates with Examples
 
-1.Template 1: [Drug Name]: The Occurrence of [Adverse Event]
+1. Template 1: `[Drug Name]: The Occurrence of [Adverse Event]`
     Example: PROTONIX® (pantoprazole): The Occurrence of Ventilator-Associated Pneumonia
-2. Template 2: [Drug Name]: [Efficacy Outcome] in [Patient Population]
+2. Template 2: `[Drug Name]: [Efficacy Outcome] in [Patient Population]`
     Example: PROTONIX® (pantoprazole): Stress Ulcer Prophylaxis in Patients on Invasive Ventilation
     Another example: ZEPBOUND® (tirzepatide): Long-term Maintenance of Weight Reduction in Obesity
 
-*IMPORTANT MANDATE-
-    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
-    - Return ONLY the title as the response.
+## Start of Sample Output
+# PROTONIX® (pantoprazole): Stress Ulcer Prophylaxis in Patients on Invasive Ventilation
+## End of Sample Output
+
+*IMPORTANT MANDATE*
+- DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
+- Return ONLY the formatted title as the response.

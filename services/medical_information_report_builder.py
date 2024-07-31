@@ -55,7 +55,7 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     # prompt = prompt_text.format(title=title, inquiry=inquiry, inquiry_type=inquiry_type, summary=summary,
     # additional_notes=additional_notes, article_content=article_content)
     if content == "clinical_data":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, trial_json=data)
+        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, trial_json=data, notes = inquiry_details.additional_notes)
     elif content == "title":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content)
     elif content == "introduction":
@@ -177,8 +177,8 @@ def generate_clinical_data(inquiry_details, articles):
     else:
         print("Trials data is not in the expected format.")
 
-    clinical_data_string = "\n".join(clinical_data)
-    clinical_data = "\n\n# Clinical Data\n"
+    clinical_data_string = "\n\n".join(clinical_data)
+    clinical_data = "\n## Clinical Data\n"
     clinical_data += clinical_data_string
 
     return clinical_data
