@@ -57,7 +57,7 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     if content == "clinical_data":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, trial_json=data, notes = inquiry_details.additional_notes)
     elif content == "title":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content)
+        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_pages)
     elif content == "introduction":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data,
                                     pi_data=pi_details)
@@ -144,7 +144,7 @@ def generate_content(inquiry_details: InquiryDetails):
     articles = get_relevant_pages(inquiry_details)
     srl_content = {}
     pi_details = get_prescribed_information(inquiry_details)
-    title = generate_report(inquiry_details, articles, "title")
+    title = generate_report(inquiry_details, pi_details, "title")
     srl_content["title"] = title
     srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
     srl_content["summary"] = generate_report(inquiry_details, articles, "summary", title)

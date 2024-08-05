@@ -1,14 +1,20 @@
 # routes/upload_routes.py
+import http
 from datetime import datetime
 from typing import List
-
-from fastapi import APIRouter, FastAPI, File, HTTPException, UploadFile
+import requests
+from fastapi import APIRouter, FastAPI, File, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
+from requests import Session
+
+from db.session import get_doc_db
 from helpers import es_utils, logger
 from helpers.logger import Logger
 from pathlib import Path
 from schemas.medical_info_inquiry import Inquiry, InquiryDetails
+from services import document_service
 from services.azure_doc_intelligence import AzureDocIntelligence
+from services.document_service import document_service
 from services.medical_information_report_builder import generate_content, generate_report
 from services.pubmed_service import fetch_articles_based_on_inquiry
 import aiofiles
@@ -21,9 +27,10 @@ router = APIRouter()
 app = FastAPI()
 
 @router.post("/upload")
-async def upload_files(files: List[UploadFile] = File(...)):
+async def upload_files(files: List[UploadFile] = File(...),
+                       db: Session = Depends(get_doc_db)):
     file_names = []
-    tasks = [process_file(file) for file in files]
+    tasks = [process_file(file, db) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)
@@ -35,8 +42,8 @@ async def upload_files(files: List[UploadFile] = File(...)):
         "fileNames": file_names
     }
 
-
-async def process_file(file: UploadFile):
+#Document conversion using Azure AI
+async def process_file_old(file: UploadFile):
     try:
         content_type = file.content_type
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -56,12 +63,59 @@ async def process_file(file: UploadFile):
         saved_file_size = os.path.getsize(file_path)
         if saved_file_size != len(contents):
             raise IOError("Mismatch in file size after saving")
-        print
         return new_filename
     except Exception as e:
         print(f"An error occurred: {e}")
         print(traceback.format_exc())
         return None
+
+async def process_file(file: UploadFile, db):
+    try:
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        new_filename = f"{file.filename.split('.')[0]}_{timestamp}.pdf"
+        file_path = Path("./storage/data/") / new_filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        async with aiofiles.open(file_path, mode='wb') as out_file:
+            contents = await file.read()  # Read the file contents
+            await out_file.write(contents)  # Write the contents to the new file
+
+        url = "https://dev-merck-test.zoomrx.ai/extract"
+
+        data = {
+            "tags": "{\"project_name\": \"ferma-mi\"}",
+            "is_text_only": False
+        }
+
+        # Prepare the file for upload
+        files = {"file": (new_filename, contents)}
+
+        response = requests.post(url, data=data, files=files)
+
+        # Check the response
+        if response.status_code == 200:
+            print("Success:", response.json())
+        else:
+            print("Error:", response.status_code, response.text)
+            raise HTTPException(response.status_code,response.text)
+        response_json = response.json()
+        try:
+            #document_id = "0464b265-31c2-4425-b029-0ce4042830e9"
+            document_id = response_json['document_id']
+            documents = document_service.get(db, document_id=document_id)
+        except Exception as e:
+            print(e)
+            raise
+        es_record_count = es_utils.write_es_data(documents)
+        saved_file_size = os.path.getsize(file_path)
+        if saved_file_size != len(contents):
+            raise IOError("Mismatch in file size after saving")
+        print(documents)
+        return new_filename
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.post("/create_srl")
@@ -77,8 +131,6 @@ async def find_cite(inquiry: Inquiry):
         start_time = time.time()
         # Simulate fetching articles based on inquiry
         articles = await fetch_articles_based_on_inquiry(inquiry)
-
-        # Log successful retrieval of articles
         Logger.log(msg = f"Successfully retrieved {len(articles)} articles.")
         end_time = time.time()
         response_time = end_time - start_time

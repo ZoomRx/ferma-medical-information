@@ -5,6 +5,7 @@ As a Medical Information Specialist at a pharmaceutical company, your role invol
 ## Inquiry Details
 - Inquiry: `[{inquiry}]`
 - Inquiry Type: `[{inquiry_type}]`
+- Prescribed Information: `[{article}]`
 
 ## Objective
 The primary goal is to craft a title that emphasizes the focus of your study related to pharmaceuticals, ensuring the title is both informative and engaging.
@@ -26,6 +27,7 @@ Ensure your title adheres to Heading 1 formatting in AMA Title Case. This means 
     v. The occurrence of [Adverse Event]
 3. **Use Concise, Descriptive Language**: Aim for brevity and clarity in your title. Avoid unnecessary jargon or overly complex phrases.
 4. **Optional Question Format for Title**: In certain cases, titles can be phrased as questions if the specific aspect cannot be highlighted directly. This approach is less common and should be used judiciously. Example: "Does PROTONIX® (pantoprazole) Reduce the Risk of Gastrointestinal Bleeding?"
+5. **If the inquiry does not specify the drug name, fetch the drug name from the given prescribed information given in the inquiry details.
 
 ## Templates with Examples
 
