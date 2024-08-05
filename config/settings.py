@@ -2,7 +2,6 @@ import json
 from pydantic import Field
 from typing import List, Dict, Any, Type, TypeVar, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from google.cloud import storage
 
 T = TypeVar('T', bound='JSONSettings')
 
@@ -39,7 +38,6 @@ class GCSSettings(JSONSettings):
         super().__init__(**kwargs)
         self.load_gcs_project_id()
 
-    @classmethod
     def load_gcs_project_id(self):
         filepath = self.gcp_service_account_filepath
         if filepath:
@@ -48,21 +46,6 @@ class GCSSettings(JSONSettings):
                 self.gcs_project_id = json_settings.project_id
             except Exception as e:
                 raise ValueError(f"Failed to load project_id from {filepath}: {e}")
-
-    # Configuring class to allow adding undefined keys to settings class
-    model_config = SettingsConfigDict(extra='allow')
-
-    @classmethod
-    def from_gcs_file(cls, *, bucket_name: str = '', file_name = '') -> object:
-        gcs_bucket_obj = storage.Client().get_bucket(bucket_name)
-        json_data = json.loads(gcs_bucket_obj.get_blob(file_name).download_as_bytes().decode('utf-8'))
-        return cls(**json_data)
-
-    @classmethod
-    def from_file_path(cls, *, file_path: str) -> object:
-        with open(file_path, 'r') as file:
-            json_data = json.load(file)
-        return cls(**json_data)
 
 
 class PubSubSettings(JSONSettings):
@@ -105,12 +88,14 @@ class DBSettings(JSONSettings):
 class SentrySettings(JSONSettings):
     sentry_dsn: str = Field(..., alias='SENTRY_DSN')
 
+
 class ESSettings(JSONSettings):
     username: str = Field(..., alias='ES_USERNAME')
     password: str = Field(..., alias='ES_PASSWORD')
-    #host: str = Field(..., alias='ES_HOST')
+    # host: str = Field(..., alias='ES_HOST')
     ext_host: str = Field(..., alias='ES_EXT_HOST')
     port: str = Field(..., alias='ES_PORT')
+
 
 class FitBaseSettings(BaseSettings):
     """
@@ -118,6 +103,7 @@ class FitBaseSettings(BaseSettings):
         that are undefined in its inherited class
     """
     model_config = SettingsConfigDict(extra='ignore')
+
 
 env: EnvSettings = EnvSettings()
 gcs: GCSSettings = GCSSettings()
@@ -127,9 +113,3 @@ azure: AzureSettings = AzureSettings()
 db: DBSettings = DBSettings()
 sentry: SentrySettings = SentrySettings()
 es: ESSettings = ESSettings()
-
-bucket_client = storage.Client()
-prompts_bucket_name: str = f"ferma-{env.environment}-mi"
-prompts_bucket: storage.Bucket = bucket_client.get_bucket(prompts_bucket_name)
-
-
