@@ -1,10 +1,5 @@
 Generate a boolean query (BQ) for the input using the below instructions and examples.
 
-Details of the HCP Inquiry
-[Inquiry: {inquiry}
-Inquiry_type :{inquiry_type}
-Additional Notes: {notes}]
-
 Instructions:
 
 Identify important terms from the given inquiry, inquiry_type and additional notes. Focus on extracting relevant information based on the intent of the input.
@@ -16,7 +11,9 @@ Break complex keywords into smaller keywords and map them accordingly.
 Wrap every sub-query inside brackets, even if it's a single word.
 Do not add any term not present in the input.
 The Output BQ should be in json format.
-The output should be ONLY the json and DONOT add any string to the output.
+DO NOT add any string to the output.
+
+
 Elastic schema:
 
 indication
@@ -27,7 +24,7 @@ drug_class (moa)
 date
 location
 
-Examples Start
+**Examples Start**
 
 Input:
 Inquiry: Can ribociclib be used for patients with HR+, HER2- advanced breast cancer?
@@ -37,14 +34,14 @@ Additional_notes: In addition to the clinical outcomes, highlight the recommende
 BQ:
 {{
 "must_have_drugs": "(ribociclib)",
-"must_have_diseases": "((HR+) OR (HER2-) OR (advanced breast cancer))",
+"must_have_diseases": "(breast cancer)",
 "must_have_firms": "",
-"must_have_phases": "((Primary Outcomes) OR (Secondary Outcomes) OR (Efficacy) OR (Safety) OR (AEs) OR (clinical outcomes) OR (progression-free survival))",
+"must_have_phases": "",
 "must_have_ncts_acronyms": "",
-"must_have_patient_subgroups": "",
+"must_have_patient_subgroups": "((HR+) OR ((HER2-) OR (advanced)))",
 "must_have_moa": "",
-"must_have_location": "",
-"should_have": "((recommended phase II dose) OR (pharmacokinetic) OR (genetic alterations) OR (Phase I Triplet Therapy))"
+"must_have_others": "((Primary Outcomes) OR (Secondary Outcomes) OR (Efficacy) OR (Safety) OR (AEs) OR (clinical outcomes) OR (progression-free survival))",
+"should_have": "((recommended phase II dose) OR (pharmacokinetic) OR (genetic alterations))"
 }}
 
 Input:
@@ -58,7 +55,7 @@ BQ:
 "must_have_ncts_acronyms": "((NCT03734029) OR (DESTINY Breast-04))",
 "must_have_patient_subgroups": "((HER2-low) OR (Metastatic))",
 "must_have_moa": "",
-"must_have_location": "",
+"must_have_others": "",
 "should_have": "(trial)"
 }}
 
@@ -73,8 +70,8 @@ BQ:
 "must_have_ncts_acronyms": "",
 "must_have_patient_subgroups": "((BRCA) OR (Wild Type) OR (Platinum Sensitive) OR (Recurrent))",
 "must_have_moa": "",
-"must_have_location": "",
-"should_have": "((trials) OR (ORR))"
+"must_have_others": "(ORR)",
+"should_have": "(trials)"
 }}
 
 Input:
@@ -86,13 +83,13 @@ BQ:
 "must_have_firms": "",
 "must_have_phases": "",
 "must_have_ncts_acronyms": "",
-"must_have_patient_subgroups": "((HR-positive) OR (HER2-negative) OR (metastatic))",
+"must_have_patient_subgroups": "((HR-positive) OR ((HER2-negative) OR (metastatic)))",
 "must_have_moa": "",
-"must_have_location": "",
-"should_have": "(safety profile)"
+"must_have_others": "(safety profile)",
+"should_have": ""
 }}
 
-Examples End
+**Examples End**
 
 Input:
 [Inquiry: {inquiry}
