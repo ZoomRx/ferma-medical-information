@@ -7,23 +7,24 @@ Document Content: [{article}]
 
 Please provide the identified clinical trial ID and the clinical study that the article focuses on and is relevant to the given inquiry. Present this information in the following JSON format:
 {{
-"study": "Dose-Escalation Study",
-"trials": []
+"study": "Name of the study",
+"trials": [List of comma separated trial ids]
 }}
-
+*** Start of Examples ***
 Here are a couple of examples:
 
 Example 1:
 {{
 "study": "Dose-Escalation Study",
-"trials": [NCT02431481]
+"trials": [NCT02431481, NCT123123313]
 }}
 
 Example 2:
 {{
-"study": "Study Design",
+"study": "Signature Study",
 "trials": [NCT02187783]
 }}
+*** End of Examples ***
 
 Ensure that your output strictly adheres to the provided JSON format and does not include any additional text beyond what is specified.
 

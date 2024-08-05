@@ -30,7 +30,8 @@ app = FastAPI()
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
     file_names = []
-    tasks = [process_file(file, db) for file in files]
+    #tasks = [process_file(file, db) for file in files]
+    tasks = [process_file_AzureAI(file) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)
@@ -43,7 +44,7 @@ async def upload_files(files: List[UploadFile] = File(...),
     }
 
 #Document conversion using Azure AI
-async def process_file_old(file: UploadFile):
+async def process_file_AzureAI(file: UploadFile):
     try:
         content_type = file.content_type
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -80,6 +81,7 @@ async def process_file(file: UploadFile, db):
             contents = await file.read()  # Read the file contents
             await out_file.write(contents)  # Write the contents to the new file
 
+
         url = "https://dev-merck-test.zoomrx.ai/extract"
 
         data = {
@@ -100,7 +102,6 @@ async def process_file(file: UploadFile, db):
             raise HTTPException(response.status_code,response.text)
         response_json = response.json()
         try:
-            #document_id = "0464b265-31c2-4425-b029-0ce4042830e9"
             document_id = response_json['document_id']
             documents = document_service.get(db, document_id=document_id)
         except Exception as e:

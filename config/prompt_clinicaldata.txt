@@ -20,15 +20,15 @@ Article:
 
 **OUTPUT FORMAT**
 
-##Title
+## Title
 
-###Study Methods
+#### Study Methods
 ...
 
-###Study Results
+#### Study Results
 ...
 
-###Safety
+#### Safety
 ...
 
 ---
@@ -47,7 +47,7 @@ Article:
 
 ---
 
-Title should be in the format `[Study Name]([Clinical Trials])`
+Title should be in the format `[Study Name]([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json
 Follow the below instructions to generate the paragraphs for respective sections:
   - "Study Methods" section:
     - Objective: Describe the study design and methodology.
@@ -79,20 +79,20 @@ IGNORE truncated tables.
 ---
 *** Start of Examples ***
 
-##Stress Ulcer Prophylaxis during Invasive Mechanical Ventilation
+### Stress Ulcer Prophylaxis during Invasive Mechanical Ventilation(NCT1231321)
 
-###Study Methods
+#### Study Methods
 
 Reevaluating the Inhibition of Stress Erosions (REVISE) was an investigator-initiated, multicenter, randomized, blinded trial that assessed stress ulcer prophylaxis in critically ill patients undergoing invasive ventilation. Patients (N=4821) were ≥18 years of age, undergoing invasive mechanical ventilation in the intensive care unit (ICU) that was expected to last >1 day post-randomization. Patients were excluded if invasive ventilation began >72 hours prior to randomization, if they received >1 dose of acid suppression in the ICU, or if acid suppression therapy was specifically indicated or contraindicated. Across 68 centers in Australia, Brazil, Canada, England, Kuwait, Pakistan, Saudi Arabia, and the United States, patients received either intravenous (IV) pantoprazole 40 mg or placebo in a 1:1 ratio, stratified by treatment center and past medical history of acid suppression (pre-hospital). The primary endpoint was clinically important upper gastrointestinal (GI) bleeding (overt GI bleeding with evidence of hemodynamic compromise or GI bleeding leading to ICU intervention or readmission to the ICU during the index hospital stay) up to 90 days after randomization. Secondary endpoints included the occurrence of ventilator-associated pneumonia, defined as a Clinical Pulmonary Infection Score (CPIS) of 6 or more.
 1.	Cook D, Deane A, Lauzier F, et al, for the REVISE Investigators. Stress ulcer prophylaxis during invasive mechanical ventilation. N Engl J Med. 2024;391(1):9-20. doi:10.1056/NEJMoa2404245.
 
 
-###Study Results
+#### Study Results
 
 Baseline characteristics were similar between treatment groups. The mean age (SD) was 58.2 (±16.4) years; 36.3% were female. The mean (SD) APACHE II score was 21.7 (±8.3). Patients were treated with study drug or placebo for a median of 5 days (interquartile range, 3 to 10) with 97.5% receiving their assigned agent (or had a prespecified exemption) for at least 80% of days receiving invasive ventilation. No patients were unblinded during the study. Ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and 567 of 2381 patients (23.8%) in the placebo group (HR, 1; 95% CI, 0.89 to 1.12; p=0.93). There were no differences between the groups using alternative pneumonia definitions.
 
 
-###Safety
+#### Safety
 
 No significant differences were seen between groups in the primary safety endpoint of death by 90 days after randomization, as well as c difficile infection in hospital, death in ICU or in hospital, or new renal replacement therapy in ICU. In addition to events that were included in the trial outcomes, one adverse drug reaction and one suspected serious adverse reaction were reported in the placebo group. Study limitations included lack of patient-reported disability outcomes or data regarding microbiome modification as a mechanism for infection risk. The authors concluded there was no clear difference in the risk of ventilator-associated pneumonia between the pantoprazole and placebo groups in critically ill patients on permanent ventilation.
 
