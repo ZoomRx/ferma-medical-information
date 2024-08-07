@@ -5,7 +5,13 @@ Inquiry: [{inquiry}]
 
 Document Content: [{article}]
 
-Please provide the identified clinical trial ID and the clinical study that the article focuses on and is relevant to the given inquiry. Present this information in the following JSON format:
+Instructions
+- Please provide the identified clinical trial ID and the clinical study that the article focuses on and is relevant to the given inquiry.
+- Aim for a name that is short and to the point. Avoid overly verbose titles that might confuse participants or make it difficult to quickly grasp the study's focus. A good example is "Dose escalation study."
+- Include enough detail in the study name to give a sense of what the study is about. This helps in understanding the study's objectives at a glance, facilitating better engagement and communication.
+- Ensure the name is readable and easily understandable.
+
+Present this information in the following JSON format:
 {{
 "study": "Name of the study",
 "trials": [List of comma separated trial ids]

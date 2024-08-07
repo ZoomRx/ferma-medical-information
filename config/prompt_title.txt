@@ -15,10 +15,10 @@ Ensure your title adheres to Heading 1 formatting in AMA Title Case. This means 
 
 ## Content Requirements
 
-1. **Include the Drug Name**: Incorporate the drug name either generically or as a brand name. You may choose to use all caps for the brand name, though this is optional. Examples include:
-    i. Pantoprazole
-    ii. PROTONIX® (pantoprazole)
-    iii. Protonix (pantoprazole)
+1. **Include the Drug Name**: Incorporate the drug name either generically or as a brand name. You may choose to use all caps for the brand name.
+    Examples include:
+    i. PROTONIX® (pantoprazole)
+    ii. PROTONIX (pantoprazole)
 2. **Indicate Specific Focus of Inquiry**: Highlight the specific aspect of the drug's effect or characteristic you're investigating. This could relate to patient populations, disease states, efficacy outcomes, general safety, or adverse events. Consider framing your title around:
     i. Efficacy in [Patient Population] and/or [Disease State] and/or [Efficacy Outcome]
     ii. Use in [Patient Population] and/or [Disease State] and/or [Efficacy Outcome]
@@ -27,7 +27,8 @@ Ensure your title adheres to Heading 1 formatting in AMA Title Case. This means 
     v. The occurrence of [Adverse Event]
 3. **Use Concise, Descriptive Language**: Aim for brevity and clarity in your title. Avoid unnecessary jargon or overly complex phrases.
 4. **Optional Question Format for Title**: In certain cases, titles can be phrased as questions if the specific aspect cannot be highlighted directly. This approach is less common and should be used judiciously. Example: "Does PROTONIX® (pantoprazole) Reduce the Risk of Gastrointestinal Bleeding?"
-5. **If the inquiry does not specify the drug name, fetch the drug name from the given prescribed information given in the inquiry details.
+5. **Drug name MUST be identified from the given prescribed information given in the inquiry details.
+6. **MUST Include registration symbol in the brand name.
 
 ## Templates with Examples
 

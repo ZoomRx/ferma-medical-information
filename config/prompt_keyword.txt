@@ -10,9 +10,10 @@ Connect keywords from different categories using the "AND" condition.
 Break complex keywords into smaller keywords and map them accordingly.
 Wrap every sub-query inside brackets, even if it's a single word.
 Do not add any term not present in the input.
-The Output BQ should be in json format.
+The Output BQ SHOULD be in json format.
 DO NOT add any string to the output.
-
+The output should be ONLY the json and DONOT add any string to the output.
+MUST prepend double backslash '\\' before any special characters if present in the identified keyword that should be escaped for elastic querystring .
 
 Elastic schema:
 
@@ -88,6 +89,24 @@ BQ:
 "must_have_others": "(safety profile)",
 "should_have": ""
 }}
+
+Input:
+Inquiry: Summarize the latest data on Dupixent (dupilumab) for treating atopic dermatitis in pediatric patients
+Inquiry_type: Efficacy (patients with an IGA score of 0/1; proportion of patients with ≥ 75% reduction in Eczema Area and Severity Index from baseline of parent study (EASI-75))
+
+BQ:
+{{
+"must_have_drugs": "((Dupixent) OR (dupilumab))",
+"must_have_diseases": "(atopic dermatitis)",
+"must_have_firms": "",
+"must_have_phases": "",
+"must_have_ncts_acronyms": "",
+"must_have_patient_subgroups": "(pediatric)",
+"must_have_moa": "",
+"must_have_others": "((Efficacy) OR (IGA score of 0\\/1) OR (EASI-75) OR (proportion of patients with ≥ 75\\% reduction in Eczema Area and Severity Index from baseline of parent study))",
+"should_have": "(latest data)"
+}}
+
 
 **Examples End**
 

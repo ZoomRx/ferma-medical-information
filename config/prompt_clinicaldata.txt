@@ -44,10 +44,11 @@ Article:
 8. Include only the most relevant information from the Article.
 9. Present the information in a clear and understandable manner for healthcare professionals.
 10. MUST include tables that are relevant to the content.
-
+11. Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
+12. MUST normalize accented characters in the output.
 ---
 
-Title should be in the format `[Study Name]([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json
+Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json
 Follow the below instructions to generate the paragraphs for respective sections:
   - "Study Methods" section:
     - Objective: Describe the study design and methodology.
@@ -61,7 +62,7 @@ Follow the below instructions to generate the paragraphs for respective sections
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety, Limitations, and Conclusions.
-    - Content Requirements: Provide detailed information on safety endpoints, study limitations (optional), and author conclusions (optional).
+    - Content Requirements: Provide detailed information on safety endpoints, study limitations, and author conclusions.
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
@@ -79,7 +80,7 @@ IGNORE truncated tables.
 ---
 *** Start of Examples ***
 
-### Stress Ulcer Prophylaxis during Invasive Mechanical Ventilation(NCT1231321)
+### Stress Ulcer Prophylaxis during Invasive Mechanical Ventilation (NCT1231321)
 
 #### Study Methods
 
