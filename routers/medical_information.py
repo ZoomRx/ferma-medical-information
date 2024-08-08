@@ -5,6 +5,7 @@ from typing import List
 import requests
 from fastapi import APIRouter, FastAPI, File, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
+from pandas import DataFrame
 from requests import Session
 
 from db.session import get_doc_db
@@ -30,8 +31,8 @@ app = FastAPI()
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
     file_names = []
-    #tasks = [process_file(file, db) for file in files]
-    tasks = [process_file_AzureAI(file) for file in files]
+    tasks = [process_file(file, db) for file in files]
+    #tasks = [process_file_AzureAI(file) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)
@@ -59,7 +60,6 @@ async def process_file_AzureAI(file: UploadFile):
         doc_intell_response_obj, doc_intell_response_dict = azure.get_raw_output(
             local_inp_file_path=file_path)
         processed_content = azure.get_processed_output(raw_output_obj=doc_intell_response_obj, file_name=new_filename)
-
         es_record_count = es_utils.write_es_data(processed_content)
         saved_file_size = os.path.getsize(file_path)
         if saved_file_size != len(contents):
@@ -103,7 +103,7 @@ async def process_file(file: UploadFile, db):
         response_json = response.json()
         try:
             document_id = response_json['document_id']
-            documents = document_service.get(db, document_id=document_id)
+            documents :DataFrame = document_service.get(db, document_id=document_id)
         except Exception as e:
             print(e)
             raise
@@ -111,7 +111,6 @@ async def process_file(file: UploadFile, db):
         saved_file_size = os.path.getsize(file_path)
         if saved_file_size != len(contents):
             raise IOError("Mismatch in file size after saving")
-        print(documents)
         return new_filename
     except Exception as e:
         print(f"An error occurred: {e}")

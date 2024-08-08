@@ -1,6 +1,7 @@
 # Import necessary libraries
 import concurrent
 import json
+import os
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from datetime import time, datetime
 
@@ -251,6 +252,7 @@ def get_relevant_pages(inquiry_details):
     json_data = json.loads(es_bool_query)
     transformed_json = transform_json(json_data)
     document_source = inquiry_details.document_source
+    document_name = [os.path.splitext(os.path.basename(source))[0] for source in document_source]
     target_query = {"query": {
         "bool": {
             "must": [
@@ -276,7 +278,7 @@ def get_relevant_pages(inquiry_details):
             "filter": [
                 {
                     "terms": {
-                        "document_name": document_source
+                        "document_name": document_name
                     }
                 }
             ]
@@ -305,10 +307,11 @@ def transform_json(original):
 
 def get_prescribed_information(inquiry_details: InquiryDetails):
     document_source = inquiry_details.pi_source
+    document_name, extension = os.path.splitext(document_source)
     target_query = {"size": 1, "query": {
         "bool": {
             "must": [
-                {"term": {"document_name": document_source}},
+                {"term": {"document_name": document_name}},
                 {"term": {"page_no": 1}}
             ]
         }

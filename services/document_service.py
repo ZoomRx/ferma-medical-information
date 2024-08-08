@@ -16,7 +16,7 @@ class DocumentService(BaseService[Documents, None, None]):
             QUERY = f"""
             SELECT
                 c.document_id,
-                d.file_name,
+                d.file_name as document_name,
                 c.page_title,
                 c.page_no,
                 c.paragraph_order,
@@ -41,7 +41,7 @@ class DocumentService(BaseService[Documents, None, None]):
     def get_processed_output(self, documents_df) -> DataFrame:
 
         page_level_df = documents_df.groupby(["document_id", "page_no"]).agg({
-            'file_name': 'first',
+            'document_name': 'first',
             'page_title': 'first',
             'content': lambda x: '\n'.join(x)
         }).reset_index()
