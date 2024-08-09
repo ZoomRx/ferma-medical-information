@@ -159,7 +159,6 @@ def generate_content(inquiry_details: InquiryDetails):
 def generate_clinical_data(inquiry_details, articles):
     # Assuming get_relevant_clinical_study returns a list of tuples (document, trial_json)
     articles, trials = get_relevant_clinical_study(inquiry_details)
-    print(trials)
     report_type = "clinical_data"
     clinical_data = []
 
@@ -253,40 +252,51 @@ def get_relevant_pages(inquiry_details):
     transformed_json = transform_json(json_data)
     document_source = inquiry_details.document_source
     document_name = [os.path.splitext(os.path.basename(source))[0] for source in document_source]
-    target_query = {"query": {
-        "bool": {
-            "must": [
-                {
-                    "query_string": {
-                        "query": transformed_json["must_have"],
-                        "fields": ["content^50", "page_title", "title"],
-                        "default_operator": "AND",
-                        "analyzer": "synonyms"
-                    }
-                }
-            ],
-            "should": [
-                {
-                    "query_string": {
-                        "query": transformed_json["should_have"],
-                        "fields": ["content^50", "page_title", "title"],
-                        "default_operator": "OR",
-                        "analyzer": "synonyms"
-                    }
-                }
-            ],
-            "filter": [
-                {
-                    "terms": {
-                        "document_name": document_name
-                    }
-                }
-            ]
+    if 'must_have' in transformed_json and transformed_json['must_have']:
+        must_query = {
+            "query_string": {
+                "query": transformed_json["must_have"],
+                "fields": ["content^50", "page_title", "title"],
+                "default_operator": "AND",
+                "analyzer": "synonyms"
+            }
         }
-    }, "_source": {
-        "includes": ["page_no", "content"]
-    }}
-    result = get_es_data(target_query)
+    else:
+        must_query = None
+
+    if 'should_have' in transformed_json and transformed_json['should_have']:
+        should_query = {
+            "query_string": {
+                "query": transformed_json["should_have"],
+                "fields": ["content^50", "page_title", "title"],
+                "default_operator": "OR",
+                "analyzer": "synonyms"
+            }
+        }
+    else:
+        should_query = None
+
+        # Build the main query structure
+    target_query = {
+        "query": {
+            "bool": {
+                "must": [] if not must_query else [must_query],
+                "should": [] if not should_query else [should_query],
+                "filter": [
+                    {
+                        "terms": {
+                            "document_name": document_name
+                        }
+                    }
+                ]
+            }
+        },
+        "_source": {
+            "includes": ["page_no", "content"]
+        }
+    }
+
+    result = get_es_data(json.dumps(target_query))
     return result
 
 
