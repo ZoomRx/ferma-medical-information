@@ -45,3 +45,5 @@ Ensure your title adheres to Heading 1 formatting in AMA Title Case. This means 
 *IMPORTANT MANDATE*
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
 - Return ONLY the formatted title as the response.
+- Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'TECENTRIQÂ' to 'TECENTRIQA' and removing symbols like 'â‰¥'.
+

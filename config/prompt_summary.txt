@@ -64,3 +64,5 @@ In your analysis and summarization process, it is imperative to meticulously rev
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
 - DO include only "Summary" as section headings in the response.
 - Split the content into multiple paragraphs based on the context and Return ONLY the paragraph data in the response.
+- Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
+
