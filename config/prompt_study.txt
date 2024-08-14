@@ -2,17 +2,19 @@ From the document content provided, identify the clinical trial ID that is most 
 Additionally, identify the clinical study within the document that is most closely related to the given inquiry. Identify the clinical study from the study objective given in the document content.
 
 Inquiry: [{inquiry}]
-
+cite_id:{cite_id}
 Document Content: [{article}]
 
 Instructions
 - Please provide the identified clinical trial ID and the clinical study that the article focuses on and is relevant to the given inquiry.
+- Please provide the cite id provided in the input as the value for cite_id specified in the json output
 - Aim for a name that is short and to the point. Avoid overly verbose titles that might confuse participants or make it difficult to quickly grasp the study's focus. A good example is "Dose escalation study."
 - Include enough detail in the study name to give a sense of what the study is about. This helps in understanding the study's objectives at a glance, facilitating better engagement and communication.
 - Ensure the name is readable and easily understandable.
 
 Present this information in the following JSON format:
 {{
+"cite_id": input cite id,
 "study": "Name of the study",
 "trials": [List of comma separated trial ids]
 }}
@@ -21,12 +23,14 @@ Here are a couple of examples:
 
 Example 1:
 {{
+"cite_id": 2,
 "study": "Dose-Escalation Study",
 "trials": [NCT02431481, NCT123123313]
 }}
 
 Example 2:
 {{
+"cite_id": 1,
 "study": "Signature Study",
 "trials": [NCT02187783]
 }}

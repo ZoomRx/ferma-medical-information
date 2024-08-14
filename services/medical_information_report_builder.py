@@ -2,7 +2,7 @@
 import concurrent
 import json
 import os
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from datetime import time, datetime
 
 import openai
@@ -49,6 +49,8 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
         prompt_file = "prompt_trials.txt"
     elif content == "study":
         prompt_file = "prompt_study.txt"
+    elif content == "references":
+        prompt_file = "prompt_reference.txt"
 
     with open(f"config/{prompt_file}", "r") as file:
         prompt_text = file.read()
@@ -62,6 +64,10 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     elif content == "introduction":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data,
                                     pi_data=pi_details)
+    elif content == "references":
+        prompt = prompt_text.format(article=article_content, study_json = data)
+    elif content == "study":
+        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, cite_id = data)
     else:
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data)
 
@@ -108,6 +114,7 @@ def generate_summary(inquiry_details, file_name):
 
     prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type)
 
+    print(prompt)
     conversation = [
         {"role": "system",
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role "
@@ -150,30 +157,45 @@ def generate_content(inquiry_details: InquiryDetails):
     srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
     srl_content["summary"] = generate_report(inquiry_details, articles, "summary", title)
 
-    clinical_data = generate_clinical_data(inquiry_details, articles)
+    clinical_data, reference_data = generate_clinical_data(inquiry_details)
     srl_content["clinical_data"] = clinical_data
+    srl_content["references"] = reference_data
     srl_document = "\n\n".join(str(value) for value in srl_content.values())
     return srl_document
 
 
-def generate_clinical_data(inquiry_details, articles):
+def generate_clinical_data(inquiry_details):
     # Assuming get_relevant_clinical_study returns a list of tuples (document, trial_json)
     articles, trials = get_relevant_clinical_study(inquiry_details)
     report_type = "clinical_data"
     clinical_data = []
+    references = []
 
-    # Check if trials is a sequence of tuples with exactly two elements each
     if isinstance(trials, (list, tuple)) and all(isinstance(item, tuple) and len(item) == 2 for item in trials):
-        # Submit tasks to the executor
+        # Initialize ThreadPoolExecutor outside the loop to reuse it
         with ThreadPoolExecutor() as executor:
-            future_to_article = {executor.submit(generate_report, inquiry_details, articles[item[0]], report_type, item[1]): item[0] for item in trials}
+            future_to_article = {}
+            future_to_article_clinical = {}
+            # Generate clinical data reports
+            for item in trials:
+                future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type, item[1])
+                future_to_article_clinical[future_clinical] = item[0]
+                future = executor.submit(generate_report, inquiry_details, articles[item[0]], "references", item[1])
+                future_to_article[future] = item[0]
 
-            for future in concurrent.futures.as_completed(future_to_article):
-                document = future_to_article[future]
+            for future_clinical in as_completed(future_to_article_clinical):
+                document = future_to_article_clinical[future_clinical]
                 try:
-                    clinical_data.append(future.result())
+                    clinical_data.append(future_clinical.result())
                 except Exception as exc:
                     print(f'An error occurred while generating report for {document}: {exc}')
+
+            for future in as_completed(future_to_article):
+                document_ref = future_to_article[future]
+                try:
+                    references.append(future.result())
+                except Exception as exc:
+                    print(f'An error occurred while generating report for {document_ref}: {exc}')
     else:
         print("Trials data is not in the expected format.")
 
@@ -181,7 +203,11 @@ def generate_clinical_data(inquiry_details, articles):
     clinical_data = "\n## Clinical Data\n"
     clinical_data += clinical_data_string
 
-    return clinical_data
+    reference_data_string = '\n'.join([f'{item}' for i, item in enumerate(references)])
+    reference_data = "\n## References\n"
+    reference_data += reference_data_string
+
+    return clinical_data, reference_data
 
 
 def generate_report_clinical_data(args):
@@ -200,9 +226,13 @@ def get_relevant_clinical_trials(inquiry_details, articles):
 def get_relevant_clinical_study(inquiry_details):
     trial_study_list = []
     article = {}
-    for document in inquiry_details.document_source:
+    document_name = [os.path.splitext(os.path.basename(source))[0] for source in inquiry_details.document_source]
+    count=1
+    for document in document_name:
         article[document] = get_es_document(document)
-        trial_study_list.append((document, generate_report(inquiry_details, article[document], "study")))
+        study_json = generate_report(inquiry_details, article[document], "study", count)
+        trial_study_list.append((document, study_json))
+        count=count+1
     return article, trial_study_list
 
 

@@ -46,6 +46,7 @@ Article:
 10. MUST include tables that are relevant to the content.
 11. Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
 12. MUST normalize accented characters in the output.
+13. Extract the cite_id from the clinical trial json and MUST add the cite_id as the citation number in the output content
 ---
 
 Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json
@@ -55,14 +56,17 @@ Follow the below instructions to generate the paragraphs for respective sections
     - Content Requirements:
       - Provide detailed information on the full Study Name and optionally, an abbreviated name or code for the study.
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint.
+      - Extract the cite_id from the clinical trial json as citation number for the generated content.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy results (if applicable), secondary efficacy results (if applicable), and statistical significance and confidence intervals.
+    - Extract the cite_id from the clinical trial json as citation number for the generated content.
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety, Limitations, and Conclusions.
     - Content Requirements: Provide detailed information on safety endpoints, study limitations, and author conclusions.
+    - Extract the cite_id from the clinical trial json as citation number for the generated content.
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
@@ -72,6 +76,7 @@ Ensure all necessary details are included and accurately represented in the outp
 
 Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
 
+MUST add the reference citiation number specified in the input json as cite_id to the output text. DONOT add reference citations in the output
 DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT
 DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 DO NOT add any truncated text or paragraph or tables.
@@ -84,18 +89,17 @@ IGNORE truncated tables.
 
 #### Study Methods
 
-Reevaluating the Inhibition of Stress Erosions (REVISE) was an investigator-initiated, multicenter, randomized, blinded trial that assessed stress ulcer prophylaxis in critically ill patients undergoing invasive ventilation. Patients (N=4821) were ≥18 years of age, undergoing invasive mechanical ventilation in the intensive care unit (ICU) that was expected to last >1 day post-randomization. Patients were excluded if invasive ventilation began >72 hours prior to randomization, if they received >1 dose of acid suppression in the ICU, or if acid suppression therapy was specifically indicated or contraindicated. Across 68 centers in Australia, Brazil, Canada, England, Kuwait, Pakistan, Saudi Arabia, and the United States, patients received either intravenous (IV) pantoprazole 40 mg or placebo in a 1:1 ratio, stratified by treatment center and past medical history of acid suppression (pre-hospital). The primary endpoint was clinically important upper gastrointestinal (GI) bleeding (overt GI bleeding with evidence of hemodynamic compromise or GI bleeding leading to ICU intervention or readmission to the ICU during the index hospital stay) up to 90 days after randomization. Secondary endpoints included the occurrence of ventilator-associated pneumonia, defined as a Clinical Pulmonary Infection Score (CPIS) of 6 or more.
-1.	Cook D, Deane A, Lauzier F, et al, for the REVISE Investigators. Stress ulcer prophylaxis during invasive mechanical ventilation. N Engl J Med. 2024;391(1):9-20. doi:10.1056/NEJMoa2404245.
+Reevaluating the Inhibition of Stress Erosions (REVISE) was an investigator-initiated, multicenter, randomized, blinded trial that assessed stress ulcer prophylaxis in critically ill patients undergoing invasive ventilation. Patients (N=4821) were ≥18 years of age, undergoing invasive mechanical ventilation in the intensive care unit (ICU) that was expected to last >1 day post-randomization. Patients were excluded if invasive ventilation began >72 hours prior to randomization, if they received >1 dose of acid suppression in the ICU, or if acid suppression therapy was specifically indicated or contraindicated. Across 68 centers in Australia, Brazil, Canada, England, Kuwait, Pakistan, Saudi Arabia, and the United States, patients received either intravenous (IV) pantoprazole 40 mg or placebo in a 1:1 ratio, stratified by treatment center and past medical history of acid suppression (pre-hospital). The primary endpoint was clinically important upper gastrointestinal (GI) bleeding (overt GI bleeding with evidence of hemodynamic compromise or GI bleeding leading to ICU intervention or readmission to the ICU during the index hospital stay) up to 90 days after randomization. Secondary endpoints included the occurrence of ventilator-associated pneumonia, defined as a Clinical Pulmonary Infection Score (CPIS) of 6 or more.[1]
 
 
 #### Study Results
 
-Baseline characteristics were similar between treatment groups. The mean age (SD) was 58.2 (±16.4) years; 36.3% were female. The mean (SD) APACHE II score was 21.7 (±8.3). Patients were treated with study drug or placebo for a median of 5 days (interquartile range, 3 to 10) with 97.5% receiving their assigned agent (or had a prespecified exemption) for at least 80% of days receiving invasive ventilation. No patients were unblinded during the study. Ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and 567 of 2381 patients (23.8%) in the placebo group (HR, 1; 95% CI, 0.89 to 1.12; p=0.93). There were no differences between the groups using alternative pneumonia definitions.
+Baseline characteristics were similar between treatment groups. The mean age (SD) was 58.2 (±16.4) years; 36.3% were female. The mean (SD) APACHE II score was 21.7 (±8.3). Patients were treated with study drug or placebo for a median of 5 days (interquartile range, 3 to 10) with 97.5% receiving their assigned agent (or had a prespecified exemption) for at least 80% of days receiving invasive ventilation. No patients were unblinded during the study. Ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and 567 of 2381 patients (23.8%) in the placebo group (HR, 1; 95% CI, 0.89 to 1.12; p=0.93). There were no differences between the groups using alternative pneumonia definitions.[1]
 
 
 #### Safety
 
-No significant differences were seen between groups in the primary safety endpoint of death by 90 days after randomization, as well as c difficile infection in hospital, death in ICU or in hospital, or new renal replacement therapy in ICU. In addition to events that were included in the trial outcomes, one adverse drug reaction and one suspected serious adverse reaction were reported in the placebo group. Study limitations included lack of patient-reported disability outcomes or data regarding microbiome modification as a mechanism for infection risk. The authors concluded there was no clear difference in the risk of ventilator-associated pneumonia between the pantoprazole and placebo groups in critically ill patients on permanent ventilation.
+No significant differences were seen between groups in the primary safety endpoint of death by 90 days after randomization, as well as c difficile infection in hospital, death in ICU or in hospital, or new renal replacement therapy in ICU. In addition to events that were included in the trial outcomes, one adverse drug reaction and one suspected serious adverse reaction were reported in the placebo group. Study limitations included lack of patient-reported disability outcomes or data regarding microbiome modification as a mechanism for infection risk. The authors concluded there was no clear difference in the risk of ventilator-associated pneumonia between the pantoprazole and placebo groups in critically ill patients on permanent ventilation.[1]
 
 *** End of Examples ***
 

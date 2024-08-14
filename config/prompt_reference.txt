@@ -1,0 +1,19 @@
+Please generate an AMA-style citation for the following article: {article} with the cite id given in json {study_json}
+
+Instructions:
+
+DONOT inlcude any other additional text
+Normalize accented special characters.
+
+Example:
+
+input json:
+{{
+"cite_id":"2"
+"study": "Signature Study",
+"trials": [NCT02187783]
+}}
+
+Output:
+
+2.	Cook D, Deane A, Lauzier F, et al, for the REVISE Investigators. Stress ulcer prophylaxis during invasive mechanical ventilation. N Engl J Med. 2024;391(1):9-20. doi:10.1056/NEJMoa2404245.
