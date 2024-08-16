@@ -1,0 +1,11 @@
+Please generate the citation for the following the prescribed information document: {article} with the cite id {cite_id}
+
+Instructions:
+
+DONOT inlcude any other additional text
+Normalize accented special characters.
+
+Example:
+
+Output:
+1. Ozempic® Prescribing Information. Novo Nordisk Inc.

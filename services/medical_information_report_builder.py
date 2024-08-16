@@ -1,8 +1,7 @@
-# Import necessary libraries
-import concurrent
+
 import json
 import os
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import time, datetime
 
 import openai
@@ -10,20 +9,16 @@ import requests
 
 from helpers.es_utils import get_es_data
 from schemas.medical_info_inquiry import InquiryDetails
-from services.azure_doc_intelligence import AzureDocIntelligence
 from config import settings
 
-# Set OpenAI API key
 openai.api_key = settings.env.open_ai_key
+citation_order = {}
 
-
-# Helper function to fetch and parse content from URLs
 def fetch_content(url):
     response = requests.get(url)
     return response.content
 
 
-# Function to create a SRL document
 def generate_report(inquiry_details, article_pages, content="all", data="", pi_details=""):
     inquiry = inquiry_details.inquiry
     inquiry_type = "All"
@@ -55,7 +50,6 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     with open(f"config/{prompt_file}", "r") as file:
         prompt_text = file.read()
 
-    # prompt = prompt_text.format(title=title, inquiry=inquiry, inquiry_type=inquiry_type, summary=summary,
     # additional_notes=additional_notes, article_content=article_content)
     if content == "clinical_data":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, trial_json=data, notes = inquiry_details.additional_notes)
@@ -79,7 +73,6 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     ]
 
     start_time = datetime.now()
-    # Generate the report using the OpenAI API
     response = openai.ChatCompletion.create(
         model="gpt-4o",
         messages=conversation,
@@ -97,17 +90,12 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
 
     return srl_content
 
-
-# Run the function to create the document
 def generate_summary(inquiry_details, file_name):
-    # title = inquiry_details.document_title
     inquiry = inquiry_details.inquiry
     inquiry_type = "All"
     if bool(inquiry_details.inquiry_type):
-        # Convert the inquiry to a text format
         inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
-    # summary = inquiry_details.summary_section
-    # additional_notes = inquiry_details.additional_notes
+    additional_notes = inquiry_details.additional_notes
 
     with open("config/prompt_extract.txt", "r") as file:
         prompt_text = file.read()
@@ -149,34 +137,54 @@ def convert_to_text_format(types):
 
 
 def generate_content(inquiry_details: InquiryDetails):
+    set_citation_order(inquiry_details)
     articles = get_relevant_pages(inquiry_details)
     srl_content = {}
     pi_details = get_prescribed_information(inquiry_details)
     title = generate_report(inquiry_details, pi_details, "title")
     srl_content["title"] = title
-    srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
     srl_content["summary"] = generate_report(inquiry_details, articles, "summary", title)
+    srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
 
-    clinical_data, reference_data = generate_clinical_data(inquiry_details)
+    clinical_data, reference_data = generate_clinical_data(inquiry_details, pi_details)
     srl_content["clinical_data"] = clinical_data
     srl_content["references"] = reference_data
     srl_document = "\n\n".join(str(value) for value in srl_content.values())
     return srl_document
 
+def set_citation_order(inquiry_details):
+    global citation_order
 
-def generate_clinical_data(inquiry_details):
+    # Assign indices to documents
+    index = 1
+    pi_document_name = os.path.splitext(os.path.basename(inquiry_details.pi_source))[0]
+    citation_order[pi_document_name] = index
+    index +=1
+
+    for document in inquiry_details.document_source:
+        document_name = os.path.splitext(os.path.basename(document))[0]
+        citation_order[document_name] = index
+        index += 1
+
+    # Add pi_source document with the next available index
+
+
+def generate_clinical_data(inquiry_details, pi_details):
     # Assuming get_relevant_clinical_study returns a list of tuples (document, trial_json)
     articles, trials = get_relevant_clinical_study(inquiry_details)
     report_type = "clinical_data"
     clinical_data = []
     references = []
+    pi_reference = get_reference_pi_data(inquiry_details.pi_source, pi_details)
+    # Assuming pi_reference is defined somewhere above this line
+    if pi_reference:
+        references.append(pi_reference)
 
     if isinstance(trials, (list, tuple)) and all(isinstance(item, tuple) and len(item) == 2 for item in trials):
         # Initialize ThreadPoolExecutor outside the loop to reuse it
         with ThreadPoolExecutor() as executor:
             future_to_article = {}
             future_to_article_clinical = {}
-            # Generate clinical data reports
             for item in trials:
                 future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type, item[1])
                 future_to_article_clinical[future_clinical] = item[0]
@@ -202,7 +210,6 @@ def generate_clinical_data(inquiry_details):
     clinical_data_string = "\n\n".join(clinical_data)
     clinical_data = "\n## Clinical Data\n"
     clinical_data += clinical_data_string
-
     reference_data_string = '\n'.join([f'{item}' for i, item in enumerate(references)])
     reference_data = "\n## References\n"
     reference_data += reference_data_string
@@ -227,12 +234,12 @@ def get_relevant_clinical_study(inquiry_details):
     trial_study_list = []
     article = {}
     document_name = [os.path.splitext(os.path.basename(source))[0] for source in inquiry_details.document_source]
-    count=1
     for document in document_name:
         article[document] = get_es_document(document)
-        study_json = generate_report(inquiry_details, article[document], "study", count)
+        cite_id = citation_order.get(document)
+        study_json = generate_report(inquiry_details, article[document], "study", cite_id)
         trial_study_list.append((document, study_json))
-        count=count+1
+    print(trial_study_list)
     return article, trial_study_list
 
 
@@ -322,13 +329,41 @@ def get_relevant_pages(inquiry_details):
             }
         },
         "_source": {
-            "includes": ["page_no", "content"]
+            "includes": ["page_no", "content", "document_name"]
         }
     }
 
-    result = get_es_data(json.dumps(target_query))
+    article_data = get_es_data(json.dumps(target_query))
+    result = add_citation_id(article_data)
     return result
 
+def get_reference_pi_data(pi_document_name, pi_details):
+    with open("config/prompt_pi_reference.txt", "r") as file:
+        prompt_text = file.read()
+    cite_id = citation_order.get(pi_document_name)
+    prompt = prompt_text.format(article=pi_details, cite_id = cite_id)
+
+    conversation = [
+        {"role": "system",
+         "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role "
+                    "involves indetifying the key pharmaceutical terms in the given HCP inquiry details"},
+        {"role": "user", "content": f"{prompt}"
+         }
+    ]
+    start_time = datetime.now()
+    # Generate the report using the OpenAI API
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=conversation,
+        temperature=0,
+        max_tokens=4096
+    )
+    end_time = datetime.now()
+    elapsed_time = end_time - start_time
+
+    pi_reference = response['choices'][0]['message']['content']
+    print(pi_reference)
+    return pi_reference
 
 def transform_json(original):
     transformed = {}
@@ -356,8 +391,19 @@ def get_prescribed_information(inquiry_details: InquiryDetails):
             ]
         }
     }, "_source": {
-        "includes": ["page_no", "content"]
+        "includes": ["page_no", "content","document_name"]
     }}
 
-    result = get_es_data(target_query)
-    return result
+    pi_data = get_es_data(target_query)
+    result = add_citation_id(pi_data)
+    return result, document_name
+
+def add_citation_id(data):
+    print(citation_order)
+    for item in data:
+        cite_id = citation_order.get(item['document_name'])
+        if cite_id:
+            item['cite_id'] = cite_id
+        else:
+            print(f"No cite_id found for document {item['document_name']}. Leaving unchanged.")
+    return data

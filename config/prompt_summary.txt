@@ -32,30 +32,23 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 ** Start of Example **
 ## Summary
 
-The VISION study evaluated patients with pretreated (≥1 androgen receptor pathway inhibitor and 1 – 2 taxane regimens) PSMA-positive mCRPC treated with 177Lu-PSMA-617 + BSoC vs BSoC alone. The primary endpoints were radiographic progression-free survival (rPFS) and overall survival (OS). The study would be considered positive if either or both primary endpoints were significant.
+* The VISION study evaluated patients with pretreated (≥1 androgen receptor pathway inhibitor and 1 – 2 taxane regimens) PSMA-positive mCRPC treated with 177Lu-PSMA-617 + BSoC vs BSoC alone. The primary endpoints were radiographic progression-free survival (rPFS) and overall survival (OS). The study would be considered positive if either or both primary endpoints were significant.
 
-Treatment with combination 177Lu-PSMA-617 + BSoC (n = 551) significantly prolonged OS compared to BSoC (n = 280) alone (15.3 months vs 11.3 months, respectively; HR = 0.62 [95% CI: 0.52 – 0.74]; P<0.001).
+* Treatment with combination 177Lu-PSMA-617 + BSoC (n = 551) significantly prolonged OS compared to BSoC (n = 280) alone (15.3 months vs 11.3 months, respectively; HR = 0.62 [95% CI: 0.52 – 0.74]; P<0.001).
 
-In the rPFS analysis set, treatment with combination 177Lu-PSMA-617 + BSoC (n = 385) significantly improved rPFS compared to BSoC (n = 196) alone (8.7 months vs 3.4 months, respectively; HR = 0.40 [99.2% CI: 0.29 – 0.57]; P<0.001).
+* In the rPFS analysis set, treatment with combination 177Lu-PSMA-617 + BSoC (n = 385) significantly improved rPFS compared to BSoC (n = 196) alone (8.7 months vs 3.4 months, respectively; HR = 0.40 [99.2% CI: 0.29 – 0.57]; P<0.001).
 
-Compared to BSoC alone, combination 177Lu-PSMA-617 + BSoC showed favorable results in secondary endpoints such as time to first symptomatic skeletal event (SSE), best overall response via RECIST v1.1, reduction in prostate-specific antigen (PSA) levels, and health-related quality of life.
+* Compared to BSoC alone, combination 177Lu-PSMA-617 + BSoC showed favorable results in secondary endpoints such as time to first symptomatic skeletal event (SSE), best overall response via RECIST v1.1, reduction in prostate-specific antigen (PSA) levels, and health-related quality of life.
 
-The most common all-grade adverse events in patients treated with 177Lu-PSMA-617 + BSoC vs BSoC alone included:
-
-- Fatigue: 43.1% vs 22.9%
-- Dry mouth: 38.8% vs 1.0%
-- Nausea: 35.3% vs 16.6%
-- Anemia: 31.8% vs 13.2%
-- Back pain: 23.4% vs 14.6%
-
-A post hoc analysis was conducted accounting for treatment exposure to facilitate a comparison of treatment-emergent adverse events (TEAEs) between the two treatment groups. Exposure-adjusted incidences of dry mouth, dry eye, and acute myelosuppression events (anemia, thrombocytopenia, lymphopenia, and leukopenia) were higher in the 177Lu-PSMA-617 plus BSoC group than the BSoC alone group. The exposure-adjusted incidences of fatigue and gastrointestinal events were similar between the two groups. Unadjusted rates of musculoskeletal events, renal events, liver events, and dyspnea were higher in the 177Lu-PSMA-617 plus BSoC group compared to the BSoC group alone. Exposure-adjusted incidences of these TEAEs became higher in the BSoC group when compared to the 177Lu-PSMA-617 plus BSoC group.
+* A post hoc analysis was conducted accounting for treatment exposure to facilitate a comparison of treatment-emergent adverse events (TEAEs) between the two treatment groups. Exposure-adjusted incidences of dry mouth, dry eye, and acute myelosuppression events (anemia, thrombocytopenia, lymphopenia, and leukopenia) were higher in the 177Lu-PSMA-617 plus BSoC group than the BSoC alone group. The exposure-adjusted incidences of fatigue and gastrointestinal events were similar between the two groups. Unadjusted rates of musculoskeletal events, renal events, liver events, and dyspnea were higher in the 177Lu-PSMA-617 plus BSoC group compared to the BSoC group alone. Exposure-adjusted incidences of these TEAEs became higher in the BSoC group when compared to the 177Lu-PSMA-617 plus BSoC group.
 
 ** End of Example **
 
 ### Guidelines for Completion:
 
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
-- Ensure the summary is more detailed, providing a clear summarization of the drug and the rationale behind the SRL.
+- Ensure each point in summary is bulleted and each bullet point corresponds to a single sentence.
+- Ensure the summary provides a clear summarization of the drug and the rationale behind the SRL.
 
 #### CRITICAL DATA REVIEW MANDATE:
 In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your summary text.
@@ -63,6 +56,8 @@ In your analysis and summarization process, it is imperative to meticulously rev
 #### IMPORTANT MANDATE:
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
 - DO include only "Summary" as section headings in the response.
+- MUST bullet the summary content.
 - Split the content into multiple paragraphs based on the context and Return ONLY the paragraph data in the response.
 - Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
+- MUST include reference citation number specified in the article content json.
 

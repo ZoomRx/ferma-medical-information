@@ -38,9 +38,11 @@ The content should contain two paragraphs ONLY. Below is the guideline for the c
 1. This part of the content includes the information on the drug name (generic), drug classification, and drug indication. Include information on Label Contraindications and also Label Specific Focus of Inquiry Information.
 2. Add more details on the specific focus of the given inquiry - `{inquiry}`.
 3. Include the most common adverse events.
+4. MUST include reference citation number specified in the article content json.
 
 ### Paragraph 2: Recap of the Inquiry or Objectives
-This information is provided in response to your request for information on `{title}`. Include the response to the given inquiry, the purpose of the response letter which answers the inquiry.
+This information is provided in response to your request for information on `{title}`. Include the response to the given inquiry, the purpose of the response letter which answers the inquiry. MUST include reference citation number specified in the article content json.
+
 
 ## Sample Output
 
@@ -48,9 +50,9 @@ This information is provided in response to your request for information on `{ti
 
 ##Introduction
 
-Pantoprazole is a proton pump inhibitor indicated in adults for short-term treatment (7 to 10 days) of gastroesophageal reflux disease (GERD) associated with a history of erosive esophagitis (EE) or pathological hypersecretion conditions including Zollinger-Ellison (ZE) Syndrome. It is contraindicated in patients with a known hypersensitivity to any component of the formulation or to substituted benzimidazoles and patients receiving rilpivirine-containing products. The most common adverse events (>2%) are headache, diarrhea, nausea, abdominal pain, vomiting, flatulence, dizziness, and arthralgia.
+Pantoprazole is a proton pump inhibitor indicated in adults for short-term treatment (7 to 10 days) of gastroesophageal reflux disease (GERD) associated with a history of erosive esophagitis (EE) or pathological hypersecretion conditions including Zollinger-Ellison (ZE) Syndrome. It is contraindicated in patients with a known hypersensitivity to any component of the formulation or to substituted benzimidazoles and patients receiving rilpivirine-containing products. The most common adverse events (>2%) are headache, diarrhea, nausea, abdominal pain, vomiting, flatulence, dizziness, and arthralgia.[1][2]
 
-In response to your unsolicited request, the purpose of this response letter is to provide information on pantoprazole and the occurrence of ventilator-associated pneumonia.
+In response to your unsolicited request, the purpose of this response letter is to provide information on pantoprazole and the occurrence of ventilator-associated pneumonia.[2]
 
 ** End of Sample Output **
 
