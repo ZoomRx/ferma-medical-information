@@ -56,17 +56,17 @@ Follow the below instructions to generate the paragraphs for respective sections
     - Content Requirements:
       - Provide detailed information on the full Study Name and optionally, an abbreviated name or code for the study.
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint.
-      - Extract the cite_id from the clinical trial json as citation number for each paragraph of the generated content.
+      - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy results (if applicable), secondary efficacy results (if applicable), and statistical significance and confidence intervals.
-    - Extract the cite_id from the clinical trial json as citation number for each paragraph of the generated content.
+    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph.
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety, Limitations, and Conclusions.
     - Content Requirements: Provide detailed information on safety endpoints, study limitations, and author conclusions.
-    - Extract the cite_id from the clinical trial json as citation number for each paragraph of the generated content.
+    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph.
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
@@ -94,7 +94,9 @@ Reevaluating the Inhibition of Stress Erosions (REVISE) was an investigator-init
 
 #### Study Results
 
-Baseline characteristics were similar between treatment groups. The mean age (SD) was 58.2 (±16.4) years; 36.3% were female. The mean (SD) APACHE II score was 21.7 (±8.3). Patients were treated with study drug or placebo for a median of 5 days (interquartile range, 3 to 10) with 97.5% receiving their assigned agent (or had a prespecified exemption) for at least 80% of days receiving invasive ventilation. No patients were unblinded during the study. Ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and 567 of 2381 patients (23.8%) in the placebo group (HR, 1; 95% CI, 0.89 to 1.12; p=0.93). There were no differences between the groups using alternative pneumonia definitions.[1]
+Baseline characteristics were similar between treatment groups. The mean age (SD) was 58.2 (±16.4) years; 36.3% were female. The mean (SD) APACHE II score was 21.7 (±8.3).[1]
+
+Patients were treated with study drug or placebo for a median of 5 days (interquartile range, 3 to 10) with 97.5% receiving their assigned agent (or had a prespecified exemption) for at least 80% of days receiving invasive ventilation. No patients were unblinded during the study. Ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and 567 of 2381 patients (23.8%) in the placebo group (HR, 1; 95% CI, 0.89 to 1.12; p=0.93). There were no differences between the groups using alternative pneumonia definitions.[1]
 
 
 #### Safety
