@@ -76,7 +76,8 @@ Ensure all necessary details are included and accurately represented in the outp
 
 Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
 
-MUST add the reference citiation number specified in the input json as cite_id to each paragraph in the output text. DONOT add reference citations in the output
+MUST add the reference citiation number specified in the input json as cite_id to each paragraph in the output text. DONOT add reference citations in the output.
+DONOT include reference citiation for table data.
 DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT
 DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 DO NOT add any truncated text or paragraph or tables.
