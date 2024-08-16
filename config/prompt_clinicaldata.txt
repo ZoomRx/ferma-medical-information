@@ -49,24 +49,24 @@ Article:
 13. Extract the cite_id from the clinical trial json and MUST add the cite_id as the citation number in the output content
 ---
 
-Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json
+Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json. If the trials is not specified in the given clinical data input json, include only the Study Name.
 Follow the below instructions to generate the paragraphs for respective sections:
   - "Study Methods" section:
     - Objective: Describe the study design and methodology.
     - Content Requirements:
       - Provide detailed information on the full Study Name and optionally, an abbreviated name or code for the study.
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint.
-      - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph.
+      - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy results (if applicable), secondary efficacy results (if applicable), and statistical significance and confidence intervals.
-    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph.
+    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety, Limitations, and Conclusions.
     - Content Requirements: Provide detailed information on safety endpoints, study limitations, and author conclusions.
-    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph.
+    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
@@ -76,11 +76,12 @@ Ensure all necessary details are included and accurately represented in the outp
 
 Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
 
-MUST add the reference citiation number specified in the input json as cite_id to the output text. DONOT add reference citations in the output
+MUST add the reference citiation number specified in the input json as cite_id to each paragraph in the output text. DONOT add reference citations in the output
 DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT
 DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 DO NOT add any truncated text or paragraph or tables.
 IGNORE truncated tables.
+DO NOT assume, make inferences or hallucinate any data.
 
 ---
 *** Start of Examples ***
