@@ -26,7 +26,7 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 3. **Study Objective**: Clearly state the main aim or objective of your study.
 4. **Most Important Result That Aligns With SRL Inquiry and Inquiry Type**: Highlight the most critical finding from your study that directly relates to the focus of the SRL.
 5. **Specific Conclusions Around the Most Important Result**: Optionally, include any specific conclusions drawn from the most important result that answers the user's inquiry given above.
-6. MUST include reference citation number for each bullet point specified in the article content json.
+6. Extract the cite_id from the article trial json and MUST add the cite_id as the citation number in the output content.
 
 ## Sample Output
 
