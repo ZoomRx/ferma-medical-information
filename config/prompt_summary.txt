@@ -54,9 +54,8 @@ In your analysis and summarization process, it is imperative to meticulously rev
 #### IMPORTANT MANDATE:
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
 - DO include only "Summary" as section headings in the response.
-- DONOT include more than 5 bullet points.
+- MUST Ensure that each citation in the article is represented by a single bullet point, matching the total count of citations exactly.
 - MUST bullet the summary content.
-- Split the content into multiple paragraphs based on the context and Return ONLY the paragraph data in the response.
 - DO NOT include special characters like 'Â' in your response
 - Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
 - DO NOT assume, make inferences or hallucinate any data.
