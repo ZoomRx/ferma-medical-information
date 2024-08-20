@@ -1,7 +1,7 @@
 
 Your job is to generate a comprehensive output detailing the clinical study and trial outlined in the provided article. The output should address the Health Care Professional's (HCP) clinical inquiry, about a pharmaceutical company's drug(s), focusing on the inquiry type specified and utilize reference material for evidence-based information.
 
-Your output must exclusively cover the study design and results of the clinical data, directly answering the inquiry mentioned. It should provide a detailed analysis and evidence-based information, avoiding summaries, bullet points, or any form of simplified content organization. The content should read like a detailed chapter from a textbook, offering in-depth knowledge without redundancy or overlap with other modules.
+Your output must exclusively cover the study design and results of the clinical data, directly answering the inquiry and the inquiry type endpoints mentioned. It should provide a detailed analysis and evidence-based information, avoiding summaries, bullet points, or any form of simplified content organization. The content should read like a detailed chapter from a textbook, offering in-depth knowledge without redundancy or overlap with other modules.
 
 Inquiry : {inquiry}
 
@@ -39,14 +39,15 @@ Article:
 3. Provide only factual information.
 4. Do not assume, infer, or speculate on any data.
 5. Return the response as text with tables in Markdown format.
-6. ENSURE the generated response accurately addresses the HCP's inquiry.
+6. ENSURE the generated response accurately addresses the HCP's inquiry and inquiry type endpoints specified.
 7. ENSURE the Markdown format in the output is consistent throughout.
 8. Include only the most relevant information from the Article.
 9. Present the information in a clear and understandable manner for healthcare professionals.
 10. MUST include tables that are relevant to the content.
 11. Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
 12. MUST normalize accented characters in the output.
-13. Extract the cite_id from the clinical trial json and MUST add the cite_id as the citation number in the output content
+13. Extract the cite_id from the clinical trial json and MUST add the cite_id as the citation number in the output content.
+14. MUST consider the additional instructions specified in the input Additional Notes while generating the response.
 ---
 
 Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json. If the trials is not specified in the given clinical data input json, include only the Study Name.
@@ -55,17 +56,21 @@ Follow the below instructions to generate the paragraphs for respective sections
     - Objective: Describe the study design and methodology.
     - Content Requirements:
       - Provide detailed information on the full Study Name and optionally, an abbreviated name or code for the study.
-      - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint.
+      - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint and Secondary endpoints (if related to inquiry).
+      - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
       - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
-    - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy results (if applicable), secondary efficacy results (if applicable), and statistical significance and confidence intervals.
+    - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy endpoints, secondary efficacy endpoints, and statistical significance and confidence intervals.
+    - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety, Limitations, and Conclusions.
-    - Content Requirements: Provide detailed information on safety endpoints, study limitations, and author conclusions.
+    - Content Requirements: MUST Provide detailed information on safety endpoints, study limitations, and author conclusions.
+    - The content MUST include safety endpoints like Common adverse events, Serious adverse events and Statistical significance and confidence intervals
+    - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
@@ -81,8 +86,10 @@ DONOT include reference citiation for table data.
 DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT
 DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 DO NOT add any truncated text or paragraph or tables.
+DO NOT include special characters like 'Â' in your response
 IGNORE truncated tables.
 DO NOT assume, make inferences or hallucinate any data.
+DONOT explicitly specify text like "The safety endpoints, study limitations, and author conclusions were not included in the provided data. Therefore, this section is omitted as per the guidelines" in the response if any of the required content is not available in the input article.
 
 ---
 *** Start of Examples ***

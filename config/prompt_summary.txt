@@ -20,7 +20,7 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 - **Heading**: Use "Summary" as the heading for your summary section.
 - **Text Format**: Ensure your summary uses Heading 1 formatting for the heading and either bullet-point or paragraph format for the body text.
 
-## Extract Required Content
+## Extract Required Content for each citation provided in the
 1. **Study Design**: Briefly describe the methodology of your study.
 2. **N Value**: If applicable, mention the sample size or number of participants involved in the study.
 3. **Study Objective**: Clearly state the main aim or objective of your study.
@@ -28,28 +28,23 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 5. **Specific Conclusions Around the Most Important Result**: Optionally, include any specific conclusions drawn from the most important result that answers the user's inquiry given above.
 6. Extract the cite_id from the article trial json and MUST add the cite_id as the citation number in the output content.
 7. DO NOT assume, make inferences or hallucinate any data.
+8. Extract the required content for each citation provided in the article content and include as a bullet point for each citation provided.
 
 ## Sample Output
 
 ** Start of Example **
 ## Summary
 
-* The VISION study evaluated patients with pretreated (≥1 androgen receptor pathway inhibitor and 1 – 2 taxane regimens) PSMA-positive mCRPC treated with 177Lu-PSMA-617 + BSoC vs BSoC alone. The primary endpoints were radiographic progression-free survival (rPFS) and overall survival (OS). The study would be considered positive if either or both primary endpoints were significant.[2]
+*  In a randomized controlled trial to assess stress ulcer prophylaxis in critically ill patients undergoing invasive ventilation, ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and in 567 of 2381 patients (23.8%) in the placebo group (p=0.93).
 
-* Treatment with combination 177Lu-PSMA-617 + BSoC (n = 551) significantly prolonged OS compared to BSoC (n = 280) alone (15.3 months vs 11.3 months, respectively; HR = 0.62 [95% CI: 0.52 – 0.74]; P<0.001).[2]
-
-* In the rPFS analysis set, treatment with combination 177Lu-PSMA-617 + BSoC (n = 385) significantly improved rPFS compared to BSoC (n = 196) alone (8.7 months vs 3.4 months, respectively; HR = 0.40 [99.2% CI: 0.29 – 0.57]; P<0.001).[1]
-
-* Compared to BSoC alone, combination 177Lu-PSMA-617 + BSoC showed favorable results in secondary endpoints such as time to first symptomatic skeletal event (SSE), best overall response via RECIST v1.1, reduction in prostate-specific antigen (PSA) levels, and health-related quality of life.[3]
-
-* A post hoc analysis was conducted accounting for treatment exposure to facilitate a comparison of treatment-emergent adverse events (TEAEs) between the two treatment groups. Exposure-adjusted incidences of dry mouth, dry eye, and acute myelosuppression events (anemia, thrombocytopenia, lymphopenia, and leukopenia) were higher in the 177Lu-PSMA-617 plus BSoC group than the BSoC alone group. The exposure-adjusted incidences of fatigue and gastrointestinal events were similar between the two groups. [3]
+*  A phase 3 randomized controlled trial to assess maintenance of weight reduction with continued treatment with the maximum tolerated dose of tirzepatide found the mean percent change in weight from Week 36 to Week 88 was −5.5% with tirzepatide vs 14.0% with placebo (difference, −19.4%; 95% CI, −21.2% to −17.7%; p<0.001) in adults with obesity (N=783).
 
 ** End of Example **
 
 ### Guidelines for Completion:
 
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
-- Ensure each point in summary is bulleted and each bullet point corresponds to a single sentence.
+- Ensure each point in summary is bulleted and each bullet point corresponds to each citation provided in the article content.
 - Ensure the summary provides a clear summarization of the drug and the rationale behind the SRL.
 - MUST include reference citation number specified in the article content json.
 
@@ -62,5 +57,8 @@ In your analysis and summarization process, it is imperative to meticulously rev
 - DONOT include more than 5 bullet points.
 - MUST bullet the summary content.
 - Split the content into multiple paragraphs based on the context and Return ONLY the paragraph data in the response.
+- DO NOT include special characters like 'Â' in your response
 - Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
+- DO NOT assume, make inferences or hallucinate any data.
+
 

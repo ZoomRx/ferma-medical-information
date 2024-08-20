@@ -8,3 +8,4 @@ Document Content:
 
 PROVIDE the extracted clinical trial ID as a list of comma separated string.
 DONOT include any additional text to the output and return ONLY the list of trial ids extracted.
+DONOT include special characters like 'Â' in your response

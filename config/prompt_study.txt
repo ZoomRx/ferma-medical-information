@@ -11,6 +11,7 @@ Instructions
 - Aim for a name that is short and to the point. Avoid overly verbose titles that might confuse participants or make it difficult to quickly grasp the study's focus. A good example is "Dose escalation study."
 - Include enough detail in the study name to give a sense of what the study is about. This helps in understanding the study's objectives at a glance, facilitating better engagement and communication.
 - Ensure the name is readable and easily understandable.
+- DO NOT include special characters like 'Â' in your response
 
 Present this information in the following JSON format:
 {{

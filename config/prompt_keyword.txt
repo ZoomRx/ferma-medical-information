@@ -12,6 +12,7 @@ Wrap every sub-query inside brackets, even if it's a single word.
 Do not add any term not present in the input.
 The Output BQ SHOULD be in json format.
 DO NOT add any string to the output.
+DO NOT include special characters like 'Â' in your response
 The output should be ONLY the json and DONOT add any string to the output.
 MUST prepend double backslash '\\' before any special characters if present in the identified keyword that should be escaped for elastic querystring .
 

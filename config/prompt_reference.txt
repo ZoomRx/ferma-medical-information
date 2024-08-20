@@ -3,6 +3,7 @@ Please generate an AMA-style citation for the following article: {article} with 
 Instructions:
 
 DONOT inlcude any other additional text
+DONOT include special characters like 'Â' in your response
 Normalize accented special characters.
 
 Example:
