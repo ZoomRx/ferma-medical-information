@@ -191,14 +191,14 @@ def generate_clinical_data(inquiry_details, pi_details):
                 future = executor.submit(generate_report, inquiry_details, articles[item[0]], "references", item[1])
                 future_to_article[future] = item[0]
 
-            for future_clinical in as_completed(future_to_article_clinical):
+            for future_clinical in future_to_article_clinical:
                 document = future_to_article_clinical[future_clinical]
                 try:
                     clinical_data.append(future_clinical.result())
                 except Exception as exc:
                     print(f'An error occurred while generating report for {document}: {exc}')
 
-            for future in as_completed(future_to_article):
+            for future in future_to_article:
                 document_ref = future_to_article[future]
                 try:
                     references.append(future.result())

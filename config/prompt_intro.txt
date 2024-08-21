@@ -38,7 +38,7 @@ The content should contain two paragraphs ONLY. Below is the guideline for the c
 1. This part of the content includes the information on the drug name (generic), drug classification, and drug indication. Include information on Label Contraindications and also Label Specific Focus of Inquiry Information.
 2. Add more details on the specific focus of the given inquiry - `{inquiry}`.
 3. Include the most common adverse events.
-4. MUST include reference citation number specified in the article content json.
+4. MUST include reference citation number specified in the article content json at end of each paragrph like "[1]".
 
 ### Paragraph 2: Recap of the Inquiry or Objectives
 This information is provided in response to your request for information on `{title}`. Include the response to the given inquiry, the purpose of the response letter which answers the inquiry. MUST include reference citation number specified in the article content json.
@@ -60,6 +60,7 @@ In response to your unsolicited request, the purpose of this response letter is 
 
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
 - Ensure the introduction is concise yet informative, providing a clear overview of the drug and the rationale behind the SRL.
+- The content should meticulously avoid repetition of data, presenting each piece of information once and clearly. This approach ensures that the content remains concise and informative.
 
 #### CRITICAL DATA REVIEW MANDATE:
 In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your introduction text.

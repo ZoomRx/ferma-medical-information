@@ -44,8 +44,7 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 ### Guidelines for Completion:
 
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
-- MUST ensure each point in summary is bulleted and MUST HAVE each bullet point corresponding to each citation provided in the article content.
-- Ensure the summary provides a clear summarization of the drug and the rationale behind the SRL.
+- MUST ensure that the number of bullet points in the summary matches the number of citations provided in the article content. Each bullet point should correspond to a unique citation.
 - MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'.
 - DONOT include any additional bullet points.
 

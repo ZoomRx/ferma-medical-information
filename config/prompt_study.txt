@@ -26,7 +26,7 @@ Example 1:
 {{
 "cite_id": 2,
 "study": "Dose-Escalation Study",
-"trials": [NCT02431481, NCT123123313]
+"trials": ["NCT02431481", "NCT123123313"]
 }}
 
 Example 2:
