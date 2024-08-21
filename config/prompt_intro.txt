@@ -67,6 +67,7 @@ In your analysis and summarization process, it is imperative to meticulously rev
 #### IMPORTANT MANDATE-
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
 - DO NOT include any section headings in the response.
-- DO NOT include special characters like 'Â' in your response
+- DONOT INCLUDE ANY SPECIAL mojibake CHARACTERS similar to 'Â' in your response.
 - Return ONLY the paragraph data in the response.
-- Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
+- Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and 'â‰¥' to ≥.
+- MUST USE UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.

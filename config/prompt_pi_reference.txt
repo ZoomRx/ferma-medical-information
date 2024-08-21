@@ -2,8 +2,8 @@ Please generate the citation for the following the prescribed information docume
 
 Instructions:
 
-DONOT inlcude any other additional text
-DONOT include special characters like 'Â' in your response
+DONOT inlcude any other additional text.
+DONOT INCLUDE ANY SPECIAL mojibake CHARACTERS similar to 'Â' in your response.
 Normalize accented special characters.
 
 Example:

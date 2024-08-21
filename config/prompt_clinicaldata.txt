@@ -59,19 +59,24 @@ Follow the below instructions to generate the paragraphs for respective sections
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint and Secondary endpoints (if related to inquiry).
       - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
       - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+      - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy endpoints, secondary efficacy endpoints, and statistical significance and confidence intervals.
     - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 
   - "Safety" section:
-    - Objective: Present the key findings from the study on Safety, Limitations, and Conclusions.
+    - Objective: Present the key findings from the study on Safety, Limitations, and the author Conclusions.
     - Content Requirements: MUST Provide detailed information on safety endpoints, study limitations, and author conclusions.
     - The content MUST include safety endpoints like Common adverse events, Serious adverse events and Statistical significance and confidence intervals
-    - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
+    - The content MUST focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
+    - The content MUST provide details on study limitations, and author conclusions.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
+
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
@@ -86,10 +91,10 @@ DONOT include reference citiation for table data.
 DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT
 DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 DO NOT add any truncated text or paragraph or tables.
-DO NOT include special characters like 'Â' in your response
+DONOT INCLUDE ANY SPECIAL mojibake CHARACTERS similar to 'Â' in your response.
+MUST USE UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.
 IGNORE truncated tables.
 DO NOT assume, make inferences or hallucinate any data.
-DONOT explicitly specify text like "The safety endpoints, study limitations, and author conclusions were not included in the provided data. Therefore, this section is omitted as per the guidelines" in the response if any of the required content is not available in the input article.
 
 ---
 *** Start of Examples ***
