@@ -59,14 +59,12 @@ Follow the below instructions to generate the paragraphs for respective sections
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint and Secondary endpoints (if related to inquiry).
       - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
       - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-      - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy endpoints, secondary efficacy endpoints, and statistical significance and confidence intervals.
     - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety, Limitations, and the author Conclusions.
@@ -75,7 +73,6 @@ Follow the below instructions to generate the paragraphs for respective sections
     - The content MUST focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - The content MUST provide details on study limitations, and author conclusions.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-    - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
 
 
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
@@ -88,13 +85,14 @@ Thoroughly review and incorporate a detailed, concise document, ensuring no info
 
 MUST add the reference citiation number specified in the input json as cite_id to each paragraph in the output text. DONOT add reference citations in the output.
 DONOT include reference citiation for table data.
-DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT
+DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT.
 DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
+MUST refrain from including any commentary or statements indicating the absence of explicit information within the provided context, such as instances where endpoints were not explicitly mentioned. MUST focus solely on presenting the available data in a succinct document format. DONOT mention or imply the unavailability of additional data or the lack thereof. Additionally, if the input article lacks pertinent data, please disregard the section entirely.
 DO NOT add any truncated text or paragraph or tables.
 DONOT INCLUDE ANY SPECIAL mojibake CHARACTERS similar to 'Â' in your response.
 MUST USE UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.
 IGNORE truncated tables.
-DO NOT assume, make inferences or hallucinate any data.
+DO NOT assume, make inferences or hallucinate any data. Extract the data only from the given input article.
 
 ---
 *** Start of Examples ***

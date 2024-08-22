@@ -35,9 +35,13 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 ** Start of Example **
 ## Summary
 
-*  In a randomized controlled trial to assess stress ulcer prophylaxis in critically ill patients undergoing invasive ventilation, ventilator-associated pneumonia occurred in 556 of 2394 patients (23.2%) in the pantoprazole group and in 567 of 2381 patients (23.8%) in the placebo group (p=0.93).[2]
+- **The SELECT-COMPARE study** assessed the safety and efficacy of upadacitinib versus adalimumab over 5 years.
+    - The study found that rates of treatment-emergent adverse events (TEAEs) were generally similar between upadacitinib and adalimumab, although numerically higher rates of herpes zoster, lymphopenia, creatine phosphokinase elevation, hepatic disorder, and non-melanoma skin cancer were reported with upadacitinib.
+    - The study concluded that the safety profile of upadacitinib through 5 years was consistent with its known safety profile, with no new safety risks identified [2].
 
-*  A phase 3 randomized controlled trial to assess maintenance of weight reduction with continued treatment with the maximum tolerated dose of tirzepatide found the mean percent change in weight from Week 36 to Week 88 was −5.5% with tirzepatide vs 14.0% with placebo (difference, −19.4%; 95% CI, −21.2% to −17.7%; p<0.001) in adults with obesity (N=783).[3]
+ - **The BALANCE-EXTEND study**, an open-label extension of two phase 2 studies, demonstrated that long-term treatment with upadacitinib for up to 6 years was associated with sustained efficacy and an acceptable safety profile.
+   - The study reported that the types and frequencies of adverse events were consistent with those reported in the phase 3 program of upadacitinib in rheumatoid arthritis populations and other studies of JAK inhibitors.
+   - No new safety signals were identified, supporting a favorable long-term benefit-risk profile of upadacitinib in patients with rheumatoid arthritis [3].
 
 ** End of Example **
 
@@ -45,6 +49,7 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
 - MUST ensure that the number of bullet points in the summary matches the number of citations provided in the article content. Each bullet point should correspond to a unique citation.
+- Each bullet point should include two sub-points: one summarizing the results and another detailing the conclusion drawn from those results.
 - MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'.
 - DONOT include any additional bullet points.
 
