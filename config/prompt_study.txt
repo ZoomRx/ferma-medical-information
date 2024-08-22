@@ -12,6 +12,9 @@ Instructions
 - Include enough detail in the study name to give a sense of what the study is about. This helps in understanding the study's objectives at a glance, facilitating better engagement and communication.
 - Ensure the name is readable and easily understandable.
 - DO NOT include special characters like 'Â' in your response
+- Include only the json content in response. DONOT include JSON formatting like '```json' in the response.
+
+
 
 Present this information in the following JSON format:
 {{

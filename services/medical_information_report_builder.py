@@ -403,7 +403,7 @@ def add_citation_id(data):
     for item in data:
         cite_id = citation_order.get(item['document_name'])
         if cite_id:
-            item['cite_id'] = cite_id
+            item.update({'cite_id': cite_id})
         else:
             print(f"No cite_id found for document {item['document_name']}. Leaving unchanged.")
     return data

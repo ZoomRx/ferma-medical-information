@@ -29,7 +29,7 @@ Aims to assist you in crafting an informative introduction for your SRL, highlig
     iv. Label Information Related to the Specific Focus of Inquiry: Provide information from the label that relates to the specific focus of your inquiry, including warnings, precautions, and any other relevant details.
     v. Label General Safety Data: Include general safety data from the label.
 2. **Recap of the Healthcare Professional (HCP) Inquiry or Key Objectives of the SRL**:
-    This section should recap the original inquiry or outline the key objectives of the SRL, indicating how it responds to a specific request for information.
+    Extract this segment from the provided article content. This segment should summarize the initial question or delineate the main goals of the SRL document, explaining how it addresses a particular information request.
 
 ## Content Structure
 The content should contain two paragraphs ONLY. Below is the guideline for the content of each paragraph to be generated for the SRL introduction.
