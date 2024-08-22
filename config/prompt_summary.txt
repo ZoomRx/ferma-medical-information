@@ -21,9 +21,10 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 - **Text Format**: Ensure your summary uses Heading 1 formatting for the heading and either bullet-point or paragraph format for the body text.
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
 - MUST Ensure the quantity of bullet points in your summary precisely matches the number of references cited within the article's content. Each bullet point must correspond exclusively to one citation.
-- Within each bullet point, structure your content to include exactly two sub-points. The first sub-point should succinctly summarize the findings derived from the study referenced. The second sub-point must clearly articulate the conclusions drawn from those findings.
-- MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'.
-- DONOT include any additional bullet points.
+- Within each bullet point, MUST structure your content to include exactly two sub-points. The first sub-point should succinctly summarize the findings derived from the study referenced. The second sub-point must clearly articulate the conclusions drawn from those findings.
+- MUST Organize the summary bullet points according to the cite_id sequence provided in the input article.
+- MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'. Do not hallucintate reference citation id.
+- DO NOT include any additional bullet points.
 
 ## Extract Required Content for each citation provided in the
 1. **Study Design**: Briefly describe the methodology of your study.
