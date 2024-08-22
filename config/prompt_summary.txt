@@ -16,9 +16,14 @@ The summary should provide a brief overview of the study design, objectives, and
 ## Objective
 Aims to assist you in crafting a concise summary for your SRL, highlighting the key aspects of your study and provide a brief overview of the study design, objectives, and the most significant findings that align with the focus of the SRL.
 
-## Formatting Guidelines
+## STRICT INSTRUCTION FOR SUMMARY FORMATTING:
 - **Heading**: Use "Summary" as the heading for your summary section.
 - **Text Format**: Ensure your summary uses Heading 1 formatting for the heading and either bullet-point or paragraph format for the body text.
+- Tailor the content to match the specific drug and focus of inquiry you are addressing.
+- MUST Ensure the quantity of bullet points in your summary precisely matches the number of references cited within the article's content. Each bullet point must correspond exclusively to one citation.
+- Within each bullet point, structure your content to include exactly two sub-points. The first sub-point should succinctly summarize the findings derived from the study referenced. The second sub-point must clearly articulate the conclusions drawn from those findings.
+- MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'.
+- DONOT include any additional bullet points.
 
 ## Extract Required Content for each citation provided in the
 1. **Study Design**: Briefly describe the methodology of your study.
@@ -45,18 +50,10 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 
 ** End of Example **
 
-### Guidelines for Completion:
-
-- Tailor the content to match the specific drug and focus of inquiry you are addressing.
-- MUST ensure that the number of bullet points in the summary matches the number of citations provided in the article content. Each bullet point should correspond to a unique citation.
-- Each bullet point should include two sub-points: one summarizing the results and another detailing the conclusion drawn from those results.
-- MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'.
-- DONOT include any additional bullet points.
-
-#### CRITICAL DATA REVIEW MANDATE:
+## CRITICAL DATA REVIEW MANDATE:
 In your analysis and summarization process, it is imperative to meticulously review and incorporate a thorough, detailed, and concise Summary. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your summary text.
 
-#### IMPORTANT MANDATE:
+## IMPORTANT MANDATE:
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
 - DO include only "Summary" as section headings in the response.
 - MUST Ensure that each citation in the article is represented by a single bullet point, matching the total count of citations exactly.
