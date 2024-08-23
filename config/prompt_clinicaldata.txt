@@ -51,6 +51,7 @@ Article:
 13. IGNORE and DO NOT include requirements that are mentioned to be excluded in "Addtional Notes".
 14. You can include additional sections like Pharmacokinetics, Clinical Activity, and Genetic Alterations if applicable based on the given inquiry, inquiry type, and additional notes.
 15. DO NOT add any truncated text or paragraph or tables.
+16. DO NOT include any sections like 'References' in the output response.
 
 ---
 
