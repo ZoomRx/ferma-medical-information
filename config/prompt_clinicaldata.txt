@@ -3,6 +3,8 @@ Your job is to generate a comprehensive output detailing the clinical study and 
 
 Your output must exclusively cover the study design and results of the clinical data, directly answering the inquiry and the inquiry type endpoints mentioned. It should provide a detailed analysis and evidence-based information, avoiding summaries, bullet points, or any form of simplified content organization. The content should read like a detailed chapter from a textbook, offering in-depth knowledge without redundancy or overlap with other modules.
 
+Ensure all necessary details are included and accurately represented in the output. This update will enhance our ability to understand and evaluate the studies referenced in the given article.
+
 Inquiry : {inquiry}
 
 Inquiry type: {inquiry_type}
@@ -34,26 +36,46 @@ Article:
 ---
 
 *** Strict Guidelines ***
-1. Interpret all tables, figures, graphs, and charts.
-2. Return all pertinent information and details without missing out on anything crucial.
-3. Provide only factual information.
-4. Do not assume, infer, or speculate on any data.
-5. Return the response as text with tables in Markdown format.
-6. ENSURE the generated response accurately addresses the HCP's inquiry and inquiry type endpoints specified.
-7. ENSURE the Markdown format in the output is consistent throughout.
-8. Include only the most relevant information from the Article.
-9. Present the information in a clear and understandable manner for healthcare professionals.
-10. MUST include tables that are relevant to the content.
-11. Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
-12. MUST normalize accented characters in the output.
-13. Extract the cite_id from the clinical trial json and MUST add the cite_id as the citation number in the output content.
-14. MUST consider the additional instructions specified in the input Additional Notes while generating the response.
-15. When encountering placeholders such as an asterisk (*), dagger (†), or double dagger (‡) in the page content or tables, MUST provide additional details or explanations for these symbols. Treat each symbol as indicating missing information or requiring further clarification. Generate concise descriptions or hypothetical details that could logically follow each symbol, ensuring they are relevant to the surrounding content. Your responses should aim to enhance understanding and maintain the flow of information for the reader.
+1. DO NOT assume, make inferences or hallucinate any data. Extract the data only from the given input article.
+2. Return all relevant and pertinent information from the Article without missing out on anything crucial.
+3. Provide only factual information. Do not assume, infer, or speculate on any data.
+4. ENSURE the generated response accurately addresses the HCP's inquiry and inquiry type endpoints specified.
+5. Return the response in Markdown format and is consistent throughout.
+6. Present the information in a clear and understandable manner for healthcare professionals.
+7. MUST include tables that are relevant to the content.
+8. Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
+9. MUST add the cite_id, from the clinical trial json, in the output content for each paragraph. AVOID adding citations for table data.
+10. MUST consider the "Additional Notes" while generating the response.
+11. DO NOT introduce statements that imply the exclusion of certain data or the shift in focus due to additional notes or additional instruction.
+12. REMOVE sections that do not have valid or relevant content, in your output.
+13. IGNORE and DO NOT include requirements that are mentioned to be excluded in "Addtional Notes".
+14. You can include additional sections like Pharmacokinetics, Clinical Activity, and Genetic Alterations if applicable based on the given inquiry, inquiry type, and additional notes.
+15. DO NOT add any truncated text or paragraph or tables.
 
 ---
 
+GUIDELINES to generate the TITLE in the output:
 Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json. If the trials is not specified in the given clinical data input json, include only the Study Name.
-Follow the below instructions to generate the paragraphs for respective sections:
+
+
+*** SECTION INFORMATION GUIDELINES ***
+
+The output format contains these sections: Study Mehtods, Study Results, and Safety.
+Follow the below guidelines to generate detailed and concise information for each section:
+
+- Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
+
+- INCLUDE tables that are relevant to each section adjacent to the paragraph data.
+
+- MUST provide additional details or explanations for placeholder symbols such as an asterisk (*), dagger (†), or double dagger (‡) encountered in the extracted content or tables.
+
+- DO NOT add any new sub-headings or sub-sections apart from the sections present in the "OUTPUT FORMAT".
+
+- DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document without adding any comments as further data not available or so.
+
+- MAKE SURE that you skip information regarding topics that are explicilty mentioned to be excluded in the  "Additional Notes". DO NOT add any statements saying that "the section or information was excluded".
+
+- Follow the below instructions to generate the paragraphs for respective sections:
   - "Study Methods" section:
     - Objective: Describe the study design and methodology.
     - Content Requirements:
@@ -69,33 +91,25 @@ Follow the below instructions to generate the paragraphs for respective sections
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
   - "Safety" section:
-    - Objective: Present the key findings from the study on Safety, Limitations, and the author Conclusions.
-    - Content Requirements: MUST Provide detailed information on safety endpoints, study limitations, and author conclusions.
-    - The content MUST include safety endpoints like Common adverse events, Serious adverse events and Statistical significance and confidence intervals
-    - The content MUST focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
-    - The content MUST provide details on study limitations, and author conclusions.
-    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+    - Objective: Present the key findings from the study on Safety and  Efficacy results in the study, study Limitations, and the author Conclusions.
+    - Content Requirements:
+        - Safety Results: Detail the study's findings on common adverse events, serious adverse events, statistical significance, and confidence intervals, if applicable. This information is vital for assessing the safety profile of the intervention or treatment under investigation.
+        - Efficacy Results: Include a thorough discussion of the primary outcomes, secondary outcomes, and patient-reported outcomes, based on the specific inquiry type if indicated. These results are essential for evaluating the effectiveness of the intervention or treatment.
+        - Study Limitations: Address the limitations encountered during the study. Discuss any challenges faced in conducting the research, potential biases, and factors that may limit the generalizability of the findings.
+        - Author Conclusions: Summarize the conclusions drawn by the authors regarding the study's outcomes. Reflect on whether the results support the initial hypotheses or suggest directions for future research.
+    - DO NOT include any subsections under this sections.
+    - Focus and Inquiry Type: Ensure that the content specifically addresses the inquiry at hand, detailing the characteristics of the specified endpoint in the inquiry type. Tailor the discussion to the focus area, whether it's safety, efficacy, limitations, or conclusions.
+    - Rigor and Reference Citations: The content must rigorously address both the study's limitations and the authors' conclusions. Each paragraph within this section must include the reference citation number specified in the clinical trial input JSON, ensuring proper attribution and facilitating easy cross-referencing.
+    - Additional Guidance:
+        - Exclusion Criteria:
+            - If any part of the "Safety" section does not contain relevant data or fails to adhere to the provided instructions (e.g., focusing solely on efficacy results. Donot include safety results), it should be excluded from the final presentation. This ensures that the content remains focused and aligned with the specified objectives.
+            - If the generated response lacks necessary data, omit the corresponding section entirely from the response.
+        - Clarification Requests: In case of ambiguity or uncertainty regarding the content requirements, seek clarification from the source or refer to the original study documentation. This proactive approach helps in maintaining accuracy and completeness in the presentation.
 
-INCLUDE tables that are relevant to this section adjacent to the paragraph data.
-
-You can include sub-sections like Pharmacokinetics, Clinical Activity, and Genetic Alterations if applicable for the given inquiry, inquiry type, and additional notes.
-
-Ensure all necessary details are included and accurately represented in the output. This update will enhance our ability to understand and evaluate the studies referenced in the given article.
-
-Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
-MUST provide additional details or explanations for placeholder symbols such as an asterisk (*), dagger (†), or double dagger (‡) encountered in the extracted content or tables.
-MUST add the reference citiation number specified in the input json as cite_id to each paragraph in the output text. DONOT add reference citations in the output.
-DONOT include reference citiation for table data.
-DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT.
-DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, e.g., endpoints were not explicitly reported in the provided context, etc. Return whatever data is available as a concise document and do not comment as further data not available or so.
-MUST refrain from including any commentary or statements indicating the absence of explicit information within the provided context, such as instances where endpoints were not explicitly mentioned. MUST focus solely on presenting the available data in a succinct document format. DONOT mention or imply the unavailability of additional data or the lack thereof. Additionally, if the input article lacks pertinent data, please disregard the section entirely.
-DO NOT add any truncated text or paragraph or tables.
-DONOT INCLUDE ANY SPECIAL mojibake CHARACTERS similar to 'Â' in your response.
-MUST USE UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.
-IGNORE truncated tables.
-DO NOT assume, make inferences or hallucinate any data. Extract the data only from the given input article.
+- MUST USE of UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.
 
 ---
+
 *** Start of Examples ***
 
 ### Stress Ulcer Prophylaxis during Invasive Mechanical Ventilation (NCT1231321)
