@@ -17,10 +17,6 @@ The introduction should succinctly convey the essence of your research, includin
 ## Objective
 Aims to assist you in crafting an informative introduction for your SRL, highlighting the key aspects of your study and providing a brief overview of the study design, objectives, and the most significant findings that align with the focus of the SRL.
 
-## Formatting Guidelines
-- **Heading**: Use "Introduction" as the heading for your introduction section.
-- **Text Format**: Ensure your introduction uses Heading 1 formatting in AMA Title Case for headings and standard paragraph formatting for body text.
-
 ## Extract Required Content
 1. **Background Information on the Drug from the Prescribed Information given above**:
     i. Drug Classification from Label: Include the classification of the drug as per its labeling.
@@ -50,8 +46,6 @@ The content should contain two paragraphs ONLY. Below is the guideline for the c
 ## Sample Output
 
 ** Start of Sample Output **
-
-##Introduction
 
 OZEMPIC® (semaglutide) is a glucagon-like peptide-1 (GLP-1) receptor agonist indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus and to reduce the risk of major adverse cardiovascular events in adults with type 2 diabetes mellitus and established cardiovascular disease. It is contraindicated in patients with a personal or family history of medullary thyroid carcinoma (MTC) or in patients with Multiple Endocrine Neoplasia syndrome type 2 (MEN 2). The most common adverse reactions, include nausea, vomiting, diarrhea, abdominal pain, and constipation. This study specifically investigates the efficacy of semaglutide in patients with type 2 diabetes and concurrent chronic kidney disease (CKD), focusing on glycemic control (HbA1c) and weight loss outcomes. [1]
 

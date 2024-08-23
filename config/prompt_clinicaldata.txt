@@ -33,7 +33,7 @@ Article:
 
 ---
 
-*** Guidelines ***
+*** Strict Guidelines ***
 1. Interpret all tables, figures, graphs, and charts.
 2. Return all pertinent information and details without missing out on anything crucial.
 3. Provide only factual information.
@@ -48,6 +48,8 @@ Article:
 12. MUST normalize accented characters in the output.
 13. Extract the cite_id from the clinical trial json and MUST add the cite_id as the citation number in the output content.
 14. MUST consider the additional instructions specified in the input Additional Notes while generating the response.
+15. When encountering placeholders such as an asterisk (*), dagger (†), or double dagger (‡) in the page content or tables, MUST provide additional details or explanations for these symbols. Treat each symbol as indicating missing information or requiring further clarification. Generate concise descriptions or hypothetical details that could logically follow each symbol, ensuring they are relevant to the surrounding content. Your responses should aim to enhance understanding and maintain the flow of information for the reader.
+
 ---
 
 Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the study name and clinical trial from the given clinical data input json. If the trials is not specified in the given clinical data input json, include only the Study Name.
@@ -74,7 +76,6 @@ Follow the below instructions to generate the paragraphs for respective sections
     - The content MUST provide details on study limitations, and author conclusions.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
 
-
 INCLUDE tables that are relevant to this section adjacent to the paragraph data.
 
 You can include sub-sections like Pharmacokinetics, Clinical Activity, and Genetic Alterations if applicable for the given inquiry, inquiry type, and additional notes.
@@ -82,7 +83,7 @@ You can include sub-sections like Pharmacokinetics, Clinical Activity, and Genet
 Ensure all necessary details are included and accurately represented in the output. This update will enhance our ability to understand and evaluate the studies referenced in the given article.
 
 Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
-
+MUST provide additional details or explanations for placeholder symbols such as an asterisk (*), dagger (†), or double dagger (‡) encountered in the extracted content or tables.
 MUST add the reference citiation number specified in the input json as cite_id to each paragraph in the output text. DONOT add reference citations in the output.
 DONOT include reference citiation for table data.
 DO NOT add any new sub-headings or sub-sections apart from the sections present in the OUTPUT FORMAT.

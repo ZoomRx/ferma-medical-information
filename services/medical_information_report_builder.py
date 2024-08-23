@@ -105,7 +105,6 @@ def generate_summary(inquiry_details, file_name):
 
     prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type)
 
-    print(prompt)
     conversation = [
         {"role": "system",
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role "
@@ -149,11 +148,17 @@ def generate_content(inquiry_details: InquiryDetails):
     summary, clinical_data, reference_data = generate_clinical_data(inquiry_details, pi_details)
 
     srl_content["summary"] = summary
-    srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
+    srl_content["introduction"] = generate_introduction(inquiry_details, articles, title, pi_details)
     srl_content["clinical_data"] = clinical_data
     srl_content["references"] = reference_data
     srl_document = "\n\n".join(str(value) for value in srl_content.values())
     return srl_document
+
+def generate_introduction(inquiry_details, articles, title, pi_details):
+    intro_data = "\n## Introduction\n"
+    intro_data_string = generate_report(inquiry_details, articles, "introduction", title, pi_details)
+    intro_data += intro_data_string
+    return intro_data
 
 def set_citation_order(inquiry_details):
     global citation_order
