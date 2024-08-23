@@ -31,8 +31,8 @@ app = FastAPI()
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
     file_names = []
-    tasks = [process_file(file, db) for file in files]
-    #tasks = [process_file_AzureAI(file) for file in files]
+    #tasks = [process_file(file, db) for file in files]
+    tasks = [process_file_AzureAI(file) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)

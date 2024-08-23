@@ -165,30 +165,26 @@ class AzureDocIntelligence():
         # Final check for any remaining content
         if content:
             pages_dict[current_page] = (document_name, page_title, content_type, content.strip())
-
         return pages_dict
 
-    @staticmethod
-    def json_to_markdown(*, table: Dict[str, Any]) -> str:
+    def json_to_markdown(self, *, table: Dict[str, Any]) -> str:
+        print("----------------------------")
+        print(table)
         markdown_text = ""
         headers = [""] * table["columnCount"]
         headers_present = 0
 
         for cell in table['cells']:
-            content = cell['content'].replace('\n', '')
-            content = content.replace(':selected:', '')
-            content = content.replace(':unselected:', '')
             if cell.get('kind', "") == 'columnHeader' and cell['rowIndex'] == 0:
+                content = self.add_span_details(cell)
                 headers[cell['columnIndex']] = content
                 headers_present = 1
 
         table_matrix = [[""] * table["columnCount"] for _ in range(table["rowCount"])]
 
         for cell in table['cells']:
-            content = cell['content'].replace('\n', '')
-            content = content.replace(':selected:', '')
-            content = content.replace(':unselected:', '')
             if not (cell.get('kind', "") == 'columnHeader' and cell['rowIndex'] == 0):
+                content = self.add_span_details(cell)
                 table_matrix[cell['rowIndex'] - headers_present][cell['columnIndex']] = content
 
         for i in range(table["rowCount"] - headers_present):
@@ -202,4 +198,26 @@ class AzureDocIntelligence():
         markdown_text = "|" + "|".join(['-'] * table['columnCount']) + "|\n" + markdown_text
         markdown_text = "|" + "|".join(headers) + "|\n" + markdown_text
         markdown_text = f"{table['caption']['content']}\n{markdown_text}" if table.get('caption') else markdown_text
+
+        print(markdown_text)
+        print("----------------------------")
+
         return markdown_text
+
+    @staticmethod
+    def add_span_details( cell) -> object:
+        content = cell['content'].replace('\n', '')
+        content = content.replace(':selected:', '')
+        content = content.replace(':unselected:', '')
+
+        columnSpan = cell.get('columnSpan', 1)
+        rowSpan = cell.get('rowSpan', 1)
+        span = ""
+        if columnSpan > 1:
+            span += f" colspan=\"{columnSpan}\""
+        if rowSpan > 1:
+            span += f" rowspan=\"{rowSpan}\""
+
+        if span:
+            content = f"<td{span}>{content}</td>"
+        return  content
