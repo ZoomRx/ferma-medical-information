@@ -53,6 +53,9 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     # additional_notes=additional_notes, article_content=article_content)
     if content == "clinical_data":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, trial_json=data, notes = inquiry_details.additional_notes)
+    elif content == "summary":
+        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
+                                    study_json=data)
     elif content == "title":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_pages)
     elif content == "introduction":
@@ -143,10 +146,10 @@ def generate_content(inquiry_details: InquiryDetails):
     pi_details = get_prescribed_information(inquiry_details)
     title = generate_report(inquiry_details, pi_details, "title")
     srl_content["title"] = title
-    srl_content["summary"] = generate_report(inquiry_details, articles, "summary", title)
-    srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
+    summary, clinical_data, reference_data = generate_clinical_data(inquiry_details, pi_details)
 
-    clinical_data, reference_data = generate_clinical_data(inquiry_details, pi_details)
+    srl_content["summary"] = summary
+    srl_content["introduction"] = generate_report(inquiry_details, articles, "introduction", title, pi_details)
     srl_content["clinical_data"] = clinical_data
     srl_content["references"] = reference_data
     srl_document = "\n\n".join(str(value) for value in srl_content.values())
@@ -175,6 +178,7 @@ def generate_clinical_data(inquiry_details, pi_details):
     report_type = "clinical_data"
     clinical_data = []
     references = []
+    summary = []
     pi_reference = get_reference_pi_data(inquiry_details.pi_source, pi_details)
     # Assuming pi_reference is defined somewhere above this line
     if pi_reference:
@@ -185,11 +189,22 @@ def generate_clinical_data(inquiry_details, pi_details):
         with ThreadPoolExecutor() as executor:
             future_to_article = {}
             future_to_article_clinical = {}
+            future_to_article_summary = {}
             for item in trials:
+                future_summary = executor.submit(generate_report, inquiry_details, articles[item[0]], "summary",
+                                                  item[1])
+                future_to_article_summary[future_summary] = item[0]
                 future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type, item[1])
                 future_to_article_clinical[future_clinical] = item[0]
                 future = executor.submit(generate_report, inquiry_details, articles[item[0]], "references", item[1])
                 future_to_article[future] = item[0]
+
+            for future_summary in future_to_article_summary:
+                document_summary = future_to_article_summary[future_summary]
+                try:
+                    summary.append(future_summary.result())
+                except Exception as exc:
+                    print(f'An error occurred while generating report for {document_summary}: {exc}')
 
             for future_clinical in future_to_article_clinical:
                 document = future_to_article_clinical[future_clinical]
@@ -207,6 +222,10 @@ def generate_clinical_data(inquiry_details, pi_details):
     else:
         print("Trials data is not in the expected format.")
 
+    summary_data_string = "\n\n".join(summary)
+    summary_data = "\n## Summary\n"
+    summary_data += summary_data_string
+
     clinical_data_string = "\n\n".join(clinical_data)
     clinical_data = "\n## Clinical Data\n"
     clinical_data += clinical_data_string
@@ -214,7 +233,7 @@ def generate_clinical_data(inquiry_details, pi_details):
     reference_data = "\n## References\n"
     reference_data += reference_data_string
 
-    return clinical_data, reference_data
+    return summary_data, clinical_data, reference_data
 
 
 def generate_report_clinical_data(args):
@@ -391,7 +410,7 @@ def get_prescribed_information(inquiry_details: InquiryDetails):
             ]
         }
     }, "_source": {
-        "includes": ["page_no", "content","document_name"]
+        "includes": ["content","document_name"]
     }}
 
     pi_data = get_es_data(target_query)

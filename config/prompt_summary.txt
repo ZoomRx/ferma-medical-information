@@ -1,6 +1,6 @@
 # Summary Generation Prompt for Scientific Research Letters (SRL)
 
-As a Medical Information Specialist at a pharmaceutical company, your role involves responding to clinical inquiries from healthcare professionals (HCPs) by crafting a clear and detailed summary for your SRL titled - `{title}`.
+As a Medical Information Specialist at a pharmaceutical company, your role involves responding to clinical inquiries from healthcare professionals (HCPs) by crafting a clear and detailed summary for your SRL.
 
 The summary should convey the essence of your research, including the drug under investigation and the specific area of given inquiry, taking into account the given inquiry type, highlighting the key aspects of your study.
 
@@ -10,20 +10,19 @@ The summary should provide a brief overview of the study design, objectives, and
 - Inquiry: `[{inquiry}]`
 - Inquiry Type: `[{inquiry_type}]`
 
-## Article Content
-`[{article}]s`
+## study json
+[{study_json}]
+
+Article:
+[{article}]
 
 ## Objective
 Aims to assist you in crafting a concise summary for your SRL, highlighting the key aspects of your study and provide a brief overview of the study design, objectives, and the most significant findings that align with the focus of the SRL.
 
 ## STRICT INSTRUCTION FOR SUMMARY FORMATTING:
-- **Heading**: Use "Summary" as the heading for your summary section.
-- **Text Format**: Ensure your summary uses Heading 1 formatting for the heading and either bullet-point or paragraph format for the body text.
 - Tailor the content to match the specific drug and focus of inquiry you are addressing.
-- MUST Ensure the quantity of bullet points in your summary precisely matches the number of references cited within the article's content. Each bullet point must correspond exclusively to one citation.
-- Within each bullet point, MUST structure your content to include exactly two sub-points. The first sub-point should succinctly summarize the findings derived from the study referenced. The second sub-point must clearly articulate the conclusions drawn from those findings.
-- MUST Organize the summary bullet points according to the cite_id sequence provided in the input article.
-- MUST include reference citation number specified in the article content json for each bullet point. Example: '[2]'. Do not hallucintate reference citation id.
+- Within the bullet point, MUST structure your content to include exactly two sub-points. The first sub-point should succinctly summarize the findings derived from the study referenced. The second sub-point must clearly articulate the conclusions drawn from those findings.
+- MUST include reference citation number specified as 'cite_id' in the study json for the bullet point. Example: '[2]'. Do not add page_no as reference citation id.
 - DO NOT include any additional bullet points.
 
 ## Extract Required Content for each citation provided in the
@@ -32,22 +31,16 @@ Aims to assist you in crafting a concise summary for your SRL, highlighting the 
 3. **Study Objective**: Clearly state the main aim or objective of your study.
 4. **Most Important Result That Aligns With SRL Inquiry and Inquiry Type**: Highlight the most critical finding from your study that directly relates to the focus of the SRL.
 5. **Specific Conclusions Around the Most Important Result**: Optionally, include any specific conclusions drawn from the most important result that answers the user's inquiry given above.
-6. Extract the cite_id from the article trial json and MUST add the cite_id as the citation number in the output content.
+6. Extract the cite_id from the input study json and MUST add the cite_id as the citation number in the output content.
 7. DO NOT assume, make inferences or hallucinate any data.
-8. For each citation identified in the article, MUST gather the pertinent details and represent them as a singular bullet point. Each bullet point should correspond to each citation provided.
 
 ## Sample Output
 
 ** Start of Example **
-## Summary
 
 - **The SELECT-COMPARE study** assessed the safety and efficacy of upadacitinib versus adalimumab over 5 years.
     - The study found that rates of treatment-emergent adverse events (TEAEs) were generally similar between upadacitinib and adalimumab, although numerically higher rates of herpes zoster, lymphopenia, creatine phosphokinase elevation, hepatic disorder, and non-melanoma skin cancer were reported with upadacitinib.
     - The study concluded that the safety profile of upadacitinib through 5 years was consistent with its known safety profile, with no new safety risks identified [2].
-
- - **The BALANCE-EXTEND study**, an open-label extension of two phase 2 studies, demonstrated that long-term treatment with upadacitinib for up to 6 years was associated with sustained efficacy and an acceptable safety profile.
-   - The study reported that the types and frequencies of adverse events were consistent with those reported in the phase 3 program of upadacitinib in rheumatoid arthritis populations and other studies of JAK inhibitors.
-   - No new safety signals were identified, supporting a favorable long-term benefit-risk profile of upadacitinib in patients with rheumatoid arthritis [3].
 
 ** End of Example **
 
@@ -56,9 +49,8 @@ In your analysis and summarization process, it is imperative to meticulously rev
 
 ## IMPORTANT MANDATE:
 - DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines.
-- DO include only "Summary" as section headings in the response.
-- MUST Ensure that each citation in the article is represented by a single bullet point, matching the total count of citations exactly.
 - MUST bullet the summary content.
+- MUST Ensure that the summary represented by a single bullet point with sub points in it.
 - DONOT INCLUDE ANY SPECIAL mojibake CHARACTERS similar to 'Â' in your response
 - MUST process the input text to normalize accented or garbage characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
 - MUST USE UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.

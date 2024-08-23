@@ -9,7 +9,7 @@ The introduction should succinctly convey the essence of your research, includin
 - Inquiry Type: `[{inquiry_type}]`
 
 ## Article Content
-`[{article}]s`
+`[{article}]`
 
 ## Prescribed Information
 `[{pi_data}]`
@@ -29,7 +29,7 @@ Aims to assist you in crafting an informative introduction for your SRL, highlig
     iv. Label Information Related to the Specific Focus of Inquiry: Provide information from the label that relates to the specific focus of your inquiry, including warnings, precautions, and any other relevant details.
     v. Label General Safety Data: Include general safety data from the label.
 2. **Recap of the Healthcare Professional (HCP) Inquiry or Key Objectives of the SRL**:
-    Extract this segment from the provided article content. This segment should summarize the initial question or delineate the main goals of the SRL document, explaining how it addresses a particular information request.
+    Extract this segment from the provided article content. This segment should summarize the initial question or delineate the main goals of the SRL document, explaining how it addresses a particular information request. MUST add the reference cite_id specified in the input article content
 
 ## Content Structure
 The content should contain two paragraphs ONLY. Below is the guideline for the content of each paragraph to be generated for the SRL introduction.
@@ -38,10 +38,13 @@ The content should contain two paragraphs ONLY. Below is the guideline for the c
 1. This part of the content includes the information on the drug name (generic), drug classification, and drug indication. Include information on Label Contraindications and also Label Specific Focus of Inquiry Information.
 2. Add more details on the specific focus of the given inquiry - `{inquiry}`.
 3. Include the most common adverse events.
-4. MUST include reference citation number specified in the article content json at end of each paragrph like "[1]".
+4. MUST include reference citation number '[1]' at the end of the paragraph.
 
 ### Paragraph 2: Recap of the Inquiry or Objectives
-This information is provided in response to your request for information on `{title}`. Include the response to the given inquiry, the purpose of the response letter which answers the inquiry. MUST include reference citation number specified in the article content json.
+1. This information is provided in response to your request for information on `{title}`.
+2. MUST Include the response to the given inquiry, the purpose of the response letter which answers the inquiry.
+3. DO NOT repeat any data mentioned in paragraph 1.
+4. MUST include reference citation number specified in the article content json.
 
 
 ## Sample Output
@@ -50,10 +53,9 @@ This information is provided in response to your request for information on `{ti
 
 ##Introduction
 
-Pantoprazole is a proton pump inhibitor indicated in adults for short-term treatment (7 to 10 days) of gastroesophageal reflux disease (GERD) associated with a history of erosive esophagitis (EE) or pathological hypersecretion conditions including Zollinger-Ellison (ZE) Syndrome. It is contraindicated in patients with a known hypersensitivity to any component of the formulation or to substituted benzimidazoles and patients receiving rilpivirine-containing products. The most common adverse events (>2%) are headache, diarrhea, nausea, abdominal pain, vomiting, flatulence, dizziness, and arthralgia.[1][2]
+OZEMPIC® (semaglutide) is a glucagon-like peptide-1 (GLP-1) receptor agonist indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus and to reduce the risk of major adverse cardiovascular events in adults with type 2 diabetes mellitus and established cardiovascular disease. It is contraindicated in patients with a personal or family history of medullary thyroid carcinoma (MTC) or in patients with Multiple Endocrine Neoplasia syndrome type 2 (MEN 2). The most common adverse reactions, include nausea, vomiting, diarrhea, abdominal pain, and constipation. This study specifically investigates the efficacy of semaglutide in patients with type 2 diabetes and concurrent chronic kidney disease (CKD), focusing on glycemic control (HbA1c) and weight loss outcomes. [1]
 
-In response to your unsolicited request, the purpose of this response letter is to provide information on pantoprazole and the occurrence of ventilator-associated pneumonia.[2]
-
+In response to your inquiry regarding the efficacy of semaglutide in patients with type 2 diabetes and concurrent chronic kidney disease, this Scientific Research Letter (SRL) aims to provide comprehensive information based on recent studies. The purpose of this response is to address the specific question of whether semaglutide remains effective in this patient population, highlighting significant findings from real-world clinical practice and multicenter studies that demonstrate improved glycemic control, weight loss, and renal outcomes in patients with CKD treated with semaglutide. [2][3]
 ** End of Sample Output **
 
 ### Guidelines for Completion:
