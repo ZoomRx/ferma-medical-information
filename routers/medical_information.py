@@ -31,8 +31,8 @@ app = FastAPI()
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
     file_names = []
-    tasks = [process_file(file, db) for file in files]
-    #tasks = [process_file_AzureAI(file) for file in files]
+    #tasks = [process_file(file, db) for file in files]
+    tasks = [process_file_AzureAI(file) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)
@@ -133,3 +133,29 @@ async def download_pdf_endpoint(links: list[str]):
     return {
         "fileNames": filenames
     }
+
+async def process_file_AzureAI(file: UploadFile):
+    try:
+        content_type = file.content_type
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        new_filename = f"{file.filename.split('.')[0]}_{timestamp}.pdf"
+        file_path = Path("./storage/data/") / new_filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        contents = await file.read()
+
+        async with aiofiles.open(file_path, "wb") as buffer:
+            await buffer.write(contents)
+        azure = AzureDocIntelligence()
+        doc_intell_response_obj, doc_intell_response_dict = azure.get_raw_output(
+            local_inp_file_path=file_path)
+        processed_content = azure.get_processed_output(raw_output_obj=doc_intell_response_obj, file_name=new_filename)
+        es_record_count = es_utils.write_es_data(processed_content)
+        saved_file_size = os.path.getsize(file_path)
+        if saved_file_size != len(contents):
+            raise IOError("Mismatch in file size after saving")
+        return new_filename
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print(traceback.format_exc())
+        return None
+
