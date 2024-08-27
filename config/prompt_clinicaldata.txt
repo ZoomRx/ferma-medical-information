@@ -37,10 +37,10 @@ Article:
 
 *** Strict Guidelines ***
 1. DO NOT assume, make inferences or hallucinate any data. Extract the data only from the given input article.
-2. Return all relevant and pertinent information from the Article without missing out on anything crucial.
+2. Return all relevant and pertinent information from the Article without missing out on anything crucial. Include only the most relevant information from the Article.
 3. Provide only factual information. Do not assume, infer, or speculate on any data.
 4. ENSURE the generated response accurately addresses the HCP's inquiry and inquiry type endpoints specified.
-5. Return the response in Markdown format and is consistent throughout.
+5. Return the response as text with tables in Markdown format.
 6. Present the information in a clear and understandable manner for healthcare professionals.
 7. MUST include tables that are relevant to the content.
 8. Process the input text to normalize accented characters and remove any special symbols. This includes converting characters like 'naïve' to 'naive' and removing symbols like 'â‰¥'.
@@ -84,12 +84,14 @@ Follow the below guidelines to generate detailed and concise information for eac
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint and Secondary endpoints (if related to inquiry).
       - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
       - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+      - MUST include tables relevant to the required content.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy endpoints, secondary efficacy endpoints, and statistical significance and confidence intervals.
     - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+    - MUST include tables relevant to the required content.
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety and  Efficacy results in the study, study Limitations, and the author Conclusions.
@@ -98,6 +100,8 @@ Follow the below guidelines to generate detailed and concise information for eac
         - Efficacy Results: Include a thorough discussion of the primary outcomes, secondary outcomes, and patient-reported outcomes, based on the specific inquiry type if indicated. These results are essential for evaluating the effectiveness of the intervention or treatment.
         - Study Limitations: Address the limitations encountered during the study. Discuss any challenges faced in conducting the research, potential biases, and factors that may limit the generalizability of the findings.
         - Author Conclusions: Summarize the conclusions drawn by the authors regarding the study's outcomes. Reflect on whether the results support the initial hypotheses or suggest directions for future research.
+        - MUST include tables relevant to the required content.
+
     - DO NOT include any subsections under this sections.
     - Focus and Inquiry Type: Ensure that the content specifically addresses the inquiry at hand, detailing the characteristics of the specified endpoint in the inquiry type. Tailor the discussion to the focus area, whether it's safety, efficacy, limitations, or conclusions.
     - Rigor and Reference Citations: The content must rigorously address both the study's limitations and the authors' conclusions. Each paragraph within this section must include the reference citation number specified in the clinical trial input JSON, ensuring proper attribution and facilitating easy cross-referencing.
