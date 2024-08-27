@@ -31,8 +31,8 @@ app = FastAPI()
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
     file_names = []
-    #tasks = [process_file(file, db) for file in files]
-    tasks = [process_file_AzureAI(file) for file in files]
+    tasks = [process_file(file, db) for file in files]
+    #tasks = [process_file_AzureAI(file) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     results = await asyncio.gather(*tasks)
@@ -45,31 +45,6 @@ async def upload_files(files: List[UploadFile] = File(...),
     }
 
 #Document conversion using Azure AI
-async def process_file_AzureAI(file: UploadFile):
-    try:
-        content_type = file.content_type
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        new_filename = f"{file.filename.split('.')[0]}_{timestamp}.pdf"
-        file_path = Path("./storage/data/") / new_filename
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-        contents = await file.read()
-
-        async with aiofiles.open(file_path, "wb") as buffer:
-            await buffer.write(contents)
-        azure = AzureDocIntelligence()
-        doc_intell_response_obj, doc_intell_response_dict = azure.get_raw_output(
-            local_inp_file_path=file_path)
-        processed_content = azure.get_processed_output(raw_output_obj=doc_intell_response_obj, file_name=new_filename)
-        es_record_count = es_utils.write_es_data(processed_content)
-        saved_file_size = os.path.getsize(file_path)
-        if saved_file_size != len(contents):
-            raise IOError("Mismatch in file size after saving")
-        return new_filename
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        print(traceback.format_exc())
-        return None
-
 async def process_file(file: UploadFile, db):
     try:
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -81,36 +56,40 @@ async def process_file(file: UploadFile, db):
             contents = await file.read()  # Read the file contents
             await out_file.write(contents)  # Write the contents to the new file
 
-
-        url = "https://dev-merck-test.zoomrx.ai/extract"
-
-        data = {
-            "tags": "{\"project_name\": \"ferma-mi\"}",
-            "is_text_only": False
-        }
-
-        # Prepare the file for upload
+        url = "https://ferma-ai-doc-intelligence.zoomrx.ai/extract"
+        headers = {'access-token': 'J1YTmJ5YbrLWfSjUQSTC'}
+        data = {"tags": "{\"project_name\": \"ferma-mi\"}", "is_text_only": False}
         files = {"file": (new_filename, contents)}
 
-        response = requests.post(url, data=data, files=files)
+        response = requests.post(url, headers=headers, data=data, files=files)
+
+        if response.status_code == 200:
+            print(response.json()['document_id'])
+        elif response.status_code == 500:
+            print(response.json()['detail'])  # error detail
+        else:
+            print(f"{response.status_code}\n\n{response.text}")
 
         # Check the response
         if response.status_code == 200:
             print("Success:", response.json())
         else:
             print("Error:", response.status_code, response.text)
-            raise HTTPException(response.status_code,response.text)
-        response_json = response.json()
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+
         try:
+            response_json = response.json()
             document_id = response_json['document_id']
-            documents :DataFrame = document_service.get(db, document_id=document_id)
-        except Exception as e:
-            print(e)
-            raise
+            documents: DataFrame = document_service.get(db, document_id=document_id)
+        except KeyError as e:
+            print(f"KeyError: {e}")
+            raise HTTPException(status_code=400, detail="Invalid response format")
+
         es_record_count = es_utils.write_es_data(documents)
         saved_file_size = os.path.getsize(file_path)
         if saved_file_size != len(contents):
             raise IOError("Mismatch in file size after saving")
+
         return new_filename
     except Exception as e:
         print(f"An error occurred: {e}")
