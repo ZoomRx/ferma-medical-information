@@ -35,7 +35,7 @@ Article:
 
 ---
 
-*** Strict Guidelines ***
+*** STRICT Guidelines ***
 1. DO NOT assume, make inferences or hallucinate any data. Extract the data only from the given input article.
 2. Return all relevant and pertinent information from the Article without missing out on anything crucial. Include only the most relevant information from the Article.
 3. Provide only factual information. Do not assume, infer, or speculate on any data.
@@ -62,7 +62,7 @@ Title should be in the format `[Study Name] ([Clinical Trials])`. Extract the st
 *** SECTION INFORMATION GUIDELINES ***
 
 The output format contains these sections: Study Mehtods, Study Results, and Safety.
-Follow the below guidelines to generate detailed and concise information for each section:
+STRICTLY Follow the below guidelines to generate detailed and concise information for each section:
 
 - Thoroughly review and incorporate a detailed, concise document, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to answer the inquiry. Failure to comply will result in incomplete and inaccurate data, which is unacceptable. Confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your document.
 
@@ -76,7 +76,9 @@ Follow the below guidelines to generate detailed and concise information for eac
 
 - MAKE SURE that you skip information regarding topics that are explicilty mentioned to be excluded in the  "Additional Notes". DO NOT add any statements saying that "the section or information was excluded".
 
-- Follow the below instructions to generate the paragraphs for respective sections:
+- STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
+
+- STRICTLY follow the below instructions to generate the paragraphs for respective sections:
   - "Study Methods" section:
     - Objective: Describe the study design and methodology.
     - Content Requirements:
@@ -84,23 +86,38 @@ Follow the below guidelines to generate detailed and concise information for eac
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint and Secondary endpoints (if related to inquiry).
       - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
       - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-      - MUST include all the tables relevant to this section.
+      - MUST include tables relevant to the required content.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
+<<<<<<< HEAD
+    - Content Requirements:
+        - MUST include content - {study_results}
+        - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
+        - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
+        - MUST include all the tables relevant to this section.
+        - STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
+=======
     - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy endpoints, secondary efficacy endpoints, and statistical significance and confidence intervals.
     - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
     - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-    - MUST include all the tables relevant to this section.
+    - MUST include tables relevant to the required content.
+>>>>>>> parent of 7035fa7 (Fixed prompt for table data)
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety and  Efficacy results in the study, study Limitations, and the author Conclusions.
     - Content Requirements:
+<<<<<<< HEAD
+        - MUST include content - {safety}
+        - MUST include all the tables relevant to this section.
+        - STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
+=======
         - Safety Results: Detail the study's findings on common adverse events, serious adverse events, statistical significance, and confidence intervals, if applicable. This information is vital for assessing the safety profile of the intervention or treatment under investigation.
         - Efficacy Results: Include a thorough discussion of the primary outcomes, secondary outcomes, and patient-reported outcomes, based on the specific inquiry type if indicated. These results are essential for evaluating the effectiveness of the intervention or treatment.
         - Study Limitations: Address the limitations encountered during the study. Discuss any challenges faced in conducting the research, potential biases, and factors that may limit the generalizability of the findings.
         - Author Conclusions: Summarize the conclusions drawn by the authors regarding the study's outcomes. Reflect on whether the results support the initial hypotheses or suggest directions for future research.
-        - MUST include all the tables relevant to this section.
+        - MUST include tables relevant to the required content.
+>>>>>>> parent of 7035fa7 (Fixed prompt for table data)
 
     - DO NOT include any subsections under this sections.
     - Focus and Inquiry Type: Ensure that the content specifically addresses the inquiry at hand, detailing the characteristics of the specified endpoint in the inquiry type. Tailor the discussion to the focus area, whether it's safety, efficacy, limitations, or conclusions.
@@ -109,9 +126,11 @@ Follow the below guidelines to generate detailed and concise information for eac
         - Exclusion Criteria:
             - If any part of the "Safety" section does not contain relevant data or fails to adhere to the provided instructions (e.g., focusing solely on efficacy results. Donot include safety results), it should be excluded from the final presentation. This ensures that the content remains focused and aligned with the specified objectives.
             - If the generated response lacks necessary data, omit the corresponding section entirely from the response.
+            - DO NOT explicitly specify the excluded data. For example, "This section is excluded as per the additional notes provided" or any similar text similar to this this.
         - Clarification Requests: In case of ambiguity or uncertainty regarding the content requirements, seek clarification from the source or refer to the original study documentation. This proactive approach helps in maintaining accuracy and completeness in the presentation.
 
 - MUST USE of UTF-8 encoding across all stages of text processing to avoid encoding-related issues and ensure that sequences like "â‰¥3" are handled correctly.
+- STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
 
 ---
 

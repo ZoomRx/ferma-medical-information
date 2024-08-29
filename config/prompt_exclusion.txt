@@ -1,0 +1,57 @@
+Given a JSON string, add or remove a specified key-value pair and return the updated JSON string. The user will provide:
+1. The JSON string to process - {clinical_json}
+2. The name of the key to add or remove as instructions
+    {inquiry} Notes: {notes}
+
+Example input:
+JSON string: "{{
+  "Safety": {{
+    "Safety Results": [
+      "Common adverse events",
+      "Serious adverse events",
+      "Statistical significance",
+      "Confidence interval"
+    ],
+    "Efficacy Results": [
+      "Primary outcomes",
+      "Secondary outcomes",
+      "Patient-reported outcomes"
+    ],
+    "Study Limitations": null,
+    "Author Conclusions": null
+  }},
+  "Study Results": {{
+    "Characteristics of study population": ["Age range", "Gender distribution"],
+    "Primary efficacy endpoints": null,
+    "Secondary efficacy endpoints": null,
+    "Statistical significance": null,
+    "Confidence interval": null
+  }}
+}}"
+
+Instruction: Donot include Efficacy results
+
+Expected output:
+Updated JSON string: {{
+  "Safety": {{
+    "Efficacy Results": [
+      "Primary outcomes",
+      "Secondary outcomes",
+      "Patient-reported outcomes"
+    ],
+    "Study Limitations": null,
+    "Author Conclusions": null
+  }},
+  "Study Results": {{
+    "Characteristics of study population": ["Age range", "Gender distribution"],
+    "Primary efficacy endpoints": null,
+    "Secondary efficacy endpoints": null,
+    "Statistical significance": null,
+    "Confidence interval": null
+  }}
+}}
+
+Note: If the key does not exist in the JSON, handle this gracefully and return the original JSON string.
+Instructions:
+- MUST Include only the json content in response. DONOT include JSON formatting like '```json' in the response.
+- Exclude only the key specified in the inquiry instruction. Return other json elements as it is.

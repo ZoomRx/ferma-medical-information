@@ -1,4 +1,3 @@
-
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -6,6 +5,7 @@ from datetime import time, datetime
 
 import openai
 import requests
+from sqlalchemy import null
 
 from helpers.es_utils import get_es_data
 from schemas.medical_info_inquiry import InquiryDetails
@@ -14,17 +14,17 @@ from config import settings
 openai.api_key = settings.env.open_ai_key
 citation_order = {}
 
+
 def fetch_content(url):
     response = requests.get(url)
     return response.content
 
 
-def generate_report(inquiry_details, article_pages, content="all", data="", pi_details=""):
+def generate_report(inquiry_details, article_pages, content="all", data="", pi_details="",clinical_data={}):
     inquiry = inquiry_details.inquiry
     inquiry_type = "All"
     if bool(inquiry_details.inquiry_type):
         inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
-    additional_notes = inquiry_details.additional_notes
 
     article_content = "{" + ", ".join([f"'{content}'" for content in article_pages]) + "}"
 
@@ -50,9 +50,9 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
     with open(f"config/{prompt_file}", "r") as file:
         prompt_text = file.read()
 
-    # additional_notes=additional_notes, article_content=article_content)
     if content == "clinical_data":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, trial_json=data, notes = inquiry_details.additional_notes)
+        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
+                                    trial_json=data, notes=clinical_data["notes"], study_results=clinical_data["study_results"] , safety = clinical_data["safety"])
     elif content == "summary":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
                                     study_json=data)
@@ -62,9 +62,9 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data,
                                     pi_data=pi_details)
     elif content == "references":
-        prompt = prompt_text.format(article=article_content, study_json = data)
+        prompt = prompt_text.format(article=article_content, study_json=data)
     elif content == "study":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, cite_id = data)
+        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, cite_id=data)
     else:
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data)
 
@@ -92,6 +92,7 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
         file.write(srl_content)
 
     return srl_content
+
 
 def generate_summary(inquiry_details, file_name):
     inquiry = inquiry_details.inquiry
@@ -130,6 +131,7 @@ def generate_summary(inquiry_details, file_name):
 
     return article_summary
 
+
 # Function to convert the array to a text format
 def convert_to_text_format(types):
     text = ""
@@ -154,11 +156,13 @@ def generate_content(inquiry_details: InquiryDetails):
     srl_document = "\n\n".join(str(value) for value in srl_content.values())
     return srl_document
 
+
 def generate_introduction(inquiry_details, articles, title, pi_details):
     intro_data = "\n## Introduction\n"
     intro_data_string = generate_report(inquiry_details, articles, "introduction", title, pi_details)
     intro_data += intro_data_string
     return intro_data
+
 
 def set_citation_order(inquiry_details):
     global citation_order
@@ -167,7 +171,7 @@ def set_citation_order(inquiry_details):
     index = 1
     pi_document_name = os.path.splitext(os.path.basename(inquiry_details.pi_source))[0]
     citation_order[pi_document_name] = index
-    index +=1
+    index += 1
 
     for document in inquiry_details.document_source:
         document_name = os.path.splitext(os.path.basename(document))[0]
@@ -185,6 +189,13 @@ def generate_clinical_data(inquiry_details, pi_details):
     references = []
     summary = []
     pi_reference = get_reference_pi_data(inquiry_details.pi_source, pi_details)
+    safety_string, study_results_string, notes = get_cleaned_content(inquiry_details)
+
+    clinical_data_input = {
+        "safety": safety_string,
+        "study_results": study_results_string,
+        "notes": notes
+    }
     # Assuming pi_reference is defined somewhere above this line
     if pi_reference:
         references.append(pi_reference)
@@ -197,9 +208,10 @@ def generate_clinical_data(inquiry_details, pi_details):
             future_to_article_summary = {}
             for item in trials:
                 future_summary = executor.submit(generate_report, inquiry_details, articles[item[0]], "summary",
-                                                  item[1])
+                                                 item[1])
                 future_to_article_summary[future_summary] = item[0]
-                future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type, item[1])
+                future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type,
+                                                  item[1], clinical_data_input)
                 future_to_article_clinical[future_clinical] = item[0]
                 future = executor.submit(generate_report, inquiry_details, articles[item[0]], "references", item[1])
                 future_to_article[future] = item[0]
@@ -209,21 +221,21 @@ def generate_clinical_data(inquiry_details, pi_details):
                 try:
                     summary.append(future_summary.result())
                 except Exception as exc:
-                    print(f'An error occurred while generating report for {document_summary}: {exc}')
+                    print(f'An error occurred while generating Summary report for {document_summary}: {exc}')
 
             for future_clinical in future_to_article_clinical:
                 document = future_to_article_clinical[future_clinical]
                 try:
                     clinical_data.append(future_clinical.result())
                 except Exception as exc:
-                    print(f'An error occurred while generating report for {document}: {exc}')
+                    print(f'An error occurred while generating Clinical report for {document}: {exc}')
 
             for future in future_to_article:
                 document_ref = future_to_article[future]
                 try:
                     references.append(future.result())
                 except Exception as exc:
-                    print(f'An error occurred while generating report for {document_ref}: {exc}')
+                    print(f'An error occurred while generating Reference report for {document_ref}: {exc}')
     else:
         print("Trials data is not in the expected format.")
 
@@ -286,7 +298,8 @@ def get_relevant_pages(inquiry_details):
     with open("config/prompt_keyword.txt", "r") as file:
         prompt_text = file.read()
 
-    prompt = prompt_text.format(inquiry=inquiry_details.inquiry, inquiry_type=inquiry_details.inquiry_type,  notes=inquiry_details.additional_notes)
+    prompt = prompt_text.format(inquiry=inquiry_details.inquiry, inquiry_type=inquiry_details.inquiry_type,
+                                notes=inquiry_details.additional_notes)
 
     conversation = [
         {"role": "system",
@@ -361,11 +374,12 @@ def get_relevant_pages(inquiry_details):
     result = add_citation_id(article_data)
     return result
 
+
 def get_reference_pi_data(pi_document_name, pi_details):
     with open("config/prompt_pi_reference.txt", "r") as file:
         prompt_text = file.read()
     cite_id = citation_order.get(pi_document_name)
-    prompt = prompt_text.format(article=pi_details, cite_id = cite_id)
+    prompt = prompt_text.format(article=pi_details, cite_id=cite_id)
 
     conversation = [
         {"role": "system",
@@ -388,6 +402,7 @@ def get_reference_pi_data(pi_document_name, pi_details):
     pi_reference = response['choices'][0]['message']['content']
     print(pi_reference)
     return pi_reference
+
 
 def transform_json(original):
     transformed = {}
@@ -415,12 +430,13 @@ def get_prescribed_information(inquiry_details: InquiryDetails):
             ]
         }
     }, "_source": {
-        "includes": ["content","document_name"]
+        "includes": ["content", "document_name"]
     }}
 
     pi_data = get_es_data(target_query)
     result = add_citation_id(pi_data)
     return result, document_name
+
 
 def add_citation_id(data):
     print(citation_order)
@@ -431,3 +447,110 @@ def add_citation_id(data):
         else:
             print(f"No cite_id found for document {item['document_name']}. Leaving unchanged.")
     return data
+
+def get_cleaned_content(inquiry_details: InquiryDetails):
+    clinical_json = {
+        "Safety": {
+            "Safety Results": [
+                "Common adverse events",
+                "Serious adverse events",
+                "Statistical significance",
+                "Confidence interval"
+            ],
+            "Efficacy Results": [
+                "Primary outcomes",
+                "Secondary outcomes",
+                "Patient-reported outcomes"
+            ],
+            "Study Limitations": null,
+            "Author Conclusions": null
+        },
+        "Study Results": {
+            "Characteristics of study population": ["Age range", "Gender distribution"],
+            "Primary efficacy endpoints": null,
+            "Secondary efficacy endpoints": null,
+            "Statistical significance": null,
+            "Confidence interval": null
+        }
+    }
+    notes = inquiry_details.additional_notes
+    if inquiry_details.additional_notes:
+        notes = check_exclusion(inquiry_details.additional_notes)
+        if(notes != inquiry_details.additional_notes):
+            with open(f"config/prompt_exclusion.txt", "r") as file:
+                prompt_text = file.read()
+
+            prompt = prompt_text.format(inquiry=inquiry_details.inquiry, notes = inquiry_details.additional_notes, clinical_json=clinical_json)
+
+            conversation = [
+                {"role": "system",
+                 "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data."},
+                {"role": "user", "content": f"""{prompt}"""
+                 }
+            ]
+
+            start_time = datetime.now()
+            response = openai.ChatCompletion.create(
+                model="gpt-4o",
+                messages=conversation,
+                temperature=0,
+                max_tokens=4096
+            )
+            clinical_json = response['choices'][0]['message']['content']
+            print(clinical_json)
+    safety, study_results = get_required_content(clinical_json), notes
+    print(notes)
+    return safety, study_results, notes
+
+
+def get_required_content(clinical_content_json):
+    try:
+        data = json.loads(clinical_content_json)
+
+        safety_string = get_content_keys(data, "Safety")
+        study_results_string = get_content_keys(data, "Study Results")
+        return safety_string, study_results_string
+
+    except json.JSONDecodeError:
+        return None, None
+
+def get_content_keys(data, content_key):
+    results = data.get(content_key, {})
+
+    def convert_value(value):
+        if isinstance(value, list):
+            return f"({', '.join(map(str, value)) if value else ''})"
+        elif value is None:
+            return 'N/A'
+        else:
+            return str(value)
+
+    results_data = []
+    for key, value in results.items():
+        converted_value = convert_value(value)
+        if converted_value != 'N/A':
+            results_data.append(f"{key}: {converted_value}")
+        else:
+            results_data.append(f"{key}")
+
+    results_string = f"{content_key} including {', '.join(results_data).strip()}"
+    return results_string
+
+def check_exclusion(notes):
+    prompt = f"Please identify if the notes have any exclusion specified in it. Notes:{notes}. If yes, remove the exclusion criteria and return the remaining content in response. If no, return the given notes as response. DONOT add any additional text or comment to response"
+    conversation = [
+        {"role": "system",
+         "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data."},
+        {"role": "user", "content": f"""{prompt}"""
+         }
+    ]
+
+    start_time = datetime.now()
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=conversation,
+        temperature=0,
+        max_tokens=4096
+    )
+    cleaned_notes = response['choices'][0]['message']['content']
+    return cleaned_notes
