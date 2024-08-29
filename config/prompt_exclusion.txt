@@ -3,8 +3,9 @@ Given a JSON string, add or remove a specified key-value pair and return the upd
 2. The name of the key to add or remove as instructions
     {inquiry} Notes: {notes}
 
-Example input:
-JSON string: "{{
+** Start of Examples **:
+Input Json:
+"{{
   "Safety": {{
     "Safety Results": [
       "Common adverse events",
@@ -29,10 +30,11 @@ JSON string: "{{
   }}
 }}"
 
+Example 1:
 Instruction: Donot include Efficacy results
 
-Expected output:
-Updated JSON string: {{
+output:
+ {{
   "Safety": {{
     "Efficacy Results": [
       "Primary outcomes",
@@ -50,6 +52,87 @@ Updated JSON string: {{
     "Confidence interval": null
   }}
 }}
+
+Example 2:
+Instruction: Include only Safety results.
+
+output:
+ {{
+  "Safety": {{
+    "Safety Results": [
+      "Common adverse events",
+      "Serious adverse events",
+      "Statistical significance",
+      "Confidence interval"
+    ],
+    "Study Limitations": null,
+    "Author Conclusions": null
+  }},
+  "Study Results": {{
+    "Characteristics of study population": ["Age range", "Gender distribution"],
+    "Primary efficacy endpoints": null,
+    "Secondary efficacy endpoints": null,
+    "Statistical significance": null,
+    "Confidence interval": null
+  }}
+}}
+
+Example 3:
+Instruction: Include only Primary endpoints.
+
+output:
+ {{
+  "Safety": {{
+    "Safety Results": [
+      "Common adverse events",
+      "Serious adverse events",
+      "Statistical significance",
+      "Confidence interval"
+    ],
+    "Efficacy Results": [
+      "Primary outcomes",
+      "Secondary outcomes",
+      "Patient-reported outcomes"
+    ],
+    "Study Limitations": null,
+    "Author Conclusions": null
+  }},
+  "Study Results": {{
+    "Characteristics of study population": ["Age range", "Gender distribution"],
+    "Primary efficacy endpoints": null,
+    "Statistical significance": null,
+    "Confidence interval": null
+  }}
+}}
+
+Example 4:
+Instruction: Do not Include only Study Limitations.
+
+output:
+ {{
+  "Safety": {{
+    "Safety Results": [
+      "Common adverse events",
+      "Serious adverse events",
+      "Statistical significance",
+      "Confidence interval"
+    ],
+    "Efficacy Results": [
+      "Primary outcomes",
+      "Secondary outcomes",
+      "Patient-reported outcomes"
+    ],
+    "Author Conclusions": null
+  }},
+  "Study Results": {{
+    "Characteristics of study population": ["Age range", "Gender distribution"],
+    "Primary efficacy endpoints": null,
+    "Statistical significance": null,
+    "Confidence interval": null
+  }}
+}}
+
+** End of Examples **:
 
 Note: If the key does not exist in the JSON, handle this gracefully and return the original JSON string.
 Instructions:
