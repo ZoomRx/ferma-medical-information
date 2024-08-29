@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import time, datetime
 
@@ -20,7 +21,7 @@ def fetch_content(url):
     return response.content
 
 
-def generate_report(inquiry_details, article_pages, content="all", data="", pi_details="",clinical_data={}):
+def generate_report(inquiry_details, article_pages, content="all", data="", pi_details="", clinical_data={}):
     inquiry = inquiry_details.inquiry
     inquiry_type = "All"
     if bool(inquiry_details.inquiry_type):
@@ -51,8 +52,12 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
         prompt_text = file.read()
 
     if content == "clinical_data":
+        print(clinical_data)
+        notes = clinical_data.get("notes", "")
+        study_results = clinical_data.get("study_results", "")
+        safety = clinical_data.get("safety", "")
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
-                                    trial_json=data, notes=clinical_data["notes"], study_results=clinical_data["study_results"] , safety = clinical_data["safety"])
+                                    trial_json=data, notes=notes, study_results=study_results, safety=safety)
     elif content == "summary":
         prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
                                     study_json=data)
@@ -191,11 +196,12 @@ def generate_clinical_data(inquiry_details, pi_details):
     pi_reference = get_reference_pi_data(inquiry_details.pi_source, pi_details)
     safety_string, study_results_string, notes = get_cleaned_content(inquiry_details)
 
-    clinical_data_input = {
-        "safety": safety_string,
-        "study_results": study_results_string,
-        "notes": notes
-    }
+    clinical_data_input = dict(
+        safety=safety_string,
+        study_results=study_results_string,
+        notes=notes
+    )
+    print(clinical_data_input)
     # Assuming pi_reference is defined somewhere above this line
     if pi_reference:
         references.append(pi_reference)
@@ -211,7 +217,7 @@ def generate_clinical_data(inquiry_details, pi_details):
                                                  item[1])
                 future_to_article_summary[future_summary] = item[0]
                 future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type,
-                                                  item[1], clinical_data_input)
+                                                  item[1], "", clinical_data_input)
                 future_to_article_clinical[future_clinical] = item[0]
                 future = executor.submit(generate_report, inquiry_details, articles[item[0]], "references", item[1])
                 future_to_article[future] = item[0]
@@ -228,6 +234,7 @@ def generate_clinical_data(inquiry_details, pi_details):
                 try:
                     clinical_data.append(future_clinical.result())
                 except Exception as exc:
+                    traceback.print_exc()
                     print(f'An error occurred while generating Clinical report for {document}: {exc}')
 
             for future in future_to_article:
@@ -448,6 +455,7 @@ def add_citation_id(data):
             print(f"No cite_id found for document {item['document_name']}. Leaving unchanged.")
     return data
 
+
 def get_cleaned_content(inquiry_details: InquiryDetails):
     clinical_json = {
         "Safety": {
@@ -476,11 +484,12 @@ def get_cleaned_content(inquiry_details: InquiryDetails):
     notes = inquiry_details.additional_notes
     if inquiry_details.additional_notes:
         notes = check_exclusion(inquiry_details.additional_notes)
-        if(notes != inquiry_details.additional_notes):
+        if (notes != inquiry_details.additional_notes):
             with open(f"config/prompt_exclusion.txt", "r") as file:
                 prompt_text = file.read()
 
-            prompt = prompt_text.format(inquiry=inquiry_details.inquiry, notes = inquiry_details.additional_notes, clinical_json=clinical_json)
+            prompt = prompt_text.format(inquiry=inquiry_details.inquiry, notes=inquiry_details.additional_notes,
+                                        clinical_json=clinical_json)
 
             conversation = [
                 {"role": "system",
@@ -498,7 +507,7 @@ def get_cleaned_content(inquiry_details: InquiryDetails):
             )
             clinical_json = response['choices'][0]['message']['content']
             print(clinical_json)
-    safety, study_results = get_required_content(clinical_json), notes
+    safety, study_results = get_required_content(clinical_json)
     print(notes)
     return safety, study_results, notes
 
@@ -513,6 +522,7 @@ def get_required_content(clinical_content_json):
 
     except json.JSONDecodeError:
         return None, None
+
 
 def get_content_keys(data, content_key):
     results = data.get(content_key, {})
@@ -536,8 +546,13 @@ def get_content_keys(data, content_key):
     results_string = f"{content_key} including {', '.join(results_data).strip()}"
     return results_string
 
+
 def check_exclusion(notes):
-    prompt = f"Please identify if the notes have any exclusion specified in it. Notes:{notes}. If yes, remove the exclusion criteria and return the remaining content in response. If no, return the given notes as response. DONOT add any additional text or comment to response"
+    with open(f"config/prompt_check_notes.txt", "r") as file:
+        prompt_text = file.read()
+
+    prompt = prompt_text.format(notes=notes)
+
     conversation = [
         {"role": "system",
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data."},
@@ -553,4 +568,5 @@ def check_exclusion(notes):
         max_tokens=4096
     )
     cleaned_notes = response['choices'][0]['message']['content']
+    print(cleaned_notes)
     return cleaned_notes

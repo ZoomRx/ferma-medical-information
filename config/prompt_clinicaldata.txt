@@ -86,38 +86,23 @@ STRICTLY Follow the below guidelines to generate detailed and concise informatio
       - Include the type of Study (Study Design), N Value (Total Number of Subjects in the Study), Duration of the Study and Follow-Up Periods (Study Duration), Study Objectives, Inclusion and Exclusion Criteria for Participants, Description of Treatment Arms and Interventions, and details about the Primary Endpoint and Secondary endpoints (if related to inquiry).
       - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
       - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-      - MUST include tables relevant to the required content.
+      - MUST include all the tables relevant to this section.
 
   - "Study Results" section:
     - Objective: Present the key findings from the study.
-<<<<<<< HEAD
     - Content Requirements:
         - MUST include content - {study_results}
         - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
         - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
         - MUST include all the tables relevant to this section.
         - STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
-=======
-    - Content Requirements: Provide detailed information on baseline characteristics of the study population, primary efficacy endpoints, secondary efficacy endpoints, and statistical significance and confidence intervals.
-    - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
-    - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
-    - MUST include tables relevant to the required content.
->>>>>>> parent of 7035fa7 (Fixed prompt for table data)
 
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety and  Efficacy results in the study, study Limitations, and the author Conclusions.
     - Content Requirements:
-<<<<<<< HEAD
         - MUST include content - {safety}
         - MUST include all the tables relevant to this section.
         - STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
-=======
-        - Safety Results: Detail the study's findings on common adverse events, serious adverse events, statistical significance, and confidence intervals, if applicable. This information is vital for assessing the safety profile of the intervention or treatment under investigation.
-        - Efficacy Results: Include a thorough discussion of the primary outcomes, secondary outcomes, and patient-reported outcomes, based on the specific inquiry type if indicated. These results are essential for evaluating the effectiveness of the intervention or treatment.
-        - Study Limitations: Address the limitations encountered during the study. Discuss any challenges faced in conducting the research, potential biases, and factors that may limit the generalizability of the findings.
-        - Author Conclusions: Summarize the conclusions drawn by the authors regarding the study's outcomes. Reflect on whether the results support the initial hypotheses or suggest directions for future research.
-        - MUST include tables relevant to the required content.
->>>>>>> parent of 7035fa7 (Fixed prompt for table data)
 
     - DO NOT include any subsections under this sections.
     - Focus and Inquiry Type: Ensure that the content specifically addresses the inquiry at hand, detailing the characteristics of the specified endpoint in the inquiry type. Tailor the discussion to the focus area, whether it's safety, efficacy, limitations, or conclusions.
