@@ -91,7 +91,7 @@ STRICTLY Follow the below guidelines to generate detailed and concise informatio
   - "Study Results" section:
     - Objective: Present the key findings from the study.
     - Content Requirements:
-        - MUST include content - {study_results}
+        - MUST include content relevant to {study_results}
         - The content should focus specifically on addressing the inquiry at hand and detailing the characteristics of the specified endpoint in the inquiry type.
         - MUST include reference citation number specified in the clinical trial input json. Include reference citation number for each paragraph in this section.
         - MUST include all the tables relevant to this section.
@@ -100,7 +100,8 @@ STRICTLY Follow the below guidelines to generate detailed and concise informatio
   - "Safety" section:
     - Objective: Present the key findings from the study on Safety and  Efficacy results in the study, study Limitations, and the author Conclusions.
     - Content Requirements:
-        - MUST include content - {safety}
+        - MUST include content relevant to {safety}.
+        - MUST include Study Limitations and Author conclusion in this section
         - MUST include all the tables relevant to this section.
         - STRICTLY DO NOT include any commentary or notes explaining the exclusion or absence of certain content. If specific information is unavailable or falls outside the designated scope, simply omit that section entirely without any further explanation or placeholder text.
 

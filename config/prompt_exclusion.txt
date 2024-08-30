@@ -1,12 +1,16 @@
-Given a JSON string, add or remove a specified key-value pair and return the updated JSON string. The user will provide:
-1. The JSON string to process - {clinical_json}
-2. The name of the key to add or remove as instructions
-    {inquiry} Notes: {notes}
+Process JSON string based on user instructions. Input:
+1. JSON string to process: {clinical_json}
+2. Notes: {notes}
+
+Action:
+1. Identify exclusion statements in notes (e.g., "Do not include", "Exclude", "Remove").
+2. Remove only the specified items from the JSON structure.
+3. Return the updated JSON string.
+4. If the given notes doesnot have any exclusion statement return the input json as response.
 
 ** Start of Examples **:
 Input Json:
 "{{
-  "Safety": {{
     "Safety Results": [
       "Common adverse events",
       "Serious adverse events",
@@ -18,71 +22,62 @@ Input Json:
       "Secondary outcomes",
       "Patient-reported outcomes"
     ],
-    "Study Limitations": null,
-    "Author Conclusions": null
-  }},
-  "Study Results": {{
-    "Characteristics of study population": ["Age range", "Gender distribution"],
-    "Primary efficacy endpoints": null,
-    "Secondary efficacy endpoints": null,
-    "Statistical significance": null,
-    "Confidence interval": null
-  }}
+    "Study Results": [
+    "Characteristics of study population",
+    "Primary efficacy endpoints",
+    "Secondary efficacy endpoints",
+    "Statistical significance",
+    "Confidence interval"
+  ]
 }}"
 
-Example 1:
 Instruction: Donot include Efficacy results
 
 output:
  {{
-  "Safety": {{
-    "Efficacy Results": [
-      "Primary outcomes",
-      "Secondary outcomes",
-      "Patient-reported outcomes"
+    "Safety Results": [
+      "Common adverse events",
+      "Serious adverse events",
+      "Statistical significance",
+      "Confidence interval"
     ],
-    "Study Limitations": null,
-    "Author Conclusions": null
-  }},
-  "Study Results": {{
-    "Characteristics of study population": ["Age range", "Gender distribution"],
-    "Primary efficacy endpoints": null,
-    "Secondary efficacy endpoints": null,
-    "Statistical significance": null,
-    "Confidence interval": null
-  }}
+    "Study Results": [
+    "Characteristics of study population",
+    "Primary efficacy endpoints",
+    "Secondary efficacy endpoints",
+    "Statistical significance",
+    "Confidence interval"
+  ]
 }}
 
-Example 2:
 Instruction: Include only Safety results.
 
 output:
  {{
-  "Safety": {{
     "Safety Results": [
       "Common adverse events",
       "Serious adverse events",
       "Statistical significance",
       "Confidence interval"
     ],
-    "Study Limitations": null,
-    "Author Conclusions": null
-  }},
-  "Study Results": {{
-    "Characteristics of study population": ["Age range", "Gender distribution"],
-    "Primary efficacy endpoints": null,
-    "Secondary efficacy endpoints": null,
-    "Statistical significance": null,
-    "Confidence interval": null
-  }}
+    "Efficacy Results": [
+      "Primary outcomes",
+      "Secondary outcomes",
+      "Patient-reported outcomes"
+    ],
+    "Study Results": [
+    "Characteristics of study population",
+    "Primary efficacy endpoints",
+    "Secondary efficacy endpoints",
+    "Statistical significance",
+    "Confidence interval"
+  ]
 }}
 
-Example 3:
 Instruction: Include only Primary endpoints.
 
 output:
  {{
-  "Safety": {{
     "Safety Results": [
       "Common adverse events",
       "Serious adverse events",
@@ -94,23 +89,19 @@ output:
       "Secondary outcomes",
       "Patient-reported outcomes"
     ],
-    "Study Limitations": null,
-    "Author Conclusions": null
-  }},
-  "Study Results": {{
-    "Characteristics of study population": ["Age range", "Gender distribution"],
-    "Primary efficacy endpoints": null,
-    "Statistical significance": null,
-    "Confidence interval": null
-  }}
+    "Study Results": [
+    "Characteristics of study population",
+    "Primary efficacy endpoints",
+    "Secondary efficacy endpoints",
+    "Statistical significance",
+    "Confidence interval"
+  ]
 }}
 
-Example 4:
 Instruction: Do not Include only Study Limitations.
 
 output:
  {{
-  "Safety": {{
     "Safety Results": [
       "Common adverse events",
       "Serious adverse events",
@@ -122,19 +113,22 @@ output:
       "Secondary outcomes",
       "Patient-reported outcomes"
     ],
-    "Author Conclusions": null
-  }},
-  "Study Results": {{
-    "Characteristics of study population": ["Age range", "Gender distribution"],
-    "Primary efficacy endpoints": null,
-    "Statistical significance": null,
-    "Confidence interval": null
-  }}
+    "Study Results": [
+    "Characteristics of study population",
+    "Primary efficacy endpoints",
+    "Secondary efficacy endpoints",
+    "Statistical significance",
+    "Confidence interval"
+  ]
 }}
 
 ** End of Examples **:
 
-Note: If the key does not exist in the JSON, handle this gracefully and return the original JSON string.
+Note: If the specified key does not exist, return the original JSON string unchanged.
+
 Instructions:
 - MUST Include only the json content in response. DONOT include JSON formatting like '```json' in the response.
-- Exclude only the key specified in the inquiry instruction. Return other json elements as it is.
+- Only remove items explicitly mentioned in identified exclusion statements.
+- Ignore any inclusion criteria in the notes.
+- If an excluded item doesn't exist, return the original JSON unchanged.
+- Return only the processed JSON string without additional text.

@@ -52,7 +52,6 @@ def generate_report(inquiry_details, article_pages, content="all", data="", pi_d
         prompt_text = file.read()
 
     if content == "clinical_data":
-        print(clinical_data)
         notes = clinical_data.get("notes", "")
         study_results = clinical_data.get("study_results", "")
         safety = clinical_data.get("safety", "")
@@ -201,7 +200,6 @@ def generate_clinical_data(inquiry_details, pi_details):
         study_results=study_results_string,
         notes=notes
     )
-    print(clinical_data_input)
     # Assuming pi_reference is defined somewhere above this line
     if pi_reference:
         references.append(pi_reference)
@@ -457,34 +455,33 @@ def add_citation_id(data):
 
 
 def get_cleaned_content(inquiry_details: InquiryDetails):
-    clinical_json = {
-        "Safety": {
-            "Safety Results": [
-                "Common adverse events",
-                "Serious adverse events",
-                "Statistical significance",
-                "Confidence interval"
-            ],
-            "Efficacy Results": [
-                "Primary outcomes",
-                "Secondary outcomes",
-                "Patient-reported outcomes"
-            ],
-            "Study Limitations": null,
-            "Author Conclusions": null
-        },
-        "Study Results": {
-            "Characteristics of study population": ["Age range", "Gender distribution"],
-            "Primary efficacy endpoints": null,
-            "Secondary efficacy endpoints": null,
-            "Statistical significance": null,
-            "Confidence interval": null
-        }
+    default_clinical_json = {
+        "Safety Results": [
+            "Common adverse events",
+            "Serious adverse events",
+            "Statistical significance",
+            "Confidence interval"
+        ],
+        "Efficacy Results": [
+            "Primary outcomes",
+            "Secondary outcomes",
+            "Patient-reported outcomes"
+        ],
+        "Study Results": [
+            "Characteristics of study population"
+            "Primary efficacy endpoints",
+            "Secondary efficacy endpoints",
+            "Statistical significance",
+            "Confidence interval"]
     }
-    notes = inquiry_details.additional_notes
-    if inquiry_details.additional_notes:
-        notes = check_exclusion(inquiry_details.additional_notes)
-        if (notes != inquiry_details.additional_notes):
+    additional_notes = inquiry_details.additional_notes
+    clinical_json = default_clinical_json
+    updated_notes = additional_notes
+    if additional_notes:
+        notes = get_exclusion(additional_notes)
+        notes_json = json.loads(notes)
+        updated_notes = notes_json['updated_notes']
+        if (notes_json['exclude'] != ""):
             with open(f"config/prompt_exclusion.txt", "r") as file:
                 prompt_text = file.read()
 
@@ -505,50 +502,74 @@ def get_cleaned_content(inquiry_details: InquiryDetails):
                 temperature=0,
                 max_tokens=4096
             )
-            clinical_json = response['choices'][0]['message']['content']
-            print(clinical_json)
+            try:
+                clinical_json = json.loads(response['choices'][0]['message']['content'])
+
+            except json.JSONDecodeError:
+                print("Error: Invalid JSON string received.")
+                clinical_json = default_clinical_json
+            except ValueError as e:
+                print(f"Error: {str(e)}")
+                clinical_json = default_clinical_json
+            except Exception as e:
+                print(f"An unexpected error occurred: {str(e)}")
+                clinical_json = default_clinical_json
+
     safety, study_results = get_required_content(clinical_json)
-    print(notes)
-    return safety, study_results, notes
+    print(updated_notes)
+    return safety, study_results, updated_notes
 
 
 def get_required_content(clinical_content_json):
     try:
-        data = json.loads(clinical_content_json)
+        # Check if the input is a valid JSON object
+        if not isinstance(clinical_content_json, dict):
+            raise ValueError("Invalid JSON format")
 
-        safety_string = get_content_keys(data, "Safety")
-        study_results_string = get_content_keys(data, "Study Results")
-        return safety_string, study_results_string
+        # Initialize variables for each type of result
+        safety_results = ""
+        efficacy_results = ""
+        study_results = ""
+
+        # Check and process each type of result
+        if "Safety Results" in clinical_content_json and clinical_content_json["Safety Results"]:
+            safety_results = ", ".join([f"{item} including" for item in clinical_content_json["Safety Results"]])
+
+        if "Efficacy Results" in clinical_content_json and clinical_content_json["Efficacy Results"]:
+            efficacy_results = ", ".join([f"{item} including" for item in clinical_content_json["Efficacy Results"]])
+
+        if "Study Results" in clinical_content_json and clinical_content_json["Study Results"]:
+            study_results = ", ".join([f"{item} including" for item in clinical_content_json["Study Results"]])
+
+        # Form the safety string only if either safety_results or efficacy_results is not empty
+        if safety_results and efficacy_results:
+            safety = f"""Safety focusing on {safety_results} and {efficacy_results}"""
+        elif safety_results:
+            safety = f"""Safety focusing on {safety_results}"""
+        elif safety_results:
+            safety = f"""Safety focusing on {efficacy_results}"""
+        else:
+            safety = "Safety"
+
+        if study_results:
+            pass
+        else:
+            study_results = "Study Results"
+
+        # Return the required content
+        return safety, study_results
 
     except json.JSONDecodeError:
+        print("Error: Invalid JSON format")
+        return None, None
+
+    except ValueError as e:
+        print(f"Error: {str(e)}")
         return None, None
 
 
-def get_content_keys(data, content_key):
-    results = data.get(content_key, {})
-
-    def convert_value(value):
-        if isinstance(value, list):
-            return f"({', '.join(map(str, value)) if value else ''})"
-        elif value is None:
-            return 'N/A'
-        else:
-            return str(value)
-
-    results_data = []
-    for key, value in results.items():
-        converted_value = convert_value(value)
-        if converted_value != 'N/A':
-            results_data.append(f"{key}: {converted_value}")
-        else:
-            results_data.append(f"{key}")
-
-    results_string = f"{content_key} including {', '.join(results_data).strip()}"
-    return results_string
-
-
-def check_exclusion(notes):
-    with open(f"config/prompt_check_notes.txt", "r") as file:
+def get_exclusion(notes):
+    with open(f"config/prompt_update_notes.txt", "r") as file:
         prompt_text = file.read()
 
     prompt = prompt_text.format(notes=notes)
@@ -568,5 +589,4 @@ def check_exclusion(notes):
         max_tokens=4096
     )
     cleaned_notes = response['choices'][0]['message']['content']
-    print(cleaned_notes)
     return cleaned_notes

@@ -1,0 +1,96 @@
+Process notes for clinical information.
+Input:
+1. Notes: {notes}
+
+Action:
+1. Identify both inclusion and exclusion statements in the notes.
+2. Remove exclusions if present in the notes and update the notes accordingly along with the remaining content.
+3. Return the updated notes as "updated_notes".
+4. No extra text allowed.
+
+Output Json:
+ {{
+ "include":"",
+ "exclude":"",
+ "updated_notes":""
+ }}
+
+** Start of Examples **
+
+Notes: I wish to have my SRL that do not include Efficacy results
+
+output:
+  {{
+ "include":"",
+ "exclude":"Do not include Efficacy results",
+ "updated_notes":""
+ }}
+
+Notes: I need my SRL with content Only include with efficacy results. Remove author limitations. Do not include safety results
+
+output:
+ {{
+ "include":"Only include efficacy results",
+ "exclude":"Remove author limitations. Do not include safety results",
+ "updated_notes":"I need my SRL with content Only include with efficacy results."
+ }}
+
+Notes: As a HCP I want to include only Safety results.
+
+output:
+  {{
+ "include":"Include only Safety results.",
+ "exclude":"",
+ "updated_notes":"As a HCP I want to include only Safety results."
+ }}
+
+Notes: Include only Primary endpoints.
+
+output:
+ {{
+ "include":"Include only Primary endpoints.",
+ "exclude":"",
+ "updated_notes":"Include only Primary endpoints."
+ }}
+
+Notes: Only include efficacy results. Do not include safety results
+
+output:
+
+ {{
+ "include":"Only include efficacy results",
+ "exclude":"Do not include safety results",
+ "updated_notes":"Only include efficacy results"
+ }}
+
+Notes: Only include efficacy results. Add primary endpoints results. Remove author limitations. Do not include safety results.
+
+output:
+ {{
+ "include":"Only include efficacy results. Add primary endpoints results ",
+ "exclude":"Remove author limitations. Do not include safety results",
+ "updated_notes":"Only include efficacy results. Add primary endpoints results"
+ }}
+
+Notes: Only include efficacy results. Remove author limitations. Add primary endpoints results. Do not include safety results.
+
+output:
+ {{
+ "include":"Only include efficacy results. Add primary endpoints results",
+ "exclude":"Remove author limitations. Do not include safety results",
+ "updated_notes":"Only include efficacy results. Add primary endpoints results"
+ }}
+
+Notes: Include data from both the patients with PD-L1-positive tumours and the mITT population.
+
+output:
+ {{
+ "include":"Include data from both the patients with PD-L1-positive tumours and the mITT population",
+ "exclude":"",
+ "updated_notes":"Include data from both the patients with PD-L1-positive tumours and the mITT population"
+ }}
+
+** End of Examples **
+
+- MUST Include only the json content in response. DO NOT include JSON formatting like '```json' in the response.
+- Generate updated notes

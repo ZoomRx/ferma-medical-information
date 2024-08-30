@@ -1,5 +1,0 @@
-Check notes for exclusions. Notes: {notes}
-
-Remove exclusions if present. Return remaining content otherwise.
-
-No extra text allowed.
