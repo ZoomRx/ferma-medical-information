@@ -159,8 +159,9 @@ async def process_file_AzureAI(file: UploadFile):
     try:
         content_type = file.content_type
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        new_filename = f"{file.filename.split('.')[0]}_{timestamp}.pdf"
-        file_path = Path("./storage/data/") / new_filename
+        new_filename = f"{file.filename.split('.')[0]}_{timestamp}"
+        filename = f"{new_filename}.pdf"
+        file_path = Path("./storage/data/") / filename
         file_path.parent.mkdir(parents=True, exist_ok=True)
         contents = await file.read()
 
@@ -174,7 +175,7 @@ async def process_file_AzureAI(file: UploadFile):
         saved_file_size = os.path.getsize(file_path)
         if saved_file_size != len(contents):
             raise IOError("Mismatch in file size after saving")
-        return new_filename
+        return filename
     except Exception as e:
         Logger.log(level="error", msg=f"Azure file_Processing: An error occurred while processing.", data={'error': str(e)})
         raise HTTPException(status_code=500, detail="Internal Server Error")
