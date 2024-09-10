@@ -1,10 +1,8 @@
 import json
 import os
-import shutil
-from typing import List, Optional, Tuple
+from typing import Tuple
 from azure.core.polling._poller import PollingReturnType_co
 from pandas import DataFrame
-from unstructured.documents.elements import Element
 
 from config import settings
 from typing import Any, Dict

@@ -24,7 +24,7 @@ def write_es_data(processed_content):
     return success
 
 
-def get_es_data(query):
+def get_es_data(query: dict):
     # target_query = {
     #     "bool": {
     #         "must": [

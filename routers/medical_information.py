@@ -1,5 +1,6 @@
 # routes/upload_routes.py
 import http
+import json
 from datetime import datetime
 from typing import List
 import requests
@@ -9,7 +10,7 @@ from pandas import DataFrame
 from requests import Session
 
 from db.session import get_doc_db
-from helpers import es_utils, logger
+from helpers import es_utils
 from helpers.logger import Logger
 from pathlib import Path
 from schemas.medical_info_inquiry import Inquiry, InquiryDetails
@@ -27,11 +28,13 @@ import time
 router = APIRouter()
 app = FastAPI()
 
+
 @router.post("/upload")
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
+    Logger.log("")
     file_names = []
-    #tasks = [process_file(file, db) for file in files]
+    # tasks = [process_file(file, db) for file in files]
     tasks = [process_file_AzureAI(file) for file in files]
     if tasks is None:
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -44,7 +47,8 @@ async def upload_files(files: List[UploadFile] = File(...),
         "fileNames": file_names
     }
 
-#Document conversion using Azure AI
+
+# Document conversion using Azure AI
 async def process_file(file: UploadFile, db):
     try:
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -99,25 +103,40 @@ async def process_file(file: UploadFile, db):
 
 @router.post("/create_srl")
 async def create_srl(inquiry_details: InquiryDetails):
-    Logger.log(f"Received request to create_srl for inquiry: {inquiry_details.inquiry}")
-    document_content = generate_content(inquiry_details)
-    return {"content": document_content}
+    try:
+        Logger.log(f"Received request to create_srl for inquiry: {inquiry_details.inquiry}", data=inquiry_details.__dict__)
+        print(f"generate_clinical_data: {inquiry_details}")
+        document_content = generate_content(inquiry_details)
+        return {"content": document_content}
+    except Exception as e:
+        Logger.log(level="error", msg=f"Create_SRL Error", data={'error': str(e)})
+        Logger.log("Create srl error details", data={
+            'Error type': {type(e).__name__},
+            'Error message': {str(e)},
+            'Traceback': {traceback.format_exc()}})
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
 
 @router.post("/find_cite")
 async def find_cite(inquiry: Inquiry):
-    Logger.log(msg = f"Received request to find citations for inquiry: {inquiry.inquiry}")
+    Logger.log(msg=f"Received request to find citations for inquiry: {inquiry.inquiry}", data=inquiry.__dict__)
     try:
         start_time = time.time()
         # Simulate fetching articles based on inquiry
         articles = await fetch_articles_based_on_inquiry(inquiry)
-        Logger.log(msg = f"Successfully retrieved {len(articles)} articles.")
+        Logger.log(msg=f"Successfully retrieved {len(articles)} articles.")
         end_time = time.time()
         response_time = end_time - start_time
-        Logger.log(msg = f"Find cite Response time: {response_time:.2f} seconds")
+        Logger.log(msg=f"Find cite Response time: {response_time:.2f} seconds")
 
         return articles
     except Exception as e:
-        Logger.log(level="error",msg=f"An error occurred while processing the request: {str(e)}")
+        Logger.log(level="error", msg=f"Find_site: Error", data={'error': str(e)})
+        Logger.log("Find site error details", data={
+            'Error type': {type(e).__name__},
+            'Error message': {str(e)},
+            'Traceback': {traceback.format_exc()}})
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -129,10 +148,12 @@ async def download_pdf_endpoint(links: list[str]):
             filename = "nihms-1732896_20240628132111.pdf"
             filenames.append(filename)
         except Exception as e:
+            Logger.log(level="error", msg=f"Download_pdf: An error occurred while processing.", data={'error': str(e)})
             return JSONResponse(status_code=400, content={"error": str(e)})
     return {
         "fileNames": filenames
     }
+
 
 async def process_file_AzureAI(file: UploadFile):
     try:
@@ -155,7 +176,5 @@ async def process_file_AzureAI(file: UploadFile):
             raise IOError("Mismatch in file size after saving")
         return new_filename
     except Exception as e:
-        print(f"An error occurred: {e}")
-        print(traceback.format_exc())
-        return None
-
+        Logger.log(level="error", msg=f"Azure file_Processing: An error occurred while processing.", data={'error': str(e)})
+        raise HTTPException(status_code=500, detail="Internal Server Error")

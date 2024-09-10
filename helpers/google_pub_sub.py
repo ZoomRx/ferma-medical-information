@@ -51,6 +51,7 @@ def publish(project_id: str, topic_id: str, content: str) -> str:
     """
     Function to publish given string to Google Cloud Pub/Sub
     """
+    content = str(content)
     data = content.encode("utf-8")
 
     publisher = pubsub_v1.PublisherClient(credentials=GCP_CREDENTIALS)

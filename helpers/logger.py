@@ -4,8 +4,8 @@ from pathlib import Path
 import copy
 from sentry_sdk import capture_exception
 
-from config import settings
 from helpers.google_pub_sub import publish
+from config import settings
 
 
 def merge_dicts(dict1, dict2):
@@ -16,25 +16,28 @@ def merge_dicts(dict1, dict2):
             dict1[key] = value
     return dict1
 
+
 def publish_log_to_pubsub(logger, log_method, event_dict):
-        try:
-            data = event_dict
-            if settings.env.environment == "production":
-                result = publish(settings.gcs.gcs_project_id, settings.pubsub.logger_topic, data)
-                print('Message published -', result)
-        except Exception as e:
-            print(e)
-            capture_exception(e)
-        return event_dict
+    try:
+        data = event_dict
+        if settings.env.environment == "production":
+            result = publish(settings.gcs.gcs_project_id, settings.pubsub.logger_topic, data)
+            print('Message published -', result)
+    except Exception as e:
+        print(e)
+        capture_exception(e)
+    return event_dict
+
 
 class Logger():
     @staticmethod
     def initialise():
+        print("Initialise")
         structlog.configure(
             processors=[
                 structlog.contextvars.merge_contextvars,
-                ecs_logging.StructlogFormatter(),
                 publish_log_to_pubsub,
+                ecs_logging.StructlogFormatter()
             ],
             logger_factory=structlog.WriteLoggerFactory(file=Path("logs/combined").with_suffix(".log").open("at")),
         )
@@ -45,7 +48,7 @@ class Logger():
         structlog.contextvars.bind_contextvars(**context)
 
     @staticmethod
-    def log(level: str = 'info',msg: str = '', data: dict = {}, update_ctx = False):
+    def log(level: str = 'info', msg: str = '', data: dict = {}, update_ctx=False):
         prev_context = copy.deepcopy(structlog.contextvars.get_contextvars())
         context = merge_dicts(structlog.contextvars.get_contextvars(), data)
         structlog.contextvars.bind_contextvars(**context)
@@ -53,9 +56,9 @@ class Logger():
         for key, value in context.items():
             if isinstance(value, dict):
                 for field, details in value.items():
-                    if isinstance(details, (dict,list)):
+                    if isinstance(details, (dict, list)):
                         context[key][field] = str(details)
-            
+
             elif isinstance(value, list):
                 context[key] = str(value)
 
@@ -70,6 +73,8 @@ class Logger():
             root_logger.error(msg)
         elif level == 'critical':
             root_logger.critical(msg)
+        else:
+            root_logger.info(msg)
 
         if not update_ctx:
             structlog.contextvars.clear_contextvars()

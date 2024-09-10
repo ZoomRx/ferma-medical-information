@@ -3,13 +3,15 @@ import os
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import time, datetime
+from typing import List
 
 import openai
 import requests
 from sqlalchemy import null
 
 from helpers.es_utils import get_es_data
-from schemas.medical_info_inquiry import InquiryDetails
+from helpers.logger import Logger
+from schemas.medical_info_inquiry import InquiryDetails, InquiryType
 from config import settings
 
 openai.api_key = settings.env.open_ai_key
@@ -21,81 +23,106 @@ def fetch_content(url):
     return response.content
 
 
-def generate_report(inquiry_details, article_pages, content="all", data="", pi_details="", clinical_data={}):
-    inquiry = inquiry_details.inquiry
-    inquiry_type = "All"
-    if bool(inquiry_details.inquiry_type):
-        inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
+import logging
+from datetime import datetime
+import traceback
 
-    article_content = "{" + ", ".join([f"'{content}'" for content in article_pages]) + "}"
 
-    if content == "all":
-        prompt_file = "prompt_srl.txt"
-    if content == "title":
-        prompt_file = "prompt_title.txt"
-    elif content == "summary":
-        prompt_file = "prompt_summary.txt"
-    elif content == "introduction":
-        prompt_file = "prompt_intro.txt"
-    elif content == "clinical_data":
-        prompt_file = "prompt_clinicaldata.txt"
-    elif content == "results":
-        prompt_file = "prompt_results.txt"
-    elif content == "trials":
-        prompt_file = "prompt_trials.txt"
-    elif content == "study":
-        prompt_file = "prompt_study.txt"
-    elif content == "references":
-        prompt_file = "prompt_reference.txt"
+def generate_report(inquiry_details: InquiryDetails, article_pages, content="all", data="", pi_details="", clinical_data={}):
+    try:
 
-    with open(f"config/{prompt_file}", "r") as file:
-        prompt_text = file.read()
+        inquiry = inquiry_details.inquiry
+        inquiry_type = "All"
+        if bool(inquiry_details.inquiry_type):
+            inquiry_type = convert_to_text_format(inquiry_details.inquiry_type)
 
-    if content == "clinical_data":
-        notes = clinical_data.get("notes", "")
-        study_results = clinical_data.get("study_results", "")
-        safety = clinical_data.get("safety", "")
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
-                                    trial_json=data, notes=notes, study_results=study_results, safety=safety)
-    elif content == "summary":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
-                                    study_json=data)
-    elif content == "title":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_pages)
-    elif content == "introduction":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data,
-                                    pi_data=pi_details)
-    elif content == "references":
-        prompt = prompt_text.format(article=article_content, study_json=data)
-    elif content == "study":
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, cite_id=data)
-    else:
-        prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data)
+        article_content = "{" + ", ".join([f"'{content}'" for content in article_pages]) + "}"
 
-    conversation = [
-        {"role": "system",
-         "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data."},
-        {"role": "user", "content": f"""{prompt}"""
-         }
-    ]
+        if content == "all":
+            prompt_file = "prompt_srl.txt"
+        elif content == "title":
+            prompt_file = "prompt_title.txt"
+        elif content == "summary":
+            prompt_file = "prompt_summary.txt"
+        elif content == "introduction":
+            prompt_file = "prompt_intro.txt"
+        elif content == "clinical_data":
+            prompt_file = "prompt_clinicaldata.txt"
+        elif content == "results":
+            prompt_file = "prompt_results.txt"
+        elif content == "trials":
+            prompt_file = "prompt_trials.txt"
+        elif content == "study":
+            prompt_file = "prompt_study.txt"
+        elif content == "references":
+            prompt_file = "prompt_reference.txt"
 
-    start_time = datetime.now()
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=conversation,
-        temperature=0,
-        max_tokens=4096
-    )
-    end_time = datetime.now()
-    elapsed_time = end_time - start_time
+        with open(f"config/{prompt_file}", "r") as file:
+            prompt_text = file.read()
 
-    print(f"Response Time for SRL content: {elapsed_time} seconds")
-    srl_content = response['choices'][0]['message']['content']
+        if content == "clinical_data":
+            notes = clinical_data.get("notes", "")
+            study_results = clinical_data.get("study_results", "")
+            safety = clinical_data.get("safety", "")
+            prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
+                                        trial_json=data, notes=notes, study_results=study_results, safety=safety)
+        elif content == "summary":
+            prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
+                                        study_json=data)
+        elif content == "title":
+            prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_pages)
+        elif content == "introduction":
+            prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data,
+                                        pi_data=pi_details)
+        elif content == "references":
+            prompt = prompt_text.format(article=article_content, study_json=data)
+        elif content == "study":
+            prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content,
+                                        cite_id=data)
+        else:
+            prompt = prompt_text.format(inquiry=inquiry, inquiry_type=inquiry_type, article=article_content, title=data)
 
-    with open("srl_content.txt", "w") as file:
-        file.write(srl_content)
+        conversation = [
+            {"role": "system",
+             "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role involves responding to clinical inquiries from healthcare professionals (HCPs) by providing accurate and comprehensive information based on the latest research and clinical data."},
+            {"role": "user", "content": f"""{prompt}"""
+             }
+        ]
 
-    return srl_content
+        log_message = f"Generate content for {content} "
+        log_data = {'inquiry_details': inquiry_details, 'data': data, 'pi_details': pi_details,
+                    'clinical_data': clinical_data, 'prompt': prompt}
+        Logger.log(msg=log_message, data=log_data)
+
+        start_time = datetime.now()
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=conversation,
+            temperature=0,
+            max_tokens=4096
+        )
+        end_time = datetime.now()
+        elapsed_time = end_time - start_time
+
+        print(f"Response Time for SRL content- {content}: {elapsed_time} seconds")
+        srl_content = response['choices'][0]['message']['content']
+
+        with open("srl_content.txt", "w") as file:
+            file.write(srl_content)
+
+        # End event logging
+        log_message = f"Generate content for {content} completed successfully"
+        log_data = {'response': {srl_content}, 'response_time': elapsed_time.total_seconds()}
+        Logger.log(msg=log_message, data=log_data)
+        return srl_content
+
+    except Exception as e:
+        # Log error details
+        error_message = f"Error occurred in generate_report for {content}"
+        Logger.log("error", msg=error_message, data={'error': str(e)})
+
+        # Re-raise the exception
+        raise
 
 
 def generate_summary(inquiry_details, file_name):
@@ -129,7 +156,7 @@ def generate_summary(inquiry_details, file_name):
     end_time = datetime.now()
     elapsed_time = end_time - start_time
 
-    print(f"Response Time for Extraction: {elapsed_time} seconds")
+    print(f"Response Time for Summary Extraction: {elapsed_time} seconds")
     # Extract the content from the response
     article_summary = response['choices'][0]['message']['content']
 
@@ -137,19 +164,42 @@ def generate_summary(inquiry_details, file_name):
 
 
 # Function to convert the array to a text format
-def convert_to_text_format(types):
-    text = ""
-    for inquiry_type in types:
-        text += f"{inquiry_type.type} ({', '.join(inquiry_type.categories)}), "
-    return text.rstrip(", ")  # Remove trailing comma and space
+def convert_to_text_format(types: List[InquiryType]):
+    if isinstance(types, list):
+        if not types:
+            Logger.log(msg=f"InquiryType is empty")
+        result = []
+        for inquiry_type in types:
+            if isinstance(inquiry_type, InquiryType):
+                if inquiry_type.type:
+                    categories_str = ', '.join(inquiry_type.categories)
+                    result.append(f"{inquiry_type.type} ({categories_str})")
+                else:
+                    Logger.log(msg = f"InquiryType has empty type: {inquiry_type}")
+            else:
+                Logger.log("warning", msg=f"Skipping non-InquiryType item: {inquiry_type}")
+        return ", ".join(result)
+    elif isinstance(types, InquiryType):
+        if types.type:
+            categories_str = ', '.join(types.categories)
+            return f"{types.type} ({categories_str})"
+        else:
+            Logger.log("warning",msg = f"InquiryType has empty type")
+            return ""
+    else:
+        Logger.log("warning",msg = f"InquiryType is invalid")
+        return ""
 
 
 def generate_content(inquiry_details: InquiryDetails):
     set_citation_order(inquiry_details)
     articles = get_relevant_pages(inquiry_details)
+
     srl_content = {}
     pi_details = get_prescribed_information(inquiry_details)
+
     title = generate_report(inquiry_details, pi_details, "title")
+
     srl_content["title"] = title
     summary, clinical_data, reference_data = generate_clinical_data(inquiry_details, pi_details)
 
@@ -168,7 +218,7 @@ def generate_introduction(inquiry_details, articles, title, pi_details):
     return intro_data
 
 
-def set_citation_order(inquiry_details):
+def set_citation_order(inquiry_details: InquiryDetails):
     global citation_order
 
     # Assign indices to documents
@@ -185,7 +235,7 @@ def set_citation_order(inquiry_details):
     # Add pi_source document with the next available index
 
 
-def generate_clinical_data(inquiry_details, pi_details):
+def generate_clinical_data(inquiry_details: InquiryDetails, pi_details):
     # Assuming get_relevant_clinical_study returns a list of tuples (document, trial_json)
     articles, trials = get_relevant_clinical_study(inquiry_details)
     report_type = "clinical_data"
@@ -225,7 +275,8 @@ def generate_clinical_data(inquiry_details, pi_details):
                 try:
                     summary.append(future_summary.result())
                 except Exception as exc:
-                    print(f'An error occurred while generating Summary report for {document_summary}: {exc}')
+                    Logger.log("error", f'An error occurred while generating Summary Report {document_summary}: {exc}')
+                    raise
 
             for future_clinical in future_to_article_clinical:
                 document = future_to_article_clinical[future_clinical]
@@ -233,16 +284,18 @@ def generate_clinical_data(inquiry_details, pi_details):
                     clinical_data.append(future_clinical.result())
                 except Exception as exc:
                     traceback.print_exc()
-                    print(f'An error occurred while generating Clinical report for {document}: {exc}')
+                    Logger.log("error", f'An error occurred while generating Clinical report {document}: {exc}')
+                    raise
 
             for future in future_to_article:
                 document_ref = future_to_article[future]
                 try:
                     references.append(future.result())
                 except Exception as exc:
-                    print(f'An error occurred while generating Reference report for {document_ref}: {exc}')
+                    Logger.log("error", f'An error occurred while generating Reference report {document_ref}: {exc}')
+                    raise
     else:
-        print("Trials data is not in the expected format.")
+        Logger.log("error", f'Trials data is not in the expected format {trials}')
 
     summary_data_string = "\n\n".join(summary)
     summary_data = "\n## Summary\n"
@@ -271,16 +324,15 @@ def get_relevant_clinical_trials(inquiry_details, articles):
     return trials_list
 
 
-def get_relevant_clinical_study(inquiry_details):
+def get_relevant_clinical_study(inquiry_details: InquiryDetails):
     trial_study_list = []
     article = {}
-    document_name = [os.path.splitext(os.path.basename(source))[0] for source in inquiry_details.document_source]
-    for document in document_name:
+    document_names = set([os.path.splitext(doc)[0] for doc in inquiry_details.document_source])
+    for document in document_names:
         article[document] = get_es_document(document)
         cite_id = citation_order.get(document)
         study_json = generate_report(inquiry_details, article[document], "study", cite_id)
         trial_study_list.append((document, study_json))
-    print(trial_study_list)
     return article, trial_study_list
 
 
@@ -299,7 +351,7 @@ def get_es_document(document_name):
     return result
 
 
-def get_relevant_pages(inquiry_details):
+def get_relevant_pages(inquiry_details: InquiryDetails):
     with open("config/prompt_keyword.txt", "r") as file:
         prompt_text = file.read()
 
@@ -374,9 +426,14 @@ def get_relevant_pages(inquiry_details):
             "includes": ["page_no", "content", "document_name"]
         }
     }
-
-    article_data = get_es_data(json.dumps(target_query))
+    article_data = get_es_data(target_query)
     result = add_citation_id(article_data)
+
+    log_message = "Generated Bool query"
+    log_data = {'inquiry': inquiry_details.inquiry, 'prompt': {prompt}, 'response': {es_bool_query},
+                'response_time': {elapsed_time}, 'es_query': target_query}
+    Logger.log(msg=log_message, data=log_data)
+
     return result
 
 
@@ -389,7 +446,7 @@ def get_reference_pi_data(pi_document_name, pi_details):
     conversation = [
         {"role": "system",
          "content": "You are a Medical Information Specialist working for a pharmaceutical company. Your role "
-                    "involves indetifying the key pharmaceutical terms in the given HCP inquiry details"},
+                    "involves identifying the key pharmaceutical terms in the given HCP inquiry details"},
         {"role": "user", "content": f"{prompt}"
          }
     ]
@@ -405,7 +462,11 @@ def get_reference_pi_data(pi_document_name, pi_details):
     elapsed_time = end_time - start_time
 
     pi_reference = response['choices'][0]['message']['content']
-    print(pi_reference)
+
+    log_message = f"Generate Reference for PI data "
+    log_data = {'pi_document': pi_document_name, 'prompt': prompt, 'response': {pi_reference},
+                'response_time': elapsed_time.total_seconds()}
+    Logger.log(msg=log_message, data=log_data)
     return pi_reference
 
 
@@ -443,10 +504,9 @@ def get_prescribed_information(inquiry_details: InquiryDetails):
     return result, document_name
 
 
-def add_citation_id(data):
-    print(citation_order)
+def add_citation_id(data: dict):
     for item in data:
-        cite_id = citation_order.get(item['document_name'])
+        cite_id = citation_order.get(item.get('document_name'))
         if cite_id:
             item.update({'cite_id': cite_id})
         else:
@@ -503,20 +563,29 @@ def get_cleaned_content(inquiry_details: InquiryDetails):
                 max_tokens=4096
             )
             try:
-                clinical_json = json.loads(response['choices'][0]['message']['content'])
+                end_time = datetime.now()
+                elapsed_time = end_time - start_time
+                response_content = response['choices'][0]['message']['content']
+                clinical_json = json.loads(response_content)
 
-            except json.JSONDecodeError:
-                print("Error: Invalid JSON string received.")
+                log_message = f"Generate json with inclusion and exclusion filters. "
+                log_data = {'prompt': prompt, 'response': {clinical_json},
+                            'response_time': elapsed_time.total_seconds()}
+                Logger.log(msg=log_message, data=log_data)
+            except json.JSONDecodeError as e:
+                Logger.log("error", f"JsonDecode Error for generated Clinical json",
+                           data={'error': str(e), 'json': str(response_content)})
                 clinical_json = default_clinical_json
             except ValueError as e:
                 print(f"Error: {str(e)}")
+                Logger.log("error", f"Value Error for generated json", data={'error': str(e)})
                 clinical_json = default_clinical_json
             except Exception as e:
                 print(f"An unexpected error occurred: {str(e)}")
+                Logger.log("error", f"An unexpected error occurred", data={'error': str(e)})
                 clinical_json = default_clinical_json
 
     safety, study_results = get_required_content(clinical_json)
-    print(updated_notes)
     return safety, study_results, updated_notes
 
 
@@ -559,12 +628,12 @@ def get_required_content(clinical_content_json):
         # Return the required content
         return safety, study_results
 
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format")
+    except json.JSONDecodeError as e:
+        Logger.log("error", f"JsonDecode Error while generating filter for Clinical data: {str(e)}")
         return None, None
 
     except ValueError as e:
-        print(f"Error: {str(e)}")
+        Logger.log("error", f"Error while generating filter for Clinical data: {str(e)}")
         return None, None
 
 
@@ -588,5 +657,12 @@ def get_exclusion(notes):
         temperature=0,
         max_tokens=4096
     )
+    end_time = datetime.now()
+    elapsed_time = end_time - start_time
+
     cleaned_notes = response['choices'][0]['message']['content']
+    log_message = f"Generate Notes without Exclusion "
+    log_data = {'additional_notes': notes, 'prompt': prompt, 'response': {cleaned_notes},
+                'response_time': elapsed_time.total_seconds()}
+    Logger.log(msg=log_message, data=log_data)
     return cleaned_notes
