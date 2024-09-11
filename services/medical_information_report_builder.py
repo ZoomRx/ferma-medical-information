@@ -258,44 +258,38 @@ def generate_clinical_data(inquiry_details: InquiryDetails, pi_details):
         # Initialize ThreadPoolExecutor outside the loop to reuse it
         with ThreadPoolExecutor() as executor:
             future_to_article = {}
-            future_to_article_clinical = {}
-            future_to_article_summary = {}
+            # Submit all tasks
             for item in trials:
                 future_summary = executor.submit(generate_report, inquiry_details, articles[item[0]], "summary",
                                                  item[1])
-                future_to_article_summary[future_summary] = item[0]
+                future_to_article[future_summary] = {"type": "summary", "id": item[0]}
+
                 future_clinical = executor.submit(generate_report, inquiry_details, articles[item[0]], report_type,
                                                   item[1], "", clinical_data_input)
-                future_to_article_clinical[future_clinical] = item[0]
-                future = executor.submit(generate_report, inquiry_details, articles[item[0]], "references", item[1])
-                future_to_article[future] = item[0]
+                future_to_article[future_clinical] = {"type": "clinical", "id": item[0]}
 
-            for future_summary in future_to_article_summary:
-                document_summary = future_to_article_summary[future_summary]
-                try:
-                    summary.append(future_summary.result())
-                except Exception as exc:
-                    Logger.log("error", f'An error occurred while generating Summary Report {document_summary}: {exc}')
-                    raise
+                future_references = executor.submit(generate_report, inquiry_details, articles[item[0]], "references",
+                                                    item[1])
+                future_to_article[future_references] = {"type": "references", "id": item[0]}
 
-            for future_clinical in future_to_article_clinical:
-                document = future_to_article_clinical[future_clinical]
-                try:
-                    clinical_data.append(future_clinical.result())
-                except Exception as exc:
-                    traceback.print_exc()
-                    Logger.log("error", f'An error occurred while generating Clinical report {document}: {exc}')
-                    raise
-
+            # Process results in submission order
             for future in future_to_article:
-                document_ref = future_to_article[future]
+                document_info = future_to_article[future]
                 try:
-                    references.append(future.result())
+                    result = future.result()
+
+                    if document_info["type"] == "summary":
+                        summary.append(result)
+                    elif document_info["type"] == "clinical":
+                        clinical_data.append(result)
+                    elif document_info["type"] == "references":
+                        references.append(result)
                 except Exception as exc:
-                    Logger.log("error", f'An error occurred while generating Reference report {document_ref}: {exc}')
+                    Logger.log("error",
+                               f'An error occurred while generating report for {document_info["id"]} ({document_info["type"]}): {exc}')
                     raise
     else:
-        Logger.log("error", f'Trials data is not in the expected format {trials}')
+        Logger.log("error",  f'Trials data is not in the expected format {trials}')
 
     summary_data_string = "\n\n".join(summary)
     summary_data = "\n## Summary\n"
@@ -328,11 +322,16 @@ def get_relevant_clinical_study(inquiry_details: InquiryDetails):
     trial_study_list = []
     article = {}
     document_names = set([os.path.splitext(doc)[0] for doc in inquiry_details.document_source])
+    print(document_names)
     for document in document_names:
+        print(document)
         article[document] = get_es_document(document)
+        print(article[document])
         cite_id = citation_order.get(document)
         study_json = generate_report(inquiry_details, article[document], "study", cite_id)
+        print(study_json)
         trial_study_list.append((document, study_json))
+    print(trial_study_list)
     return article, trial_study_list
 
 
