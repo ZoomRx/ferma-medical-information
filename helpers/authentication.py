@@ -117,13 +117,13 @@ def validate_user(db, username, password):
             print(e)
             raise
         if is_authenticated:
-            Logger.log(msg=f"{username} Logged in")
+            Logger.log(level="info", msg=f"{username} Loggin successful", data={'user': username})
             return {
                 "mail": email,
                 "username": username
             }
         else:
-            Logger.log(msg=f"{username} not found")
+            Logger.log(level = "error",msg=f"{username} not found")
             raise HTTPException(status_code=400, detail="User not found")
     except Exception as e:
         capture_exception(e)

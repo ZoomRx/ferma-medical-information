@@ -32,7 +32,8 @@ app = FastAPI()
 @router.post("/upload")
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
-    Logger.log("")
+    file_uploaded = [file.filename for file in files]
+    Logger.log(level="info", msg=f"Upload_files: file name - {file_uploaded}")
     file_names = []
     # tasks = [process_file(file, db) for file in files]
     tasks = [process_file_AzureAI(file) for file in files]
@@ -158,6 +159,8 @@ async def download_pdf_endpoint(links: list[str]):
 async def process_file_AzureAI(file: UploadFile):
     try:
         content_type = file.content_type
+        Logger.log(level="info",  msg=f"Process file: file name - {file.filename}, content_type: {content_type}")
+
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         new_filename = f"{file.filename.split('.')[0]}_{timestamp}"
         filename = f"{new_filename}.pdf"
