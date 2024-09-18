@@ -23,7 +23,7 @@ def login(
 ):
     username = login_data.username
     password = login_data.password
-    Logger.log(level="info", msg=f"{username} Logging in..", data={'user':username})
+    Logger.log(level="info", msg=f"{username} Logging in..", data={"user":username})
     response = authenticate_user(db, username, password)
 
     if response:

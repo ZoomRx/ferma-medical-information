@@ -1,4 +1,7 @@
 import inspect
+import json
+from datetime import datetime
+
 from google.oauth2 import service_account
 from google.api_core import retry
 from google.cloud import pubsub_v1
@@ -47,14 +50,24 @@ async def subscribe(project_id: str, subscription_id: str, callback):
                 print(e)
 
 
-def publish(project_id: str, topic_id: str, content: str) -> str:
+def publish(project_id: str, topic_id: str, content: str, log_level: str = "INFO") -> None:
     """
-    Function to publish given string to Google Cloud Pub/Sub
+    Function to publish formatted logs to Google Cloud Pub/Sub
     """
-    content = str(content)
-    data = content.encode("utf-8")
+    # Add timestamp and log level to the content
+    event_dict = {"log_level": log_level, "content": content}
 
+    # Convert event_dict to JSON string
+    json_data = json.dumps(event_dict)
+
+    # Encode the JSON string to bytes
+    encoded_data = json_data.encode('utf-8')
     publisher = pubsub_v1.PublisherClient(credentials=GCP_CREDENTIALS)
     topic_path = publisher.topic_path(project_id, topic_id)
-    future = publisher.publish(topic_path, data)
-    return future.result()
+
+    try:
+        future = publisher.publish(topic_path, data=encoded_data)
+        result = future.result()
+        print(f"Published log successfully. Message ID: {result}")
+    except Exception as e:
+        print(f"Failed to publish log: {str(e)}")

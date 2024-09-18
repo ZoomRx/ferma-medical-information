@@ -166,8 +166,6 @@ class AzureDocIntelligence():
         return pages_dict
 
     def json_to_markdown(self, *, table: Dict[str, Any]) -> str:
-        print("----------------------------")
-        print(table)
         markdown_text = ""
         headers = [""] * table["columnCount"]
         headers_present = 0
@@ -196,9 +194,6 @@ class AzureDocIntelligence():
         markdown_text = "|" + "|".join(['-'] * table['columnCount']) + "|\n" + markdown_text
         markdown_text = "|" + "|".join(headers) + "|\n" + markdown_text
         markdown_text = f"{table['caption']['content']}\n{markdown_text}" if table.get('caption') else markdown_text
-
-        print(markdown_text)
-        print("----------------------------")
 
         return markdown_text
 

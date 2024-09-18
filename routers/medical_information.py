@@ -7,12 +7,14 @@ import requests
 from fastapi import APIRouter, FastAPI, File, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
 from pandas import DataFrame
-from requests import Session
+from requests import Session, Request
 
 from db.session import get_doc_db
 from helpers import es_utils
 from helpers.logger import Logger
 from pathlib import Path
+
+from middlewares.logger import logger_middleware
 from schemas.medical_info_inquiry import Inquiry, InquiryDetails
 from services import document_service
 from services.azure_doc_intelligence import AzureDocIntelligence
@@ -27,7 +29,7 @@ import time
 
 router = APIRouter()
 app = FastAPI()
-
+app.middleware("http")(logger_middleware)
 
 @router.post("/upload")
 async def upload_files(files: List[UploadFile] = File(...),
@@ -105,7 +107,7 @@ async def process_file(file: UploadFile, db):
 @router.post("/create_srl")
 async def create_srl(inquiry_details: InquiryDetails):
     try:
-        Logger.log(f"Received request to create_srl for inquiry: {inquiry_details.inquiry}", data=inquiry_details.__dict__)
+        Logger.log(f"CreateSRL API: {inquiry_details.inquiry}", data=inquiry_details.__dict__)
         print(f"generate_clinical_data: {inquiry_details}")
         document_content = generate_content(inquiry_details)
         return {"content": document_content}
@@ -182,3 +184,4 @@ async def process_file_AzureAI(file: UploadFile):
     except Exception as e:
         Logger.log(level="error", msg=f"Azure file_Processing: An error occurred while processing.", data={'error': str(e)})
         raise HTTPException(status_code=500, detail="Internal Server Error")
+

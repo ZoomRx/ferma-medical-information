@@ -16,13 +16,11 @@ def merge_dicts(dict1, dict2):
             dict1[key] = value
     return dict1
 
-
 def publish_log_to_pubsub(logger, log_method, event_dict):
     try:
         data = event_dict
         if settings.env.environment == "production":
-            result = publish(settings.gcs.gcs_project_id, settings.pubsub.logger_topic, data)
-            print('Message published -', result)
+            publish(settings.gcs.gcs_project_id, settings.pubsub.logger_topic, data)
     except Exception as e:
         print(e)
         capture_exception(e)
