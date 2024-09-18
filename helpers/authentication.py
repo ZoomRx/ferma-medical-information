@@ -31,17 +31,18 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 def decode_token(token: str):
-    if not settings.env.IS_DEBUG:
-        return "abcd@zrx.com"
-    payload = jwt.decode(
-        token, settings.env.jwt_token,
-        algorithms=[JWT_ENCODE_ALGORITHM]
-    )
-    userMail: str = payload.get("sub")
-    if userMail is None:
-        return False
-    else:
-        return userMail
+    try:
+        payload = jwt.decode(token, settings.env.jwt_token, algorithms=[JWT_ENCODE_ALGORITHM])
+        print(payload)
+        username: str = payload.get("username")
+        if username is None:
+            raise ValueError("User email not found in token")
+        return username
+    except jwt.JWTError:
+        raise ValueError("Invalid token")
+    except Exception as e:
+        capture_exception(e)
+        print(e)
 
 
 def verify_token(token: str = Depends(oauth2_scheme)):
@@ -49,15 +50,13 @@ def verify_token(token: str = Depends(oauth2_scheme)):
         return "abcd@zrx.com"
 
     try:
-        payload = jwt.decode(
-            token, settings.env.jwt_token,
-            algorithms=[JWT_ENCODE_ALGORITHM]
-        )
-        userMail: str = payload.get("sub")
-        if userMail is None:
-            return False
-        else:
-            return userMail
+        payload = jwt.decode(token, settings.jwt_token, algorithms=[JWT_ENCODE_ALGORITHM])
+        user_email: str = payload.get("email")
+        user_username: str = payload.get("username")
+        if user_email is None or user_username is None:
+            raise ValueError("User email or username not found in token")
+
+        return user_email
     except JWTError as e:
         capture_exception(e)
         Logger.log('error', f"Threw error while verifying token", {"error": e, "token": token})
