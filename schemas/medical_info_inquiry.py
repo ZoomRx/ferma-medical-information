@@ -1,6 +1,6 @@
+import dataclasses
 from typing import List
 from pydantic import BaseModel
-
 
 class InquiryType(BaseModel):
     type: str
@@ -10,6 +10,8 @@ class InquiryType(BaseModel):
         # Custom initialization logic here
         print(f"InquiryType created with type={self.type} and categories={self.categories}")
 
+    def to_json(self):
+        return self.__dict__
 
 class InquiryDetails(BaseModel):
     inquiry: str
@@ -17,6 +19,9 @@ class InquiryDetails(BaseModel):
     document_source: List[str]
     pi_source: str
     inquiry_type: List[InquiryType]
+
+    def to_json(self):
+        return self.__dict__
 
 
 class Inquiry(BaseModel):

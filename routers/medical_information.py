@@ -1,13 +1,10 @@
-# routes/upload_routes.py
-import http
-import json
 from datetime import datetime
 from typing import List
 import requests
 from fastapi import APIRouter, FastAPI, File, HTTPException, UploadFile, Depends
 from fastapi.responses import JSONResponse
 from pandas import DataFrame
-from requests import Session, Request
+from requests import Session
 
 from db.session import get_doc_db
 from helpers import es_utils
@@ -15,7 +12,7 @@ from helpers.logger import Logger
 from pathlib import Path
 
 from middlewares.logger import logger_middleware
-from schemas.medical_info_inquiry import Inquiry, InquiryDetails
+from schemas.medical_info_inquiry import Inquiry, InquiryDetails, InquiryType
 from services import document_service
 from services.azure_doc_intelligence import AzureDocIntelligence
 from services.document_service import document_service
@@ -35,7 +32,7 @@ app.middleware("http")(logger_middleware)
 async def upload_files(files: List[UploadFile] = File(...),
                        db: Session = Depends(get_doc_db)):
     file_uploaded = [file.filename for file in files]
-    Logger.log(level="info", msg=f"Upload_files: file name - {file_uploaded}")
+    Logger.log(msg=f"Upload_files", data={'files':file_uploaded})
     file_names = []
     # tasks = [process_file(file, db) for file in files]
     tasks = [process_file_AzureAI(file) for file in files]
@@ -107,8 +104,7 @@ async def process_file(file: UploadFile, db):
 @router.post("/create_srl")
 async def create_srl(inquiry_details: InquiryDetails):
     try:
-        Logger.log(f"CreateSRL API: {inquiry_details.inquiry}", data=inquiry_details.__dict__)
-        print(f"generate_clinical_data: {inquiry_details}")
+        Logger.log(msg=f"CreateSRL API Request", data=inquiry_details.to_json())
         document_content = generate_content(inquiry_details)
         return {"content": document_content}
     except Exception as e:
@@ -119,11 +115,9 @@ async def create_srl(inquiry_details: InquiryDetails):
             'Traceback': {traceback.format_exc()}})
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
-
 @router.post("/find_cite")
 async def find_cite(inquiry: Inquiry):
-    Logger.log(msg=f"Received request to find citations for inquiry: {inquiry.inquiry}", data=inquiry.__dict__)
+    Logger.log(msg=f"Find Site Request", data=inquiry.__dict__)
     try:
         start_time = time.time()
         # Simulate fetching articles based on inquiry
@@ -185,3 +179,10 @@ async def process_file_AzureAI(file: UploadFile):
         Logger.log(level="error", msg=f"Azure file_Processing: An error occurred while processing.", data={'error': str(e)})
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+def serialize_complex_object(obj):
+    if isinstance(obj, InquiryType):
+        return obj.__dict__
+    elif hasattr(obj, '__dict__'):
+        return obj.__dict__
+    else:
+        return str(obj)

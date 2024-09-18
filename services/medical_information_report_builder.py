@@ -1,13 +1,10 @@
 import json
 import os
-import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import time, datetime
+from concurrent.futures import ThreadPoolExecutor
 from typing import List
 
 import openai
 import requests
-from sqlalchemy import null
 
 from helpers.es_utils import get_es_data
 from helpers.logger import Logger
@@ -89,7 +86,7 @@ def generate_report(inquiry_details: InquiryDetails, article_pages, content="all
              }
         ]
 
-        log_message = f"Generate content for {content} "
+        log_message = f"Generate {content} "
         log_data = {'inquiry_details': inquiry_details, 'data': data, 'pi_details': pi_details,
                     'clinical_data': clinical_data, 'prompt': prompt}
         Logger.log(msg=log_message, data=log_data)
@@ -111,7 +108,7 @@ def generate_report(inquiry_details: InquiryDetails, article_pages, content="all
             file.write(srl_content)
 
         # End event logging
-        log_message = f"Generate content for {content} completed successfully"
+        log_message = f"Generate {content} completed successfully"
         log_data = {'response': {srl_content}, 'response_time': elapsed_time.total_seconds()}
         Logger.log(msg=log_message, data=log_data)
         return srl_content
@@ -289,7 +286,7 @@ def generate_clinical_data(inquiry_details: InquiryDetails, pi_details):
                                f'An error occurred while generating report for {document_info["id"]} ({document_info["type"]}): {exc}')
                     raise
     else:
-        Logger.log("error",  f'Trials data is not in the expected format {trials}')
+        Logger.log("error",  msg= f'Trials data is not in the expected format {trials}')
 
     summary_data_string = "\n\n".join(summary)
     summary_data = "\n## Summary\n"
@@ -567,7 +564,7 @@ def get_cleaned_content(inquiry_details: InquiryDetails):
                 response_content = response['choices'][0]['message']['content']
                 clinical_json = json.loads(response_content)
 
-                log_message = f"Generate json with inclusion and exclusion filters. "
+                log_message = f"Generate inclusion and exclusion filters"
                 log_data = {'prompt': prompt, 'response': {clinical_json},
                             'response_time': elapsed_time.total_seconds()}
                 Logger.log(msg=log_message, data=log_data)
@@ -660,7 +657,7 @@ def get_exclusion(notes):
     elapsed_time = end_time - start_time
 
     cleaned_notes = response['choices'][0]['message']['content']
-    log_message = f"Generate Notes without Exclusion "
+    log_message = f"Generate Additional Notes without Exclusion "
     log_data = {'additional_notes': notes, 'prompt': prompt, 'response': {cleaned_notes},
                 'response_time': elapsed_time.total_seconds()}
     Logger.log(msg=log_message, data=log_data)

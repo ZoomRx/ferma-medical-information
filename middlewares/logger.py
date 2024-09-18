@@ -10,16 +10,9 @@ async def logger_middleware(request: Request, call_next):
     structlog.contextvars.clear_contextvars()
     ctx = {
         "transaction_id": str(uuid4()),
-        "request_path": request.url.path,
-        "query_params": dict(request.query_params)
+        "request_path": request.url.path
     }
     try:
-        if request.body:
-            try:
-                ctx["request_body"] = await request.body()
-            except Exception as e:
-                structlog.contextvars.bind_contextvars(**ctx)
-                Logger.log('error', f"Failed to parse request body", {"error": str(e)})
         auth_header = request.headers.get("Authorization", "").split(" ")
         if len(auth_header) == 2:
             user = decode_token(auth_header[1])
