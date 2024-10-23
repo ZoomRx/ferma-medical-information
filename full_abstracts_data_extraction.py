@@ -61,7 +61,7 @@ def read_full_abstracts(file_path):
 
 # Function to send the extracted text to Azure OpenAI and get a response
 def get_openai_response(abstract_text):
-    with open("/Users/zoomr/ferma-medical-information/config/full_abstract_extraction.txt",
+    with open("./config/full_abstract_extraction.txt",
               "r") as file:
         prompt_text = file.read()
     prompt = prompt_text.format(input=abstract_text)
