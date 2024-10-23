@@ -1,0 +1,212 @@
+Read the entire content provided as the input query thoroughly.
+
+1)category:
+Identify and answer the question "Is this session about a clinical trial/preclinical/general?"
+- you can understand this if the session is about clinical trial in human or discussing clinical trial data (in human) - categorise as "Clinical". Even if there is no trial_identifier or trial_acronym, but is a clinical trial data in human, categorise as "Clinical"
+- Preclinical study in animal model, cell lines or in silico, etc - classify as "Preclinical".
+- If it is a general discussion about targeting a disease, mechanism of action of a known drug without any mentions of a trial or a preclinical inference, it will be "General"
+- All retrospective study, post-hoc analysis, meta-analysis, systemic reviews that are not having any clinical trial identifiers are to be categorised as "General".
+- Answer only with the term "Clinical" or "Preclinical" or "General".
+Example format of output "Category: Clinical".
+
+2)trial_identifier
+- This should only include specific identifiers mentioned in the input query that are clearly labeled and directly related to clinical trials.
+Example Format 1: "Trial Identifier: NCT03682536", if no value return "-".
+
+3)trial_acronym
+- This should be a specific Trial Acronym (such as Checkmate-008, SUNRISE-002) mentioned in the input query mentioned in the input query directly related to clinical trials.
+- Read the entire context before returning data. DO NOT include anything that you are doubtful that it may not refer to a trial.
+-DO NOT INTENTIONALLY MISS OUT ON ACRONYM if it is present in the input
+Example format: "trial_acronym: KEYNOTE-522"
+- If no trial acronym found, return "-".
+
+4)primary_drug, secondary_drug and comparator_drug:
+-Read through entire context and return ONLY INTERVENTIONAL DRUG, Active ingredient, drug class like Inhibitors, chemotherapy, radiation therapy, etc.
+-DO NOT return terms like Placebo, Buffer, Saline, New entity, Novel, First-in-class, Observation, behavioral, procedure, concentration or dosage under drugs.
+- MUST Review the entire input query thoroughly to capture appropriate drugs
+- DO NOT return drug name if it is non-interventional like "Tamoxifen resistant", "Cisplatin pretreated", "<Drug> intolerant", etc.
+Example: Palbociclib resistant Lung Cancer, here Palbociclib is NOT a DRUG as it is non-interventional.
+- Follow each instruction detailed below to enable classification.
+
+INSTRUCTIONS:
+a. primary_drug-
+-It can be either a single drug or multiple drugs or a sequence of drugs.
+-If it is multiple drugs, Primary drug can be identified with patterns that signify the equal importance of the drug combination tested for the session.
+- MUST classify drugs with the following PATTERNS as Primary Drug:
+"in combination", "together", "and", "with", "+", "plus", "followed by" etc.
+-It can be a brand, generic, imaging agent like [18F]-FDG, genetic product like Oncolytic Virus CF33-expressing hNIS/Anti-PD-L1 Antibody, vaccines like Allogeneic Myeloma Vaccine, cell products like CAR-T Cell, Lymphocyte, etc.
+-If the drugs are mentioned for chemotherapy or regimen, return them in output. Eg: Input:chemo consisting of paclitaxel; carboplatin, then Output: Paclitaxel; Carboplatin
+-If both brand and generic name for the same primary drug is present, Return ONLY the brand name. Example: Olaparib (Lynparza) for NSCLC, return Primary drug: Lynparza.
+-DO NOT return synonymous mentions of a drug present within brackets as 2 different terms. Example: Pembrolizumab (mk-3475) for advanced urothelial cancer. Return ONLY Pembrolizumab as primary drug. DO NOT return the alphanumeric synonym: mk-3475 as a primary drug as it is a synonym to Pembrolizumab.
+- The examples below have some patterns that has been highlighted within quotes for you to understand drug classification patterns:
+Eg 1: Input- Olaparib "+" alpelisib "followed by" chemoradiotherapy for CRC; Output- Primary drug: Olaparib; Alpelisib; Chemoradiotherapy
+Eg 2: Input- Pembrolizumab "in combination with" chemotherapy; Output- Primary drug: Pembrolizumab; Chemotherapy
+
+b. secondary_drug
+-Secondary drug is a drug that may or may not be given with the primary drug, but is NEVER the comparator.
+- MUST classify drugs with the following PATTERNS as Secondary drug:
+"with or without", "with/without", "and/or", "monotherapy and in combination with", "+/-", etc.
+- The examples below have some patterns that has been highlighted within quotes for you to understand drug classification patterns:
+Eg 1: Input - Myeloma Vaccine "with" FOLFIRINOX "+/-" Pembrolizumab
+Output: Primary Drug: Myeloma Vaccine; FOLFIRINOX
+Secondary Drug: Pembrolizumab
+Eg 2: Input: Enzalutamide "in combination with" Olaparib (Lynparza) "with/without" Dacarbazine, Output: Primary Drug: Enzalutamide; Lynparza
+Secondary Drug: Dacarbazine
+
+c. comparator_drug
+- This is the drug against which the primary/secondary drug is compared in the input context. It can be single or multiple drugs.
+- MUST classify drugs with the following PATTERNS as Comparator drug:
+"versus", "vs", "compared with", "compared to", etc.
+- If the same drug is present as both primary and comparator, return the drug under both. Refer to the example below,
+Example 1: Input - Olaparib (OLA) "vs" OLA "plus" Durvalumab
+Output: Primary Drug: Olaparib
+Secondary Drug:-
+Comparator Drug: Olaparib; Durvalumab
+Example 2: Input - Alpelisib "in monotherapy or with" cisplatin "compared to" SOC (carboplatin/cisplatin)
+Output: Primary Drug: Alpelisib
+Secondary Drug: Cisplatin
+Comparator Drug: Carboplatin; Cisplatin
+
+Example 3: Input- Updated results from an ongoing phase 1/2a study of T3011, an oncolytic HSV expressing IL-12 and PD-1 antibody, administered via IT injection "as monotherapy or combined with" pembrolizumab "vs" radiation therapy "given along with" olaparib in advanced solid tumors.
+Output
+Primary drug: T3011
+Secondary drug: Pembrolizumab
+Comparator drug: Radiation Therapy; Olaparib
+
+**CRITICAL DATA CLASSIFICATION MANDATE: CONSIDER ONLY TITLE and BACKGROUND of the input query ONLY to enable classification of the drug to primary drug/secondary drug/comparator drug by identifying patterns as listed under each category discussed above. Ensure the PATTERN is identified correctly from the title and drug classification is made accordingly, double-check your submission before giving the output. The drugs MUST be picked by analysing and going through the entire input context thoroughly as explained above. DO NOT return drug name if it is mentioned in a non-interventional context like "<Drug> resistant", "<Drug> pretreated", "<Drug> intolerant". This step is non-negotiable and must be adhered to before proceeding to the classification of the drug. Failure to comply with this mandate will result in incomplete and inaccurate data, which is unacceptable.**
+
+Example:
+Input:
+Title: Outcomes with first-line (1L) Alpelisib + endocrine therapy (ET) vs combination chemotherapy (combo CT) in pre/perimenopausal patients Ovarian Cancer
+Background: "...Alpelisib + ET over combo CT..."
+Methods:"...systemic therapy Alpelisib with letrozole/anastrozole + goserelin or of combo CT (docetaxel + capecitabine, paclitaxel + gemcitabine, or capecitabine + vinorelbine)..."
+Results:"...significant PFS benefit with Alpelisib + ET vs combo CT..."
+Conclusions: "... improved secondary outcomes with Alpelisib + ET over combo CT..."
+Output:
+Primary Drug: Alpelisib; Letrozole; Anastrozole; Goserelin
+Secondary Drug:-
+Comparator Drug: Docetaxel; Capecitabine; Paclitaxel; Gemcitabine; Vinorelbine
+
+5) indication
+-Indication is the disease or condition along with the patient populations considered for that disease in the conference session. The extraction of indication MUST be as specific as possible, including the disease or condition with the relevant patient populations.
+-Below are a few categories that MUST be considered for the patient population,
+  - Stages of disease: Outline its progression or severity, often represented as stages like I, II, III, IV, etc.
+  - Mutation type/Biomarkers: Identify genetic alterations relevant to the disease, such as "EGFR-Positive", "KRAS G12C mutant", "HER2-Overexpressing" etc.
+  - Patient subgroup: Pinpoint the specific group being treated or studied, such as "Previously Treated", "Advanced", "Pediatric", "Adult", "Elderly" etc.
+  - Other Treatment or Patient Characteristics: Provide deeper insights into the disease, patient's surgery/chemotherapy/treatment status, such as "Postoperative", "Recurrent", "Metastatic", "High-risk", "symptomatic" etc.
+  - Do not include exclusion criteria in the indications. Example: For metastatic HER2 positive breast cancer excluding patients with CNS metastases, RETURN indication as Metastatic HER2 Positive Breast Cancer.
+
+*Example Format for indication output: "Advanced Fourth-line Relapsed/Recurrent BRCA-mutant or DDR-mutated EBV-Positive Lynch Syndrome and Lung Cancer previously treated with Aromatase Inhibitors"*
+
+6) disease
+-Extract ONLY the disease information (EXCLUDE all patient population info).
+-If the disease in input is abbreviated, the disease name should be returned in the FULL FORM. -Format would be that if indication is "Later-line of treatment for Stage 4 High-Risk KRAS-Mutant Locally Advanced or Metastatic Pancreatic Cancer", DISEASE would be "Pancreatic Cancer".
+- Do NOT return terms like Metastatic, Recurrent, Advanced, Relapsed, Pediatric, biomarkers like HR-positive, HER2-negative, and other additional information with the disease.
+- If the disease is due to / related to another disease, ensure to return the entire term. Example:
+1) Chemotherapy-associated Nausea and Vomiting, 2) Hepatocellular carcinoma with portal vein tumor thrombosis
+- If the disease has information of histology or sub-type, ensure to return it. Example:
+1) Clear cell renal cell carcinoma, 2) Neurofibromatosis Type 1
+*IMPORTANT-DO NOT return sentences, return only disease name. If multiple separate with ";"*
+
+7) phase
+- Extract the phase details of particular input query, if mentioned. If there are multiple phases separate using ";". DO NOT use roman letters.
+Example Format: "phase: Phase 2"
+
+8) study_sponsor
+- Return Study sponsor ONLY if a firm, university, research institute or some valid company name is mentioned explicitly as a study sponsor, or funded by, or funding information, etc. Example for output format: "Study Sponsor: Merck". If no value, or if any term like internally funded or non-company terms like some awards etc. are mentioned, return "-"
+
+9) Follow the instructions given below. DO NOT Hallucinate or make up any data.
+
+INSTRUCTIONS:
+1. Return detailed summarized paragraphs of titles - Introduction, Study design, Results/Discussion, Conclusion by thoroughly going through each data provided within the input context '''.
+2. introduction
+- Return introductory lines about the session in this paragraph.
+- If it is a "General" session, Return the introduction or the purpose of the particular session given in the Input Query ONLY in this section.
+3. study design
+- Read the entire context thoroughly and return detailed summarized paragraph under the heading "Study design"
+- It MUST contain data on arms, cohorts, intervention, dosage and duration of treatment, Route of treatment, Enrollment number for the study and for each cohort, Allocation, Intervention Model, Masking, Eligibility criteria, Median age and Endpoints or Outcome measures ONLY if present. Do NOT make up any data.
+- Ensure to ALWAYS return a cohort-wise description of each data, if available in the context provided.
+- Ensure to return any numerical values related to study design/method if mentioned in input query
+- If no study design related information is present, return as "-".
+Example:
+Study design:
+
+This is a randomized, single group assignment, phase 2 trial assessing the efficacy of TAR-200 with or without cetrelimab in 3 cohorts, Group A (n=350): TAR-200 (225 mg gemcitabine Q3W [induction phase] and Q12W [maintenance phase]) + cetrelimab. Group B (n=350): BCG (QW for 6 weeks [induction] and QW for 3 weeks at Weeks 12, 24, 48, 72, and 96 [maintenance]). Group C (n=350): TAR-200 (225 mg gemcitabine Q3W [induction phase] and Q12W [maintenance phase]). There are 350 patients in each cohort, adding to 1050 patients in total. This study enrolls adult patients with histologically confirmed Non-muscle-invasive Bladder Cancer (high-grade Ta, any T1, or CIS), BCG-naive or last exposure >3 years prior to randomization, age 18 years, ECOG performance status 0, 1, or 2, and no visible papillary disease or negative/atypical local urine cytology for high-grade urothelial carcinoma. They should not have brain metastsis and previous treatment with enzalutamide. The outcome measures studied are, Primary Objective is safety, DFS, DCR, PFS and antitumor activity, secondary objective is to identify the ORR and OS. There is also an exploratory objective to compare the PFS and OS rate between the cohorts.
+
+4. Results/Discussion and Safety Results:
+
+Return all the data pertaining to Results/Discussion, Safety Results by thoroughly going through each data provided within the context '''.
+
+4a. results_discussion:
+- Return all the patient details such of Enrollement number, Median age, Eligibility criteria etc if it is mentioned.
+- Return a detailed summary with all the results discussed in the study with the values of each Endpoints (Primary, Secondary, Other)if present
+- It MUST describe ALL endpoint names and endpoint values from the context within ''' with the corresponding statistical value like hazard ratio (HR), p-value, confidence interval (CI) etc always with the data.
+- Return both individual arm values and also overall values if mentioned. Eg: At median follow-up of 12.4 months (mos) (range, 0.1-30.2), median OS was 13.2 mos (95% CI: 10.9-17.8) with BV+R2 vs 7.5 mos (95% CI: 2.3-10.7) with R2 (HR 0.327; 95% CI: 0.345-0.881; P=0.0075)
+- DO NOT skip any endpoint value and corresponding statistical value.
+- MUST include all the outcome measures provided within '''.
+- Extract ALL data and findings from the input text encompassing both quantitative and qualitative findings of the study. Ensure a holistic coverage of outcomes.
+- Detailed Inclusion of All Numerical Findings: Ensure extraction includes ALL numerical result mentioned in the study, covering all efficacy outcomes, end of treatement, response rates and ALL other primary endpoints. Emphasize on capturing exact figures, percentages, HR, CI, p-values,events and statistical measures.
+** MUST Return the number of patients in that arm when returning numerical data with name of arm, if present. DO NOT HALLUCINATE or make up data.**
+- Transparent Reporting of Negative Results: Include all negative findings, offering a complete and unbiased view of the study's conclusions, especially those that contrast with the expected outcomes.
+- Return all available data including time from randomization, median follow up date, duration of response, DFS, and any other related data, if provided.
+- Refrain from incorporating non-pertinent data or information, maintaining focus on study-specific findings.
+- Return median follow up data with months mentioned in the input query.
+- Include data and endpoint value from ALL patient subgroups and EVERY arm or cohort of the study.
+- The paragraph returned can be very detailed including ALL numerical data discussed in the input context.
+- If session is a "General" session, summarize the content of the session by giving importance to ALL data points.
+- There is no restriction on word count, CROSS-CHECK with the input context if you have returned ALL numerical data present in the result and discussion section as it VERY CRUCIAL.
+- Ensure the depth and richness of data is maintained in the output generated by you. Output should be data-driven
+
+4a. safety_results:
+- MUST return ALL Safety and Adverse events (TEAE) under Safety Results
+- DO NOT MISS OUT ANY VALUES related to safety data.
+- Detail all adverse events reported in the study, including specific numerical data like occurrence percentages and sample sizes. Focus   on all adverse events, ensuring their occurrence rates and sample sizes are clearly and prominently reported.
+- If more than one arm data is present, return ALL.
+- Return individual and overall TEAEs, Any TRAE, Serious TRAE, TRAE discontinuation, treatment related death and other TRAEs if mentioned in input query
+- If there is no safety results mentioned, return "-".
+
+5. conclusion:
+
+- Return a summarized paragraph for Conclusion, it MUST summarize from conclusion/summary section from the context provided within '''. The essential contents of the study 'Conclusion' should include the title of the abstract/session as well. Refrain from adding your own insights to conclusion.
+-Always start this session with "This session at the conference indicated that" followed by the conclusion data
+
+General Instructions:
+6. Interpret ALL tables, figures, graphs and charts with all details.
+7. Return ALL endpoint values WITH corresponding Hazard ratio (HR) values including range, p-values, confidence interval (CI value) and ALL numerical values that denote statitical significance in the "Results/Discussion" section.
+8. Ensure to return the statistical values pertaining all the time intervals. For example: The PFS rates at  12 and 24 months, respectively, in EGFR-mutated unresectable stage III NSCLC were  74% vs. 22%, and 65% vs. 13%. In this example, PFS rates at 12 and 24 months should be returned.
+9. Return details on number of patients and time from randomization of each endpoint data discussed, if available. DO NOT Hallucinate.
+10. Create a checklist to ensure you have returned ALL numerical data present in the input context in the output with all associated statistical values with it. Give priority to return ALL numerical value in the context.
+11. DO NOT assume, make inferences or hallucinate any data.
+12. Ensure to return any trial identifiers mentioned in the input query.
+13. Provide a detailed report with ALL data giving priority to report ALL NUMERICAL VALUES with arm details, there is no restriction in word count.
+
+**CRITICAL DATA REVIEW MANDATE: In your analysis and summarization process, it is imperative to meticulously review the entire input context and provide all meta-data requested as output accurately as per the instruction. This includes thoroughly reading and understanding each line of the provided text, ensuring no information is disregarded or overlooked. This step is non-negotiable and must be adhered to before proceeding to incorporate a thorough and detailed summary of Study Design, Results/Discussion, and Conclusion sections. Failure to comply with this mandate will result in incomplete and inaccurate summaries, which is unacceptable. Always confirm that all pertinent information, as explicitly stated or provided in the context, has been fully considered into your summaries.**
+
+*IMPORTANT MANDATE- DO NOT return any comment or statement stating that the context does not contain explicit information or any such lines, Ex: endpoints were not explicitly reported in the provide in the context, etc. Return whatever data is available as a concise summary and do NOT comment as further data not available or so.*
+
+Return the Output in "json" Format:
+
+  {{
+    "Output":
+
+    {{
+        "category": "A",
+       "trial_identifier": "B",
+       "trial_acronym": "C",
+       "primary_drug": "D",
+       "secondary_drug": "E",
+       "comparator_drug": "F",
+       "indication": "G",
+       "disease": "H",
+       "phase": "I",
+       "sponsor": "J",
+       "introduction": "K",
+       "study_design": "L",
+       "results_discussion": "M",
+       "safety_results": "N"
+       "conclusion": "O"
+       }}
+  }}
+  -Input Query-
+'''{input}'''
+
