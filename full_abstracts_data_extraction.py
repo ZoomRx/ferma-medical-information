@@ -1,5 +1,6 @@
 import io
 import math
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import quote_plus
@@ -64,7 +65,7 @@ def get_openai_response(abstract_text):
               "r") as file:
         prompt_text = file.read()
     prompt = prompt_text.format(input=abstract_text)
-    start_time = datetime.now()
+    start_time = time.time()
     response = client.chat.completions.create(
         model="deployment-name",  # Replace with your actual deployment name
         messages=[
@@ -75,10 +76,9 @@ def get_openai_response(abstract_text):
         temperature=0,
         top_p=0
     )
-    end_time = datetime.now()
-    elapsed_time = end_time - start_time
+    end_time = time.time() - start_time
 
-    return response.choices[0].message.content.strip(), response.usage.completion_tokens, response.usage.prompt_tokens, response.usage.total_tokens,elapsed_time
+    return response.choices[0].message.content.strip(), response.usage.completion_tokens, response.usage.prompt_tokens, response.usage.total_tokens,end_time
 
 def process_abstracts_old(df):
     output_token = 0
