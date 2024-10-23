@@ -12,7 +12,6 @@ import chardet
 from elasticsearch import Elasticsearch
 from openai import AzureOpenAI
 
-from helpers import es_utils
 from datetime import datetime
 
 openai.api_type = "azure"
@@ -61,10 +60,11 @@ def read_full_abstracts(file_path):
 
 # Function to send the extracted text to Azure OpenAI and get a response
 def get_openai_response(abstract_text):
-    with open("/Users/zoomr/PycharmProjects/Ferma-congress-Summary/data/prompts/full_abstract_extraction.txt",
+    with open("/Users/zoomr/ferma-medical-information/config/full_abstract_extraction.txt",
               "r") as file:
         prompt_text = file.read()
     prompt = prompt_text.format(input=abstract_text)
+    start_time = datetime.now()
     response = client.chat.completions.create(
         model="deployment-name",  # Replace with your actual deployment name
         messages=[
@@ -75,7 +75,10 @@ def get_openai_response(abstract_text):
         temperature=0,
         top_p=0
     )
-    return response.choices[0].message.content.strip(), response.usage.completion_tokens, response.usage.prompt_tokens, response.usage.total_tokens
+    end_time = datetime.now()
+    elapsed_time = end_time - start_time
+
+    return response.choices[0].message.content.strip(), response.usage.completion_tokens, response.usage.prompt_tokens, response.usage.total_tokens,elapsed_time
 
 def process_abstracts_old(df):
     output_token = 0
@@ -175,12 +178,13 @@ def process_abstract(row):
     abstract = row['full_abstract']
 
     if str(abstract) != "nan":
-        openai_response, output_token, prompt_token, total_token = get_openai_response(abstract)
+        openai_response, output_token, prompt_token, total_token, response_time = get_openai_response(abstract)
     else:
         openai_response = """["{\n  \"Output\": {\n    \"category\": \"-\",\n    \"trial_identifier\": \"-\",\n    \"trial_acronym\": \"-\",\n    \"primary_drug\": \"-\",\n    \"secondary_drug\": \"-\",\n    \"comparator_drug\": \"-\",\n    \"indication\": \"-\",\n    \"disease\": \"-\",\n    \"phase\": \"-\",\n    \"sponsor\": \"-\",\n    \"introduction\": \"-\",\n    \"study_design\": \"-\",\n    \"results_discussion\": \"-\",\n    \"safety_results\": \"-\",\n    \"conclusion\": \"-\"\n  }\n}"]"""
         output_token = 0
         prompt_token = 0
         total_token = 0
+        response_time = 0
 
     processed_data = {
         "session_id": row['session_id'],
@@ -212,10 +216,11 @@ def process_abstract(row):
         "conference_name": "ASH 2023",
         "time_zone": "",
         "location": row["location"],
-        "openai_response": {openai_response},  # Placeholder for OpenAI response
-        "completion_token": {output_token},
-        "prompt_token": {prompt_token},
-        "total_tokens": {total_token}
+        "openai_response": f"{openai_response}",  # Placeholder for OpenAI response
+        "completion_token": f"{output_token}",
+        "prompt_token": f"{prompt_token}",
+        "total_tokens": f"{total_token}",
+        "response_time": f"{response_time}"
     }
 
     processed_data = {k: v if not isinstance(v, set) else list(v) for k, v in processed_data.items()}
@@ -230,7 +235,7 @@ def generate_full_abstract_summary(file_path):
      #Step 2: Process the full abstract to generate summaries
     process_abstracts(full_abstract_df)
     # Step 3: Load the JSONL file and convert to a DataFrame
-    #generate_full_abstract_summary_output(output_jsonl_file, "summary_output_latest.csv")
+    generate_full_abstract_summary_output(output_jsonl_file, "summary_output_latest.csv")
 
 def generate_full_abstract_summary_output(input_jsonl_file, output_csv_file):
     # Step 1: Load the JSONL file and convert to a DataFrame
@@ -360,5 +365,5 @@ def es_write(data):
 def has_hyphen(s):
     return s == '-'
 
-file_path = "/Users/zoomr/PycharmProjects/Ferma-congress-Summary/data/input/ASH_2023_FullData2.csv"
+file_path = "ASH_2023_FullData.csv"
 generate_full_abstract_summary(file_path)
